@@ -159,15 +159,27 @@ void MC_Compute::PayOff(void)
 {
 }
 
+
+
 // cette fonction prend en argument le temps et ressort un dt
 double MC_Compute::Compute_dt(int date)
 {
-	if (date < 104)
-	{
-		return (104 - date)/52;
-	} else 
-	{
-		return (52 - (date % 52))/52;
+	if (m_discretisation = WEEK) {
+		if (date < 104)
+		{
+			return (104 - date)/52;
+		} else 
+		{
+			return (52 - (date % 52))/52;
+		}
+	} else {
+		if (date < 104*7)
+		{
+			return (104*7 - date)/365;
+		} else 
+		{
+			return (365 - (date % 365))/365;
+		}
 	}
 }
 
