@@ -55,3 +55,23 @@ bool Model::CheckParameter() {
 Model::~Model()
 {
 }
+
+PnlVect * Model::Diffuse_cours_histo(double spot, double drift, double vol) {
+	double maturity = 365;
+	double dt = 1;
+	PnlVect * Historique = pnl_vect_create(260);
+	pnl_vect_set(Historique, 0, spot);
+	PnlRng * rng = pnl_rng_create(PNL_RNG_MERSENNE);
+	PnlVect * l_vecAlea = pnl_vect_create(260);
+	pnl_vect_rng_normal_d(l_vecAlea, 260, rng);
+	for (int k = 1; k < 260; k++){		
+		double l_compo1 = 0;
+		double l_compo2 = 0;
+		double tmp;
+		l_compo1 = drift - pow(vol,2) * dt / 2;
+		l_compo2 = vol * dt * pnl_vect_get(l_vecAlea,k);
+		tmp = pnl_vect_get(Historique,k) * exp(l_compo1 + l_compo2);
+		pnl_vect_set(Historique, k, tmp);
+	}
+	return Historique;
+}

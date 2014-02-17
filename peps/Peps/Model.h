@@ -20,5 +20,5 @@ public :
 	void Model::Diffuse(PnlMat * histoFixMT, PnlVect *finalSpotMT, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time);
 	int Nb_Path() const { return m_nbPath; }
 	void Nb_Path(int val) { m_nbPath = val; }
-
+	PnlVect * Model::Diffuse_cours_histo(double strike, double drift, double vol);
 };
