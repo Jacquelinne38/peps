@@ -134,6 +134,7 @@ Produit::Produit()
 Produit::~Produit()
 {
 	pnl_mat_free(&m_matCor);
+	pnl_mat_free(&m_historique);
 }
 
 // Ces fonctions doivent prendre le temps en parametre
