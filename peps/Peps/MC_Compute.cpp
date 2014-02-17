@@ -5,6 +5,7 @@
 
 MC_Compute::MC_Compute(Produit * produit, Model * model)
 {
+	m_discretisation = WEEK;
 	m_produit = produit;
 	m_sizeEquityProduct = produit->getEquities().size();
 	m_model = model;
