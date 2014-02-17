@@ -73,7 +73,7 @@ public :
 	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma);
 
 	void payoff();
-	void Compute_dt();
+	double Compute_dt(int date);
 	void Compute_path();
 	void PayOff();
 	

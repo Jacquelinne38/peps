@@ -159,8 +159,15 @@ void MC_Compute::PayOff(void)
 }
 
 // cette fonction prend en argument le temps et ressort un dt
-void MC_Compute::Compute_dt(void)
+double MC_Compute::Compute_dt(int date)
 {
+	if (date < 104)
+	{
+		return (104 - date)/52;
+	} else 
+	{
+		return (52 - (date % 52))/52;
+	}
 }
 
 // cette fonction prend en argument le temps et ressort la matrice de fixing
