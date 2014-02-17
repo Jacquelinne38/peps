@@ -6,6 +6,9 @@
 class MC_Compute
 {
 private:
+
+	enum DISCRETISATION_TYPE { DAY, WEEK };
+
 	double T;
 	double K;
 	double m_spot;
@@ -15,6 +18,7 @@ private:
 	Produit * m_produit;
 	Model * m_model;
 	int m_sizeEquityProduct;
+	DISCRETISATION_TYPE m_discretisation;
 	/*
 	* Déclaration du vecteur spot
 	* return vecteur des prix spot
