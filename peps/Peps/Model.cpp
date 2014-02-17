@@ -3,7 +3,7 @@
 #include "Model.h"
 
  void Model::Diffuse(PnlMat * histoFixMT, PnlVect *finalSpotMT, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time) {
-	double l_maturity = 4;
+	double l_maturity = PAS-1;
 	// le pas de temps
 	double l_dt = 1;
 	// le nombre d'interval de discretisation

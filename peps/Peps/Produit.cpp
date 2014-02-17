@@ -70,7 +70,7 @@ void Produit::SetDataHisto() {
 				pnl_mat_set(m_historique, i,j, atof(split[j].data()));
 			}
 		}
-		pnl_mat_print(m_historique);
+		//pnl_mat_print(m_historique);
 	}
 	
 }

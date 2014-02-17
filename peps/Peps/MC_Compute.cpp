@@ -36,7 +36,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta,
 
 	//MonteCarlo
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		PnlMat *l_histoFixMT = pnl_mat_create(m_sizeEquityProduct, 5);
+		PnlMat *l_histoFixMT = pnl_mat_create(m_sizeEquityProduct, PAS);
 		PnlVect *l_finalSpotMT =  pnl_vect_copy(l_spot);
 		PnlMat *l_histoFix;
 		pnl_mat_set_col(l_histoFixMT, l_finalSpotMT, 0);
@@ -72,7 +72,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta,
 
 inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff) {
 	// Renta est la matrice des rentabilites autant de ligne que d'actifs et 4 colonnes car il y a 4 intervales de discretisation (5dates)
-	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, 4);
+	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, PAS);
 	// On calcul le prix du m_produit //Pour ca on a besoin de la rentabilite du portefeuille
 	Rent(histoFix, l_renta);
 	// On peut ensuite calculer son payoff //Ici la fonction price2 devrait retourner la date ou le payoff a ete touche
@@ -86,14 +86,14 @@ inline void MC_Compute::ComputeGrec(PnlMat * sumDelta, PnlMat* sumGamma, const P
 	PnlMat *l_histoFixShNeg;
 	// le delta est une matrice a autant de ligne que d'actifs et 5 colonnes car on observe 5 fois.
 	//!\\ A modif
-	PnlMat *l_gamma = pnl_mat_create(m_sizeEquityProduct,5);
-	PnlMat *l_delta = pnl_mat_create(m_sizeEquityProduct,5);
+	PnlMat *l_gamma = pnl_mat_create(m_sizeEquityProduct,PAS);
+	PnlMat *l_delta = pnl_mat_create(m_sizeEquityProduct,PAS);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 
 	for (int l = 0; l < m_sizeEquityProduct; l++) {
 		//!\\\\\\\\\\\\\___ Virer ce 5
-		for (int m = 0; m < 5; m++) {
+		for (int m = 0; m < PAS; m++) {
 			//calcul de histofixshifte
 			l_histoFixShPos = pnl_mat_copy(histoFix);
 			l_histoFixShNeg = pnl_mat_copy(histoFix);
@@ -103,7 +103,7 @@ inline void MC_Compute::ComputeGrec(PnlMat * sumDelta, PnlMat* sumGamma, const P
 			MLET(l_histoFixShNeg,l,m)=(MGET(histoFix,l,m))*0.95;
 			
 			// Puis on diffuse a partir de m+1 sauf si m==5 auquel cas il n'y a rien a faire
-			if (m !=5 ){
+			if (m != PAS ){
 				PnlVect * spot = pnl_vect_create(m_sizeEquityProduct);
 				pnl_mat_get_col(spot, l_histoFixShPos, m);
 				m_model->Diffuse(l_histoFixShPos, spot, l_drift, l_vol, m_produit, m_rng, m+1);

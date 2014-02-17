@@ -40,8 +40,8 @@ int main(int argc, char **argv)
 	//son histofix doit etre quasi vide a part la premiere colonne remplie des spots.
 	Produit produit = Produit();
 	double price = 0, priceSquare = 0;
-	PnlMat * delta = pnl_mat_create(produit.getEquities().size(),5);
-	PnlMat * gamma = pnl_mat_create(produit.getEquities().size(),5);
+	PnlMat * delta = pnl_mat_create(produit.getEquities().size(),PAS);
+	PnlMat * gamma = pnl_mat_create(produit.getEquities().size(),PAS);
 	Model model = Model(NBPATH);
 	MC_Compute moteur = MC_Compute(&produit, &model);
 	// on lance le price
