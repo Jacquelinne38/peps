@@ -2,10 +2,83 @@
 #include "Produit.h"
 #include "pnl\pnl_matrix.h"
 
+#include <fstream>
+#include <vector>
+using namespace std;
+
+template < class ContainerT >
+void tokenize(const std::string& str, ContainerT& tokens,
+	const std::string& delimiters = " ", bool trimEmpty = false)
+{
+	std::string::size_type pos, lastPos = 0;
+	while(true)
+	{
+		pos = str.find_first_of(delimiters, lastPos);
+		if(pos == std::string::npos)
+		{
+			pos = str.length();
+
+			if(pos != lastPos || !trimEmpty)
+				tokens.push_back(ContainerT::value_type(str.data()+lastPos,
+				(ContainerT::value_type::size_type)pos-lastPos ));
+
+			break;
+		}
+		else
+		{
+			if(pos != lastPos || !trimEmpty)
+				tokens.push_back(ContainerT::value_type(str.data()+lastPos,
+				(ContainerT::value_type::size_type)pos-lastPos ));
+		}
+
+		lastPos = pos + 1;
+	}
+};
+
+
+void Produit::SetDataHisto() {
+	fstream fichier("../DATA/data.txt");
+	vector <string> monTableau;
+
+	if ( !fichier )
+		cout << "fichier inexistant";
+	else
+	{
+		bool continuer = true;
+
+		while( !fichier.eof() )
+		{
+			monTableau.push_back("");//creation d'une ligne vide
+
+			getline(fichier, monTableau.back());//lecture d'une ligne du fichier
+
+			int ligne = monTableau.size() - 1;//je recupere la taille du tableau (-1 pour la ligne 0)
+
+			if(monTableau[ligne].empty())//si la ligne est vide
+				monTableau.pop_back();//on la retire du tableau
+		}
+
+		cout << "nombre de lignes : " << monTableau.size() << endl;//j'affiche le nombre de lignes pour test
+		std::vector<std::string> split;
+		tokenize(monTableau[0], split, ",");
+		int msize = split.size();
+		m_historique = pnl_mat_create(monTableau.size(), msize);
+		for(int i = 0 ; i < monTableau.size(); i ++) {
+			split.clear();
+			tokenize(monTableau[i], split, ",");
+			for (int j = 0 ; j < msize; j++) {
+				pnl_mat_set(m_historique, i,j, atof(split[j].data()));
+			}
+		}
+		pnl_mat_print(m_historique);
+	}
+	
+}
 
 Produit::Produit()
 {
-	//dans ce constructeur on doit faire appel aux constructeurs d'equity avec les bons parametres pour creer tous les equity et fx
+	SetDataHisto();
+		//dans ce constructeur on doit faire appel aux constructeurs d'equity avec les bons parametres pour creer tous les equity et fx
 		Equity barclays = Equity(100, 0.2, "barclays");
 		Equity sony = Equity (50, 0.3, "sony");
 		Equity arcelor = Equity (200, 0.25, "arcelor");

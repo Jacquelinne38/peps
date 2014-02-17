@@ -17,8 +17,9 @@ private :
 	std::vector<Fx>  ListFx;
 	//MatCor = pnl_mat_create(4,5);	
 
-	//Déclaration de la matrice de covariance
+	PnlMat *m_historique;
 	PnlMat *m_matCor;
+	void Produit::SetDataHisto();
 
 	//Manque la déclaration de l'histofixing
 	// matrice de 5 colonnes(t0, t1, t2, t3 et T) et de (listEquity.length + listFx.length)

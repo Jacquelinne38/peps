@@ -51,6 +51,9 @@ int main(int argc, char **argv)
 	pnl_mat_free(&delta);
 	pnl_mat_free(&gamma);
 
+
+	//pnl_vect_print(model.Diffuse_cours_histo(produit.getEquities()[3].value, 0.05/52, produit.getEquities()[3].volatility/52));
+
 	while (getchar() != '\n') ;
 	return 0;
 
