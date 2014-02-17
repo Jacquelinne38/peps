@@ -35,5 +35,6 @@ public :
 	~Produit();
 
 	std::vector<Equity> getEquities()  { return ListEquit;  };
+	PnlMat * getMatHisto() const { return m_historique; }
 	PnlMat * getMatCor() { return m_matCor; };
 };
