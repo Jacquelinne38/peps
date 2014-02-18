@@ -1,3 +1,4 @@
+
 #include "StdAfx.h"
 #include "Produit.h"
 #include "pnl\pnl_matrix.h"
@@ -62,11 +63,11 @@ void Produit::SetDataHisto() {
 		std::vector<std::string> split;
 		tokenize(monTableau[0], split, ",");
 		int msize = split.size();
-		m_historique = pnl_mat_create(monTableau.size(), msize);
+		m_historique = pnl_mat_create(monTableau.size(), PAS);
 		for(int i = 0 ; i < monTableau.size(); i ++) {
 			split.clear();
 			tokenize(monTableau[i], split, ",");
-			for (int j = 0 ; j < msize; j++) {
+			for (int j = 0 ; j < PAS; j++) {
 				pnl_mat_set(m_historique, i,j, atof(split[j].data()));
 			}
 		}
