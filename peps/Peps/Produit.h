@@ -19,7 +19,7 @@ private :
 
 	PnlMat *m_historique;
 	PnlMat *m_matCor;
-	void Produit::SetDataHisto();
+	void Produit::LoadDataHisto();
 
 	//Manque la déclaration de l'histofixing
 	// matrice de 5 colonnes(t0, t1, t2, t3 et T) et de (listEquity.length + listFx.length)

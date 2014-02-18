@@ -8,8 +8,8 @@ public:
 
 	double value;
 	double volatility;
-	char* name;
-	Equity(double spot, double vol, char* Ename);
+	std::string name;
+	Equity(double spot, double vol, std::string Ename);
 	~Equity(void);
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 //Monté carlo
-#define NBPATH 5
+#define NBPATH 10000
 #define PERF_MAX 0.25
 #define PERF_MIN -0.50
 #define NB_ACTIFS 4
@@ -8,6 +8,9 @@
 #define REMB_N_ANTI 0.98
 #define PAS 260
 #define TAUX_ACTUALISATION 0.05
+//Diffuse from t l_dt 
+#define DT 1.0/52.0
+#define NBSEMAINE 52.0
 
 
 //Date de fixing
@@ -17,3 +20,9 @@
 #define FIXING3 207
 #define FIXING4 259
 	
+
+//DEBUG
+#define PRINTPRICE 0
+#define PRINTDELTA 0
+#define PRINTGAMMA 0
+#define PRINTINTERVAL 0

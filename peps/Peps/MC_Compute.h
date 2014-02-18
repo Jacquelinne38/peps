@@ -48,7 +48,15 @@ private:
 	*/
 	inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time);
 	inline double Price2(const PnlMat *rent, int time);
+	/*
+	* @param in temps
+	* @pram in value : valeur a actualiser à t0
+	*/
 	inline double Discount(double value, int date, int time);
+	/*
+	* @param in  matrice de fixing
+	* return : performance lissée sous forme de vecteur, 1 ligne par actif/taux
+	*/ 
 	inline double Perf_Liss(const PnlVect *spot);
 	/*
 	in
@@ -64,10 +72,21 @@ private:
 								   const double nbAlea,
 								   const PnlMat *matCor);*/
 
-
+	/*
+	* Renvoi true si il y a eu lieu a un remboursement avant la date t passé en paramètre
+	*/
 	bool MC_Compute::isRemb(PnlMat * coursHisto, int time);
 
+	/*@param in v
+	* @pram in v0
+	* @pram out res
+	*/
 	void MC_Compute::RentVect(PnlVect * V, PnlVect * V0, PnlVect * res);
+	/*
+	* @param in temps
+	* @return out dt
+	*/
+	double Compute_dt(int date);
 
 public :
 	MC_Compute(Produit * produit, Model * model);
@@ -80,11 +99,12 @@ public :
 	* out pricesquare
 	* out Delta
 	* out gamma
+	* renvoi -10 si la t trop grand par rapport au remboursement
 	*/
 	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time); 
-	bool MC_Compute::Condition_Remb(PnlMat * past, int time);
+	inline bool MC_Compute::Condition_Remb(PnlMat * past, int time);
 	void payoff();
-	double Compute_dt(int date);
+
 	void Compute_path();
 	void PayOff();
 

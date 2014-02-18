@@ -2,11 +2,11 @@
 #include "Equity.h"
 
 
-Equity::Equity(double spot ,double vol, char* Ename)
+Equity::Equity(double spot ,double vol, std::string Ename)
 {
 	value = spot;
 	volatility = vol;
-	name = "Ename";
+	name = Ename;
 }
 
 
