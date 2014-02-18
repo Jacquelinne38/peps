@@ -32,6 +32,12 @@ void TronqCoursHisto(const PnlMat * histo, PnlMat * outTronq, int time) {
 * @param out : matrice aux dates de fixing
 * @param in : vecteur des dates de fixing
 */
+//Pour tester on crée un tableau avec les date de fixing
+//static const int arr[] = {FIXING0, FIXING1, FIXING2, FIXING3, FIXING4};
+//std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+//PnlMat * test = pnl_mat_create(m_produit->getMatHisto()->m,lvec_fixingDate.size());	
+//getPathFix(m_produit->getMatHisto(), test, lvec_fixingDate);
+//pnl_mat_free(&test);
 void getPathFix(const PnlMat * past,  PnlMat * fixing, std::vector<int> lst_time) {
 	if (past->m != fixing->m  || fixing->n != lst_time.size()) throw std::logic_error("[FAIL] getPathFix : Matrice size incomptatible");
 	if (lst_time[lst_time.size()-1] > past->n) throw std::logic_error("[FAIL] getPathFix : Valeur de temps impossible sur la matrice past");
