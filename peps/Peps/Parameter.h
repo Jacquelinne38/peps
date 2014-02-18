@@ -7,6 +7,7 @@
 #define REMB_ANTI 1.23
 #define REMB_N_ANTI 0.98
 #define PAS 260
+#define TAUX_ACTUALISATION 0.05
 
 
 //Date de fixing

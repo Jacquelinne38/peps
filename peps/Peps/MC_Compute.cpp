@@ -12,6 +12,9 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 	m_model = model;
 	m_rng = pnl_rng_create (PNL_RNG_MERSENNE);
 	pnl_rng_sseed (m_rng, time(NULL));
+	static const int arr[] = {FIXING0, FIXING1, FIXING2, FIXING3, FIXING4};
+	std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+	mvec_fixingDate = lvec_fixingDate;
 }
 
 
@@ -23,7 +26,7 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 // a quel moment doit on passer le spot en EUR
 // comment gérer la maturité en actualisant
 // faire attention a diffuser en CZK mais que la valeur des actifs soient stockées avec leur monnaie respective
-int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma, int time)
+int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time)
 {
 	if(!m_model->CheckParameter()) return -1;
 	PnlMat * l_coursHisto = m_produit->getMatHisto();
@@ -61,13 +64,11 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta,
 		// A partir de Past on calcul le prix et le delta et le gamma
 
 		// ICI APPELER la fonction qui a partir de past retourne la matrice juste au date de fixing
-		static const int arr[] = {FIXING0, FIXING1, FIXING2, FIXING3, FIXING4};
-		std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-		getPathFix(l_past, l_histoFix, lvec_fixingDate);
+		getPathFix(l_past, l_histoFix, mvec_fixingDate);
 		// Cette matrice s'appelle l_histofix
-		PriceProduct(l_histoFix, &l_payoff);
-		//ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift);
-
+		PriceProduct(l_histoFix, &l_payoff, time);
+		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
+		//std::cout<<l_payoff<<std::endl;
 		//On somme les payoff
 		*sumPrice += l_payoff;
 		//*priceSquare += pow(l_payoff, 2);
@@ -80,8 +81,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta,
 
 	//Moyenne du prix
 	*sumPrice /= m_model->Nb_Path();
-	//pnl_mat_div_double(sumDelta,  m_model->Nb_Path());
-	//pnl_mat_div_double(sumGamma,  m_model->Nb_Path());
+	pnl_vect_div_double(sumDelta,  m_model->Nb_Path());
+	pnl_vect_div_double(sumGamma,  m_model->Nb_Path());
 
 	pnl_vect_free(&l_drift);
 	pnl_vect_free(&l_spot);
@@ -90,69 +91,105 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta,
 	return 0;
 }
 
-inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff) {
+inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time) {
 	// Renta est la matrice des rentabilites autant de ligne que d'actifs et 4 colonnes car il y a 4 intervales de discretisation (5dates)
 	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, PAS);
 	// On calcul le prix du m_produit //Pour ca on a besoin de la rentabilite du portefeuille
 	Rent(histoFix, l_renta);
 	// On peut ensuite calculer son payoff //Ici la fonction price2 devrait retourner la date ou le payoff a ete touche
-	*payoff = Price2(l_renta);
+	*payoff = Price2(l_renta, time);
 	pnl_mat_free(&l_renta);
 }
 
 
-inline void MC_Compute::ComputeGrec(PnlMat * sumDelta, PnlMat* sumGamma, const PnlMat * past, const double payoff, PnlVect* l_vol, PnlVect* l_drift) {
+inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * past, const double payoff, PnlVect* l_vol, PnlVect* l_drift, int time) {
 	
 	PnlMat *l_pastShPos;
 	PnlMat *l_pastShNeg;
-	PnlMat *l_histoFixShPos;
-	PnlMat * l_histoFixShNeg;
-	PnlMat *l_gamma = pnl_mat_create(m_sizeEquityProduct,PAS);
-	PnlMat *l_delta = pnl_mat_create(m_sizeEquityProduct,PAS);
+	PnlMat *l_histoFixShPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
+	PnlMat * l_histoFixShNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
+	PnlVect *l_gamma = pnl_vect_create(m_sizeEquityProduct);
+	PnlVect *l_delta = pnl_vect_create(m_sizeEquityProduct);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 
 	for (int l = 0; l < m_sizeEquityProduct; l++) {
-		for (int m = 0; m < PAS; m++) {
 			l_pastShPos = pnl_mat_copy(past);
 			l_pastShNeg = pnl_mat_copy(past);
-			for (int n = m; m < PAS - 1; m++){
+			for (int n = time; n < PAS; n++){
 				// On shifte positivement et negativement
 				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*1.05;
 				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*0.95;
 			}
+			/*
+			std::cout << std::endl;
+			std::cout << "NOUVEAU COUPLE DE MATRICE" << std::endl;
+			std::cout << "MATRICE SHIFTEE POSITIVEMENT" << std::endl;
+			std::cout << std::endl;
+			pnl_mat_print(l_pastShPos);
+			std::cout << "MATRICE SHIFTEE NEGATIVEMENT" << std::endl;
+			std::cout << std::endl;
+			pnl_mat_print(l_pastShNeg);
+			std::cout << std::endl;
+			*/
+
 			// ICI appeler la fonction qui selectionne les dates de fixing
+			getPathFix(l_pastShPos, l_histoFixShPos, mvec_fixingDate);
+			getPathFix(l_pastShNeg, l_histoFixShNeg, mvec_fixingDate);
+			
+			
+			/*
+			std::cout << "NOUVEAU COUPLE DE MATRICE" << std::endl;
+			std::cout << "MATRICE SHIFTEE POSITIVEMENT" << std::endl;
+			pnl_mat_print(l_histoFixShPos);
+			std::cout << "MATRICE SHIFTEE NEGATIVEMENT" << std::endl;
+			pnl_mat_print(l_histoFixShNeg);
+			*/
+
 			// et qui retroune l_histoFixShPos et l_histoFixShNeg
 			
 			//calcul des rentabilites pour chacune des matrices de histofix shifte
-			PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, (past->n - 1));
-			PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, (past->n - 1));
+			PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
+			PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size()- 1);
 			Rent(l_histoFixShPos,l_rentPos);
 			Rent(l_histoFixShNeg,l_rentNeg);
-
+			
+			/*
+			std::cout << "NOUVEAU COUPLE DE MATRICE" << std::endl;
+			std::cout << "MATRICE SHIFTEE POSITIVEMENT" << std::endl;
+			pnl_mat_print(l_rentPos);
+			std::cout << "MATRICE SHIFTEE NEGATIVEMENT" << std::endl;
+			pnl_mat_print(l_rentNeg);
+			std::cout << std::endl << std::endl;
+			*/
 
 			// Calcul le payoff a partir de la matrice des rentabilites
-			ld_payoffPos = Price2(l_rentPos);
-			ld_payoffNeg = Price2(l_rentNeg);				
+			ld_payoffPos = Price2(l_rentPos, time);
+			ld_payoffNeg = Price2(l_rentNeg, time);		
+			
+			/*
+			std::cout << "nouveau couple de payoff" << std::endl;
+			std::cout << ld_payoffPos << std::endl;
+			std::cout << ld_payoffNeg << std::endl;
+			*/
 
-			// On modifie delta(l,m) et gamma(l,m)
-			pnl_mat_set(l_delta, l, m, ((ld_payoffPos-ld_payoffNeg)/0.1));
-			pnl_mat_set(l_gamma, l, m ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(0.05,2))));
+
+			pnl_vect_set(l_delta, l, ((ld_payoffPos-ld_payoffNeg)/0.1));
+			pnl_vect_set(l_gamma, l ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(0.05,2))));
 			
 			pnl_mat_free(&l_rentPos);
 			pnl_mat_free(&l_rentNeg);
-		}
 	}
 	// On somme les delta
-	pnl_mat_plus_mat(sumDelta, l_delta);
+	pnl_vect_plus_vect(sumDelta, l_delta);
 	// On somme les gamma
-	pnl_mat_plus_mat(sumGamma, l_gamma);
+	pnl_vect_plus_vect(sumGamma, l_gamma);
 
 	//libération ressource
 	pnl_mat_free(&l_histoFixShPos);
 	pnl_mat_free(&l_histoFixShNeg);
-	pnl_mat_free(&l_gamma);
-	pnl_mat_free(&l_delta);
+	pnl_vect_free(&l_gamma);
+	pnl_vect_free(&l_delta);
 }
 
 
@@ -202,16 +239,15 @@ void MC_Compute::Compute_path(void)
 }
 
 // fonction qui prend en parametre le temps et une valeure et actualise la valeur a t0
-inline double MC_Compute::Discount(double value, int date)
+inline double MC_Compute::Discount(double value, int date, int time)
 {
 	//Pour le moment le taux sans risque est la c'est pas la qu'il devra etre
-	double taux_ssR = 0.05;
-	return (value*exp(-(date * taux_ssR)));
+	return (value*exp(-(((double)abs(date-time))/52.0 * TAUX_ACTUALISATION)));
 }
 
 
 
-inline double MC_Compute::Price2(const PnlMat *rent)
+inline double MC_Compute::Price2(const PnlMat *rent, int time)
 {
 	double minCol;
 	double val;
@@ -227,14 +263,15 @@ inline double MC_Compute::Price2(const PnlMat *rent)
 		}
 		if ((minCol > -0.1) && (i != 3))
 		{
-		    return Discount(REMB_ANTI, i);
+		    return Discount(REMB_ANTI, mvec_fixingDate[i], time);
 		}
 	}
 	PnlVect *perf = pnl_vect_create(rent->m);
 	pnl_mat_get_col(perf, rent, rent->n - 1);
 	val = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
 	pnl_vect_free(&perf);
-	return Discount(val, (rent->n -1));
+	//return Discount(val, (rent->n -1), time);
+	return Discount(val, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
 }
 
 inline void MC_Compute::Perf_Boost(const PnlVect *perf, PnlVect * ret)
@@ -273,7 +310,7 @@ inline double MC_Compute::Perf_Liss(const PnlVect *spot)
 		ret += val;
 	}
 	pnl_vect_free(&res);
-	return ret/NB_ACTIFS;
+	return ret/m_sizeEquityProduct;
 }
 
 inline void MC_Compute::Rent(const PnlMat *histoFix, PnlMat *res)

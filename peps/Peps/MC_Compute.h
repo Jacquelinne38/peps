@@ -39,16 +39,16 @@ private:
 	* @param in matricte histofix
 	* @param in payoff
 	*/
-    inline void MC_Compute::ComputeGrec(PnlMat * sumDelta, PnlMat* sumGamma, const PnlMat * histoFix, const double payoff, PnlVect* l_vol, PnlVect* l_drift);
+    inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * histoFix, const double payoff, PnlVect* l_vol, PnlVect* l_drift, int time);
 
 
 	/*
 	* @param histoFix in
 	* @param payoff out
 	*/
-	inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff);
-	inline double Price2(const PnlMat *rent);
-	inline double Discount(double value, int date);
+	inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time);
+	inline double Price2(const PnlMat *rent, int time);
+	inline double Discount(double value, int date, int time);
 	inline double Perf_Liss(const PnlVect *spot);
 	/*
 	in
@@ -68,13 +68,15 @@ public :
 	MC_Compute(Produit * produit, Model * model);
 	~MC_Compute();
 
+	std::vector<int> mvec_fixingDate;
+
 	/*
 	* out price
 	* out pricesquare
 	* out Delta
 	* out gamma
 	*/
-int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma, int time);
+int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time);
 
 	void payoff();
 	double Compute_dt(int date);
