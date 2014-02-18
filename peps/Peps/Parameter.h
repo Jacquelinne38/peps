@@ -7,4 +7,12 @@
 #define REMB_ANTI 1.23
 #define REMB_N_ANTI 0.98
 #define PAS 260
+
+
+//Date de fixing
+#define FIXING0 0
+#define FIXING1 103
+#define FIXING2 155
+#define FIXING3 207
+#define FIXING4 259
 	
