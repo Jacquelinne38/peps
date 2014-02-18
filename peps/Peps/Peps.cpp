@@ -17,12 +17,18 @@
 #include <pnl/pnl_random.h>
 #include <ctime>
 #include <algorithm>
+#include <iostream>
+#include <string>
+#include <fstream>
 
 
 void print(double price, double squarePrice, const PnlVect * delta, const PnlVect * gamma, int nbPath) {
 	std::cout << "AFFICHAGE DES RESULTATS"<< std::endl;
 	std::cout << "[*] Prix : " ;
 	std::cout << price << std::endl;
+	if (price > 1.23) {
+		std::cout << "NOOOOBB OUT" << std::endl;
+	}
 	/*std::cout << "[*] Delta : " << std::endl;
 	pnl_vect_print(delta);
 	std::cout << "[*] Gamma : " << std::endl;
@@ -35,6 +41,20 @@ void print(double price, double squarePrice, const PnlVect * delta, const PnlVec
 	std::cout << trust << std::endl;*/
 }
 
+void CreeFichierPrix(std::vector<double> vec, std::string nomFichier) {
+	std::ofstream fichier(nomFichier, std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert
+	if(fichier)
+	{
+		for(unsigned int i = 0 ; i < vec.size(); ++i) {
+			fichier << vec[i] << std::endl;
+		}
+		fichier.close();
+	}
+	else
+		std::cerr << "Impossible d'ouvrir le fichier !" << std::endl;
+
+}
+
 int main(int argc, char **argv)
 {
 	
@@ -44,13 +64,18 @@ int main(int argc, char **argv)
 	PnlVect * gamma = pnl_vect_create(produit.getEquities().size());
 	Model model = Model(NBPATH);
 	MC_Compute moteur = MC_Compute(&produit, &model);
+	std::vector<double> vec_price;
 	// ICI cree la matrice path complete
 
 	// on lance le price en t
 	for (int t=0; t<250; t++){
 		if ( moteur.Price(&price, &priceSquare, delta, gamma, t) != 0) std::cout << "Bug" << std::endl;
-		else print(price, priceSquare, delta, gamma ,model.Nb_Path());
+		else {
+			print(price, priceSquare, delta, gamma ,model.Nb_Path());
+			vec_price.push_back(price);
+		}
 	}
+	CreeFichierPrix(vec_price, "../DATA/prix.txt");
 		pnl_vect_free(&delta);
 		pnl_vect_free(&gamma);
 	
