@@ -29,11 +29,12 @@ void print(double price, double squarePrice, const PnlVect * delta, const PnlVec
 	if (price > 1.23) {
 		std::cout << "NOOOOBB OUT" << std::endl;
 	}
-	/*std::cout << "[*] Delta : " << std::endl;
+	std::cout << "[*] Delta : " << std::endl;
+	std::cout << "[*] Delta : " << std::endl;
 	pnl_vect_print(delta);
 	std::cout << "[*] Gamma : " << std::endl;
 	pnl_vect_print(gamma);
-	*/
+	
 	/*
 	squarePrice /= (nbPath);
 	double trust = sqrt(squarePrice - price*price)  * 1.96 / pow(nbPath,0.5);
@@ -69,11 +70,11 @@ int main(int argc, char **argv)
 
 	// on lance le price en t
 	for (int t=0; t<250; t++){
-		if ( moteur.Price(&price, &priceSquare, delta, gamma, t) != 0) std::cout << "Bug" << std::endl;
-		else {
-			print(price, priceSquare, delta, gamma ,model.Nb_Path());
-			vec_price.push_back(price);
-		}
+		int ret = moteur.Price(&price, &priceSquare, delta, gamma, t);
+		if (ret == -10) break;
+		else if (ret != 0) std::cout << "Bug" << std::endl;
+		
+		else print(price, priceSquare, delta, gamma ,model.Nb_Path());
 	}
 	CreeFichierPrix(vec_price, "../DATA/prix.txt");
 		pnl_vect_free(&delta);

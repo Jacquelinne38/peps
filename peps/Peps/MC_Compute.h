@@ -64,6 +64,11 @@ private:
 								   const double nbAlea,
 								   const PnlMat *matCor);*/
 
+
+	bool MC_Compute::isRemb(PnlMat * coursHisto, int time);
+
+	void MC_Compute::RentVect(PnlVect * V, PnlVect * V0, PnlVect * res);
+
 public :
 	MC_Compute(Produit * produit, Model * model);
 	~MC_Compute();
@@ -76,12 +81,13 @@ public :
 	* out Delta
 	* out gamma
 	*/
-int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time);
-
+	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time); 
+	bool MC_Compute::Condition_Remb(PnlMat * past, int time);
 	void payoff();
 	double Compute_dt(int date);
 	void Compute_path();
 	void PayOff();
+
 	
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 //Monté carlo
-#define NBPATH 2
+#define NBPATH 5
 #define PERF_MAX 0.25
 #define PERF_MIN -0.50
 #define NB_ACTIFS 4
