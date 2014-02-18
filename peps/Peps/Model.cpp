@@ -112,7 +112,7 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, const PnlVect * 
 		pnl_mat_free(&l_choleskyCor);
 	}
 	pnl_vect_free(&spot);
-	pnl_mat_print(path);
+	//pnl_mat_print(path);
 	// ET donc en sortie on a path de rempli
 	// de 0 a time avec les cours historiques et de time + 1 a PAS avec les valeurs simulees
 }

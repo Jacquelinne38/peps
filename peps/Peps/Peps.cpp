@@ -36,7 +36,7 @@ void print(double price, double squarePrice, const PnlMat * delta, const PnlMat 
 
 int main(int argc, char **argv)
 {
-
+	
 	Produit produit = Produit();
 	double price = 0, priceSquare = 0;
 	PnlMat * delta = pnl_mat_create(produit.getEquities().size(),PAS);
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 	Model model = Model(NBPATH);
 	MC_Compute moteur = MC_Compute(&produit, &model);
 	// ICI cree la matrice path complete
-	PnlMat * Path = produit.getMatHisto();
+
 	// on lance le price en t
 
 	if ( moteur.Price(&price, &priceSquare, delta, gamma, 0) != 0) std::cout << "Bug" << std::endl;
