@@ -2,6 +2,8 @@
 #include "MC_Compute.h"
 #include "Model.h"
 
+
+//USSLESS NOW
  void Model::Diffuse(PnlMat * histoFixMT, PnlVect *finalSpotMT, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time) {
 	double l_maturity = PAS-1;
 	// le pas de temps
@@ -51,6 +53,7 @@ Model::~Model()
 {
 }
 
+//USSLESS
 PnlVect * Model::Diffuse_cours_histo(double spot, double drift, double vol) {
 	double dt = 1;
 	PnlVect * Historique = pnl_vect_create(260);
@@ -74,18 +77,14 @@ PnlVect * Model::Diffuse_cours_histo(double spot, double drift, double vol) {
 
 
 void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time) {
-
 	// A changer
 	double l_dt = 1.0/52.0; 
-	
-	// le vecteur spot
+
 	PnlVect * spot = pnl_vect_create(produit->getEquities().size());
 	pnl_mat_get_col(spot, path, time);
 	
-	// A chacune de ces tours de boucle spot passe de t a t+dt et on inscrit St+dt dans une colone de Path
+	// A chacune de ces tours de boucle spot passe de t a t+dt et on inscrit St+dt dans une colone de path
 	for (int k = time; k < PAS -1 ; k++){
-		
-		//vecteur aleatoire
 		PnlVect * l_vecAlea = pnl_vect_create(produit->getEquities().size());
 		pnl_vect_rng_normal_d(l_vecAlea, produit->getEquities().size(), rng);
 	
