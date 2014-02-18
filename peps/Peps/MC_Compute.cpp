@@ -76,6 +76,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		//pnl_mat_free(&l_histoFixMT);
 		//pnl_vect_free(&l_finalSpotMT);
 		pnl_mat_free(&l_histoFix);
+//		pnl_vect_free(&spot);
 		
 	}
 
@@ -87,6 +88,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	pnl_vect_free(&l_drift);
 	pnl_vect_free(&l_spot);
 	pnl_vect_free(&l_vol);
+	pnl_mat_free(&l_past);
 
 	return 0;
 }
