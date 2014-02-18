@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "MC_Compute.h"
+#include "test.h"
 
 
 
@@ -14,16 +15,18 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 }
 
 
+
+
 //TODO 
 // les dates sont mal gerees
 // on ne gere pas les differents monnaies
 // a quel moment doit on passer le spot en EUR
 // comment gérer la maturité en actualisant
 // faire attention a diffuser en CZK mais que la valeur des actifs soient stockées avec leur monnaie respective
-int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma)
+int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma, int time)
 {
 	if(!m_model->CheckParameter()) return -1;
-
+	PnlMat * l_coursHisto = m_produit->getMatHisto();
 	// Payoff prendra le payoff du m_produit a chaque tour de boucle
 	double l_payoff = 0;
 	//ATTRIBUT A METTRE DANS EQUITY
@@ -33,35 +36,52 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta,
 	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
 	PnlVect * l_spot = GetInitSpot();
 	PnlVect * l_vol = GetInitVol();
+	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
+	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
+	TronqCoursHisto(l_coursHisto, l_past, time);
 
 	//MonteCarlo
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		PnlMat *l_histoFixMT = pnl_mat_create(m_sizeEquityProduct, PAS);
+		/*PnlMat *l_histoFixMT = pnl_mat_create(m_sizeEquityProduct, PAS);
 		PnlVect *l_finalSpotMT =  pnl_vect_copy(l_spot);
 		PnlMat *l_histoFix;
 		pnl_mat_set_col(l_histoFixMT, l_finalSpotMT, 0);
+		*/
+		// 5 a ne pas metttre
+		PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, 5);
+		PnlVect * spot;
+		// la fonction doit diffuser a partir de t
+		//m_model->Diffuse(l_histoFixMT, l_finalSpotMT, l_drift, l_vol, m_produit, m_rng, 0);
 
-		m_model->Diffuse(l_histoFixMT, l_finalSpotMT, l_drift, l_vol, m_produit, m_rng, 0);
+
+		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
+		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
+		// et les valeurs simulees de time + 1 a la 259
 		
-		// A partir de histofix on calc le prix et le delta et le gamma
-		l_histoFix = pnl_mat_copy(l_histoFixMT);
+		// A partir de Past on calcul le prix et le delta et le gamma
+
+		// ICI APPELER la fonction qui a partir de past retourne la matrice juste au date de fixing
+		static const int arr[] = {FIXING0, FIXING1, FIXING2, FIXING3, FIXING4};
+		std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+		getPathFix(l_past, l_histoFix, lvec_fixingDate);
+		// Cette matrice s'appelle l_histofix
 		PriceProduct(l_histoFix, &l_payoff);
-		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_payoff, l_vol, l_drift);
+		//ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift);
 
 		//On somme les payoff
 		*sumPrice += l_payoff;
-		*priceSquare += pow(l_payoff, 2);
+		//*priceSquare += pow(l_payoff, 2);
 
-		pnl_mat_free(&l_histoFixMT);
-		pnl_vect_free(&l_finalSpotMT);
+		//pnl_mat_free(&l_histoFixMT);
+		//pnl_vect_free(&l_finalSpotMT);
 		pnl_mat_free(&l_histoFix);
 		
 	}
 
 	//Moyenne du prix
 	*sumPrice /= m_model->Nb_Path();
-	pnl_mat_div_double(sumDelta,  m_model->Nb_Path());
-	pnl_mat_div_double(sumGamma,  m_model->Nb_Path());
+	//pnl_mat_div_double(sumDelta,  m_model->Nb_Path());
+	//pnl_mat_div_double(sumGamma,  m_model->Nb_Path());
 
 	pnl_vect_free(&l_drift);
 	pnl_vect_free(&l_spot);
@@ -81,39 +101,32 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff) {
 }
 
 
-inline void MC_Compute::ComputeGrec(PnlMat * sumDelta, PnlMat* sumGamma, const PnlMat * histoFix, const double payoff, PnlVect* l_vol, PnlVect* l_drift) {
+inline void MC_Compute::ComputeGrec(PnlMat * sumDelta, PnlMat* sumGamma, const PnlMat * past, const double payoff, PnlVect* l_vol, PnlVect* l_drift) {
+	
+	PnlMat *l_pastShPos;
+	PnlMat *l_pastShNeg;
 	PnlMat *l_histoFixShPos;
-	PnlMat *l_histoFixShNeg;
-	// le delta est une matrice a autant de ligne que d'actifs et 5 colonnes car on observe 5 fois.
-	//!\\ A modif
+	PnlMat * l_histoFixShNeg;
 	PnlMat *l_gamma = pnl_mat_create(m_sizeEquityProduct,PAS);
 	PnlMat *l_delta = pnl_mat_create(m_sizeEquityProduct,PAS);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 
 	for (int l = 0; l < m_sizeEquityProduct; l++) {
-		//!\\\\\\\\\\\\\___ Virer ce 5
 		for (int m = 0; m < PAS; m++) {
-			//calcul de histofixshifte
-			l_histoFixShPos = pnl_mat_copy(histoFix);
-			l_histoFixShNeg = pnl_mat_copy(histoFix);
-			
-			// On shifte positivement et negativement
-			MLET(l_histoFixShPos,l,m)=(MGET(histoFix,l,m))*1.05;
-			MLET(l_histoFixShNeg,l,m)=(MGET(histoFix,l,m))*0.95;
-			
-			// Puis on diffuse a partir de m+1 sauf si m==5 auquel cas il n'y a rien a faire
-			if (m != PAS ){
-				PnlVect * spot = pnl_vect_create(m_sizeEquityProduct);
-				pnl_mat_get_col(spot, l_histoFixShPos, m);
-				m_model->Diffuse(l_histoFixShPos, spot, l_drift, l_vol, m_produit, m_rng, m+1);
-				m_model->Diffuse(l_histoFixShNeg, spot, l_drift, l_vol, m_produit, m_rng, m+1);
-				pnl_vect_free(&spot);
+			l_pastShPos = pnl_mat_copy(past);
+			l_pastShNeg = pnl_mat_copy(past);
+			for (int n = m; m < PAS - 1; m++){
+				// On shifte positivement et negativement
+				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*1.05;
+				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*0.95;
 			}
-
+			// ICI appeler la fonction qui selectionne les dates de fixing
+			// et qui retroune l_histoFixShPos et l_histoFixShNeg
+			
 			//calcul des rentabilites pour chacune des matrices de histofix shifte
-			PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, (histoFix->n - 1));
-			PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, (histoFix->n - 1));
+			PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, (past->n - 1));
+			PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, (past->n - 1));
 			Rent(l_histoFixShPos,l_rentPos);
 			Rent(l_histoFixShNeg,l_rentNeg);
 

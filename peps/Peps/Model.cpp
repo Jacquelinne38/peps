@@ -38,11 +38,6 @@
 	// ET donc en sortie on a l_histofixMT de rempli et finalspotMT egal a ST
 }
 
-Model::Model(int nbPath)
-{
-	m_nbPath = nbPath;
-	
-}
 
 
 bool Model::CheckParameter() {
@@ -75,4 +70,55 @@ PnlVect * Model::Diffuse_cours_histo(double spot, double drift, double vol) {
 		pnl_vect_set(Historique, k, tmp);
 	}
 	return Historique;
+}
+
+
+void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time) {
+
+	// A changer
+	double l_dt = 1.0/52.0; 
+	
+	// le vecteur spot
+	PnlVect * spot = pnl_vect_create(produit->getEquities().size());
+	pnl_mat_get_col(spot, path, time);
+	
+	// A chacune de ces tours de boucle spot passe de t a t+dt et on inscrit St+dt dans une colone de Path
+	for (int k = time; k < PAS -1 ; k++){
+		
+		//vecteur aleatoire
+		PnlVect * l_vecAlea = pnl_vect_create(produit->getEquities().size());
+		pnl_vect_rng_normal_d(l_vecAlea, produit->getEquities().size(), rng);
+	
+		// Cholesky de la matrice de correlation
+		PnlMat * l_choleskyCor = pnl_mat_create(produit->getEquities().size(), produit->getEquities().size());
+		l_choleskyCor = pnl_mat_copy(produit->getMatCor());
+		pnl_mat_chol(l_choleskyCor);
+		
+		// on diffuse les trajectoires, boucle sur chacun des actifs du m_produit
+		for (unsigned int j = 0; j < produit->getEquities().size(); ++j){ 
+			double l_compo1 = 0;
+			double l_compo2 = 0;
+			l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * l_dt;
+			PnlVect * tmp2 = pnl_mat_mult_vect(l_choleskyCor, vol);
+			double tmp = pnl_vect_get(tmp2, j) ;
+			l_compo2 = tmp * pnl_vect_get(l_vecAlea, j) * sqrt(l_dt);
+			pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
+			pnl_vect_free(&tmp2);
+		}
+		// normalement en sortie de boucle, spot contient la valeur en t+dt de tous les actifs
+		// on met ces valeurs dans la matrice path
+		pnl_mat_set_col(path, spot, k+1);
+		pnl_vect_free(&l_vecAlea);
+		pnl_mat_free(&l_choleskyCor);
+	}
+	pnl_vect_free(&spot);
+	pnl_mat_print(path);
+	// ET donc en sortie on a path de rempli
+	// de 0 a time avec les cours historiques et de time + 1 a PAS avec les valeurs simulees
+}
+
+Model::Model(int nbPath)
+{
+	m_nbPath = nbPath;
+
 }

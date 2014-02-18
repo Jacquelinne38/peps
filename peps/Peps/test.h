@@ -40,14 +40,13 @@ void TronqCoursHisto(const PnlMat * histo, PnlMat * outTronq, int time) {
 //pnl_mat_free(&test);
 void getPathFix(const PnlMat * past,  PnlMat * fixing, std::vector<int> lst_time) {
 	if (past->m != fixing->m  || fixing->n != lst_time.size()) throw std::logic_error("[FAIL] getPathFix : Matrice size incomptatible");
-	if (lst_time[lst_time.size()-1] > past->n) throw std::logic_error("[FAIL] getPathFix : Valeur de temps impossible sur la matrice past");
+	if (lst_time[lst_time.size()-1] > past->n - 1) throw std::logic_error("[FAIL] getPathFix : Valeur de temps impossible sur la matrice past");
 	PnlVect * tmp = pnl_vect_create(past->m);
-	for (int i = 0; i < lst_time.size(); ++i) {
+	for (unsigned int i = 0; i < lst_time.size(); ++i) {
 		pnl_mat_get_col(tmp, past, lst_time[i]);
-		std::cout << std::endl;
 		pnl_mat_set_col(fixing, tmp, i);
 	}
 	//debug
-	pnl_mat_print(fixing);
+	//pnl_mat_print(fixing);
 	pnl_vect_free(&tmp);
 }

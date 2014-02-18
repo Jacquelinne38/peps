@@ -74,7 +74,7 @@ public :
 	* out Delta
 	* out gamma
 	*/
-	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma);
+int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlMat * sumDelta, PnlMat * sumGamma, int time);
 
 	void payoff();
 	double Compute_dt(int date);
