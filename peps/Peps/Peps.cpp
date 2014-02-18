@@ -23,11 +23,11 @@ void print(double price, double squarePrice, const PnlVect * delta, const PnlVec
 	std::cout << "AFFICHAGE DES RESULTATS"<< std::endl;
 	std::cout << "[*] Prix : " ;
 	std::cout << price << std::endl;
-	/*std::cout << "[*] Delta : " << std::endl;
+	std::cout << "[*] Delta : " << std::endl;
 	pnl_vect_print(delta);
 	std::cout << "[*] Gamma : " << std::endl;
 	pnl_vect_print(gamma);
-	*/
+	
 	/*
 	squarePrice /= (nbPath);
 	double trust = sqrt(squarePrice - price*price)  * 1.96 / pow(nbPath,0.5);
@@ -48,7 +48,10 @@ int main(int argc, char **argv)
 
 	// on lance le price en t
 	for (int t=0; t<250; t++){
-		if ( moteur.Price(&price, &priceSquare, delta, gamma, t) != 0) std::cout << "Bug" << std::endl;
+		int ret = moteur.Price(&price, &priceSquare, delta, gamma, t);
+		if (ret == -10) break;
+		else if (ret != 0) std::cout << "Bug" << std::endl;
+		
 		else print(price, priceSquare, delta, gamma ,model.Nb_Path());
 	}
 		pnl_vect_free(&delta);

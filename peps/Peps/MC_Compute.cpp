@@ -17,7 +17,28 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 	mvec_fixingDate = lvec_fixingDate;
 }
 
-
+bool MC_Compute::isRemb(PnlMat * coursHisto, int time) {
+	bool tmp = false;
+	if(time > mvec_fixingDate[1]){
+		if(Condition_Remb(coursHisto, mvec_fixingDate[1])){
+			std::cout<< "LE PAYOFF A DEJA ETE TOUCHE EN t1"<<std::endl;
+			return true;
+		}
+		if (time > mvec_fixingDate[2]){
+			if(Condition_Remb(coursHisto, mvec_fixingDate[2])){
+				std::cout<< "LE PAYOFF A DEJA ETE TOUCHE EN t2"<<std::endl;
+				return true;
+			}
+			if (time > mvec_fixingDate[3]){
+				if(Condition_Remb(coursHisto, mvec_fixingDate[3])){
+					std::cout<< "LE PAYOFF A DEJA ETE TOUCHE EN t3"<<std::endl;
+					return true;
+				}
+			}
+		}
+	}
+	return tmp;
+}
 
 
 //TODO 
@@ -28,8 +49,16 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 // faire attention a diffuser en CZK mais que la valeur des actifs soient stockées avec leur monnaie respective
 int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time)
 {
+	*sumPrice = 0;
+	*priceSquare = 0;
+	pnl_vect_set_zero(sumDelta);
+	pnl_vect_set_zero(sumGamma);
 	if(!m_model->CheckParameter()) return -1;
 	PnlMat * l_coursHisto = m_produit->getMatHisto();
+
+	
+
+
 	// Payoff prendra le payoff du m_produit a chaque tour de boucle
 	double l_payoff = 0;
 	//ATTRIBUT A METTRE DANS EQUITY
@@ -42,6 +71,11 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
 	TronqCoursHisto(l_coursHisto, l_past, time);
+
+	
+	if(isRemb(l_coursHisto, time))
+		return -10;
+	
 
 	//MonteCarlo
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
@@ -67,6 +101,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
 		// Cette matrice s'appelle l_histofix
 		PriceProduct(l_histoFix, &l_payoff, time);
+		//std::cout<< l_payoff<<std::endl;
 		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
 		//std::cout<<l_payoff<<std::endl;
 		//On somme les payoff
@@ -343,4 +378,31 @@ PnlVect * MC_Compute::GetInitVol() {
 		pnl_vect_set(vol, k, m_produit->getEquities()[k].volatility);
 	}
 	return vol;	
+}
+
+/*@param in v
+* @pram in v0
+* @pram out res
+*/
+void MC_Compute::RentVect(PnlVect * V, PnlVect * V0, PnlVect * res) {
+	for (int k = 0 ; k < res->size; k++){
+		pnl_vect_set(res, k, (pnl_vect_get(V,k)/pnl_vect_get(V0,k)- 1));
+	}
+}
+
+bool MC_Compute::Condition_Remb(PnlMat * past, int time){
+	bool condSortie = false;
+	PnlVect * S0 = pnl_vect_create(past->m);
+	PnlVect * S1 = pnl_vect_create(past->m);
+	PnlVect * rent = pnl_vect_create(past->m);
+	pnl_mat_get_col(S0, past, 0);
+	pnl_mat_get_col(S1, past, time);
+	RentVect(S1, S0, rent);
+	for (int j = 0; j< rent->size; j++){
+		if ( pnl_vect_get(rent, j) > -0.1 ) condSortie = true;
+	}
+	pnl_vect_free(&S0);
+	pnl_vect_free(&S1);
+	pnl_vect_free(&rent);
+	return condSortie;
 }
