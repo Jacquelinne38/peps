@@ -18,7 +18,10 @@ int main(int argc, char **argv)
 	start = std::clock();
 
 	double price = 0, priceSquare = 0;
+	double price_couverture = 0;
 	std::vector<double> vec_price;
+	std::vector<PnlVect *> vec_delta;
+	std::vector<double> vec_priceCouverture;
 	Produit produit = Produit();
 	Model model = Model(NBPATH);
 
@@ -34,13 +37,35 @@ int main(int argc, char **argv)
 		int ret = moteur.Price(&price, &priceSquare, delta, gamma, t);
 		if (ret == -10) break;
 		else if (ret != 0) std::cout << "Bug" << std::endl;
-		
 		else print(price, priceSquare, delta, gamma ,model.Nb_Path());
+
 		vec_price.push_back(price);
+		vec_delta.push_back(pnl_vect_copy(delta));
+
+		PnlVect * l_spot = pnl_vect_create(produit.getMatHisto()->m);
+		pnl_mat_get_col(l_spot, produit.getMatHisto(), t);
+		if (t == 0){
+			price_couverture = price - pnl_vect_scalar_prod(delta, l_spot);
+			
+		} else {
+			PnlVect * l_diffDelta = pnl_vect_copy(vec_delta[vec_delta.size()-2]);
+			//pnl_vect_print(vec_delta[vec_delta.size()-2]);
+			pnl_vect_minus_vect(l_diffDelta, delta);
+			pnl_vect_mult_double(l_diffDelta, -1);
+			price_couverture = price_couverture * exp(-TAUX_ACTUALISATION*DT) - pnl_vect_scalar_prod(l_diffDelta, l_spot);
+			pnl_vect_free(&l_diffDelta);
+		}
+		vec_priceCouverture.push_back(price_couverture);
+	//	std::cout << "Spot : " << std::endl;
+		//pnl_vect_print(l_spot);
+		pnl_vect_free(&l_spot);
 	}
 
-	CreeFichierPrix(vec_price, "../DATA/prix.txt");
+	CreerFichierData(vec_price, "../DATA/prix.txt");
+	CreerFichierData(vec_priceCouverture, "../DATA/couverture.txt");
 
+
+	//desaclouer le vecteur de delta
 	pnl_vect_free(&delta);
 	pnl_vect_free(&gamma);
 	

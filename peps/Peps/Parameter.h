@@ -1,16 +1,17 @@
 #pragma once
 //Monté carlo
-#define NBPATH 10000
-#define PERF_MAX 0.25
-#define PERF_MIN -0.50
+#define NBPATH 10
+static const double PERF_MAX = 0.25;
+static const double PERF_MIN = -0.50;
 #define NB_ACTIFS 4
-#define REMB_ANTI 1.23
-#define REMB_N_ANTI 0.98
+static const double REMB_ANTI = 1.23;
+static const double REMB_N_ANTI  = 0.98;
 #define PAS 260
-#define TAUX_ACTUALISATION 0.05
+static const double TAUX_ACTUALISATION = 0.05;
 //Diffuse from t l_dt 
-#define DT 1.0/52.0
-#define NBSEMAINE 52.0
+static const double DT = 1.0/52.0;
+static const double  NBSEMAINE = 52.0;
+static const double H = 0.2;
 
 
 //Date de fixing

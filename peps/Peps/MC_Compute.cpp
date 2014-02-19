@@ -158,8 +158,8 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			pnl_mat_clone(l_pastShNeg, past);
 			for (int n = time; n < PAS; n++){
 				// On shifte positivement et negativement
-				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*1.05;
-				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*0.95;
+				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*(1+H);
+				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*(1-H);
 			}
 			// ICI appeler la fonction qui selectionne les dates de fixing et qui retroune l_histoFixShPos et l_histoFixShNeg
 			getPathFix(l_pastShPos, l_histoFixShPos, mvec_fixingDate);
@@ -177,8 +177,8 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			ld_payoffPos = Price2(l_rentPos, time);
 			ld_payoffNeg = Price2(l_rentNeg, time);		
 
-			pnl_vect_set(l_delta, l, ((ld_payoffPos-ld_payoffNeg)/0.1));
-			pnl_vect_set(l_gamma, l ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(0.05,2))));
+			pnl_vect_set(l_delta, l, ((ld_payoffPos-ld_payoffNeg)/(2*H)));
+			pnl_vect_set(l_gamma, l ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
 			
 
 	}

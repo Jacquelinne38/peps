@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Produit.h"
 
-static void CreeFichierPrix(std::vector<double> vec, std::string nomFichier) {
+static void CreerFichierData(std::vector<double> vec, std::string nomFichier) {
 	std::ofstream fichier(nomFichier, std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert
 	if(fichier)
 	{
