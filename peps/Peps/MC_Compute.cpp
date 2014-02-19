@@ -80,40 +80,19 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 	//MonteCarlo
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		/*PnlMat *l_histoFixMT = pnl_mat_create(m_sizeEquityProduct, PAS);
-		PnlVect *l_finalSpotMT =  pnl_vect_copy(l_spot);
-		PnlMat *l_histoFix;
-		pnl_mat_set_col(l_histoFixMT, l_finalSpotMT, 0);
-		*/
-		// 5 a ne pas metttre
-		PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, 5);
-		//PnlVect * spot;
-		// la fonction doit diffuser a partir de t
-		//m_model->Diffuse(l_histoFixMT, l_finalSpotMT, l_drift, l_vol, m_produit, m_rng, 0);
-
-
+		PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
 		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
-		// et les valeurs simulees de time + 1 a la 259
+		// et les valeurs simulees de time + 1 a la derniere
 		
 		// A partir de Past on calcul le prix et le delta et le gamma
 
 		// ICI APPELER la fonction qui a partir de past retourne la matrice juste au date de fixing
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
-		// Cette matrice s'appelle l_histofix
 		PriceProduct(l_histoFix, &l_payoff, time);
-		//std::cout<< l_payoff<<std::endl;
 		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
-		//std::cout<<l_payoff<<std::endl;
-		//On somme les payoff
 		*sumPrice += l_payoff;
-		//*priceSquare += pow(l_payoff, 2);
-
-		//pnl_mat_free(&l_histoFixMT);
-		//pnl_vect_free(&l_finalSpotMT);
 		pnl_mat_free(&l_histoFix);
-//		pnl_vect_free(&spot);
-		
 	}
 
 	//Moyenne du prix

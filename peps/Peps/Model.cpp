@@ -38,7 +38,6 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, const PnlVect * 
 		pnl_mat_free(&l_choleskyCor);
 	}
 	pnl_vect_free(&l_spot);
-	//pnl_mat_print(path);
 }
 
 bool Model::CheckParameter() {
