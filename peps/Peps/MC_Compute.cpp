@@ -76,7 +76,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
 
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
-		// et les valeurs simulees de time + 1 a la 259
+		// et les valeurs simulees de time + 1 a la derniere
 		
 		// A partir de Past on calcul le prix et le delta et le gamma
 
