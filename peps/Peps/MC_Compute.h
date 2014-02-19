@@ -105,10 +105,6 @@ public :
 	inline bool MC_Compute::Condition_Remb(PnlMat * past, int time);
 	void payoff();
 
-	void Compute_path();
-	void PayOff();
-
-	
 };
 
 

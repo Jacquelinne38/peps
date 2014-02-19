@@ -46,95 +46,67 @@ bool MC_Compute::isRemb(PnlMat * coursHisto, int time) {
 	return tmp;
 }
 
-
-//TODO 
-// Devise non géré
-// a quel moment doit on passer le spot en EUR
-// comment gérer la maturité en actualisant
-// faire attention a diffuser en CZK mais que la valeur des actifs soient stockées avec leur monnaie respective
 int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time)
 {
-	//reset obligatoire des paramètre
+	//reset obligatoire des paramètres
 	*sumPrice = 0;
 	*priceSquare = 0;
 	pnl_vect_set_zero(sumDelta);
 	pnl_vect_set_zero(sumGamma);
 	//check model parameter
 	if(!m_model->CheckParameter()) return -1;
-	//on recupére cours histo ce n'est pas a nous de la désallouer
+	//Pour l'instant c'est nous qui générons la matrice historique il faudra dans le future récupérer les cours sur internet
 	PnlMat * l_coursHisto = m_produit->getMatHisto();
 
-	// Payoff prendra le payoff du m_produit a chaque tour de boucle
 	double l_payoff = 0;
-	//ATTRIBUT A METTRE DANS EQUITY: on devra avoir une méthode getinitdrift mais avant on doit creer la classe currency chaque currency a un drift
 	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
-	//On peu faire mieux ici
 	PnlVect * l_spot = GetInitSpot();
 	PnlVect * l_vol = GetInitVol();
 	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
-	TronqCoursHisto(l_coursHisto, l_past, time);
 
 	if(isRemb(l_coursHisto, time))
 		return -10;
+	TronqCoursHisto(l_coursHisto, l_past, time);
+	//Ici la matrice l_past contient les valeurs historiques sur les colonnes de 0 à time
 
-	//MonteCarlo
+	//Monte carlo
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		/*PnlMat *l_histoFixMT = pnl_mat_create(m_sizeEquityProduct, PAS);
-		PnlVect *l_finalSpotMT =  pnl_vect_copy(l_spot);
-		PnlMat *l_histoFix;
-		pnl_mat_set_col(l_histoFixMT, l_finalSpotMT, 0);
-		*/
-		// 5 a ne pas metttre
-		PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, 5);
-		//PnlVect * spot;
-		// la fonction doit diffuser a partir de t
-		//m_model->Diffuse(l_histoFixMT, l_finalSpotMT, l_drift, l_vol, m_produit, m_rng, 0);
-
-
+		PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
 		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
+
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
 		// et les valeurs simulees de time + 1 a la 259
 		
 		// A partir de Past on calcul le prix et le delta et le gamma
 
-		// ICI APPELER la fonction qui a partir de past retourne la matrice juste au date de fixing
+		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
-		// Cette matrice s'appelle l_histofix
 		PriceProduct(l_histoFix, &l_payoff, time);
-		//std::cout<< l_payoff<<std::endl;
 		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
-		//std::cout<<l_payoff<<std::endl;
-		//On somme les payoff
 		*sumPrice += l_payoff;
-		//*priceSquare += pow(l_payoff, 2);
-
-		//pnl_mat_free(&l_histoFixMT);
-		//pnl_vect_free(&l_finalSpotMT);
-		pnl_mat_free(&l_histoFix);
-//		pnl_vect_free(&spot);
-		
+		pnl_mat_free(&l_histoFix);		
 	}
 
-	//Moyenne du prix
+	//Moyenne du prix du delta et du gamma
 	*sumPrice /= m_model->Nb_Path();
 	pnl_vect_div_double(sumDelta,  m_model->Nb_Path());
-	pnl_vect_div_double(sumGamma,  m_model->Nb_Path());
+	//pnl_vect_div_double(sumGamma,  m_model->Nb_Path());
 
 	pnl_vect_free(&l_drift);
 	pnl_vect_free(&l_spot);
 	pnl_vect_free(&l_vol);
 	pnl_mat_free(&l_past);
+	pnl_mat_free(&l_coursHisto);
 
 	return 0;
 }
 
 inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time) {
-	// Renta est la matrice des rentabilites autant de ligne que d'actifs et 4 colonnes car il y a 4 intervales de discretisation (5dates)
+	//Renta est la matrice des rentabilites avec autant de lignes que d'actifs et 4 colonnes car il y a 4 intervales entres les dates de fixing (5dates)
 	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, PAS);
-	// On calcul le prix du m_produit //Pour ca on a besoin de la rentabilite du portefeuille
 	Rent(histoFix, l_renta);
-	// On peut ensuite calculer son payoff //Ici la fonction price2 devrait retourner la date ou le payoff a ete touche
+	// On peut ensuite cacluler le prix ici le payoff en fait c'est le prix (il faut qu'on change le nom)
 	*payoff = Price2(l_renta, time);
 	pnl_mat_free(&l_renta);
 }
@@ -153,6 +125,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 
+
 	for (int l = 0; l < m_sizeEquityProduct; l++) {
 			pnl_mat_clone(l_pastShPos, past);
 			pnl_mat_clone(l_pastShNeg, past);
@@ -161,12 +134,12 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*(1+H);
 				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*(1-H);
 			}
-			// ICI appeler la fonction qui selectionne les dates de fixing et qui retroune l_histoFixShPos et l_histoFixShNeg
+			//Icii on selectionne les dates de fixing et on retourne l'histoFixShPos et l_histoFixShNeg
 			getPathFix(l_pastShPos, l_histoFixShPos, mvec_fixingDate);
 			getPathFix(l_pastShNeg, l_histoFixShNeg, mvec_fixingDate);
 	
 			//reset matrice
-			pnl_mat_set_zero(l_pastShNeg);
+			pnl_mat_set_zero(l_rentNeg);
 			pnl_mat_set_zero(l_rentPos);
 			
 			//calcul des rentabilites pour chacune des matrices de histofix shifte
@@ -175,17 +148,18 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 
 			// Calcul le payoff a partir de la matrice des rentabilites
 			ld_payoffPos = Price2(l_rentPos, time);
-			ld_payoffNeg = Price2(l_rentNeg, time);		
+			ld_payoffNeg = Price2(l_rentNeg, time);	
 
 			pnl_vect_set(l_delta, l, ((ld_payoffPos-ld_payoffNeg)/(2*H)));
-			pnl_vect_set(l_gamma, l ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
+			//pnl_vect_set(l_gamma, l ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
 			
 
 	}
+	
 	// On somme les delta
 	pnl_vect_plus_vect(sumDelta, l_delta);
 	// On somme les gamma
-	pnl_vect_plus_vect(sumGamma, l_gamma);
+	//pnl_vect_plus_vect(sumGamma, l_gamma);
 
 	//libération ressource
 	pnl_mat_free(&l_histoFixShPos);
@@ -202,11 +176,6 @@ MC_Compute::~MC_Compute()
 {
 }
 
-// cette fonction prend en argument historique de fixing
-// elle ressort le payoff du m_produit
-void MC_Compute::PayOff(void)
-{
-}
 
 inline double MC_Compute::Compute_dt(int date)
 {
@@ -229,20 +198,17 @@ inline double MC_Compute::Compute_dt(int date)
 	}
 }
 
-void MC_Compute::Compute_path(void)
-{// cette fonction prend en argument le temps et ressort la matrice de fixing
-}
-
+//retourne la valeur actualisée de value
 inline double MC_Compute::Discount(double value, int date, int time)
 {
 	//Pour le moment le taux sans risque est la c'est pas la qu'il devra etre
-	return (value*exp(-(((double)abs(date-time))/NBSEMAINE * TAUX_ACTUALISATION)));
+	return (value*exp(-(((double)date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
 }
 
 inline double MC_Compute::Price2(const PnlMat *rent, int time)
 {
-	double minCol;
-	double val;
+	double minCol = 0;
+	double val = 0;
 	for (int i = 0; i < rent->n; i++)
 	{
 		minCol = 0;
@@ -253,8 +219,10 @@ inline double MC_Compute::Price2(const PnlMat *rent, int time)
 				minCol = pnl_mat_get(rent, j, i);
 			}
 		}
+		//!!!!!!\\\ i +1 ? et i!= 4 ???
 		if ((minCol > -0.1) && (i != 3))
 		{
+			//pnl_mat_print(rent);
 		    return Discount(REMB_ANTI, mvec_fixingDate[i], time);
 		}
 	}

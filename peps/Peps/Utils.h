@@ -2,19 +2,7 @@
 #include "stdafx.h"
 #include "Produit.h"
 
-static void CreerFichierData(std::vector<double> vec, std::string nomFichier) {
-	std::ofstream fichier(nomFichier, std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert
-	if(fichier)
-	{
-		for(unsigned int i = 0 ; i < vec.size(); ++i) {
-			fichier << vec[i] << std::endl;
-		}
-		fichier.close();
-	}
-	else
-		std::cerr << "Impossible d'ouvrir le fichier !" << std::endl;
 
-}
 
 static void print(double price, double squarePrice, const PnlVect * delta, const PnlVect * gamma, int nbPath) {
 	if(PRINTPRICE) {
@@ -71,9 +59,11 @@ void tokenize(const std::string& str, ContainerT& tokens,
 	}
 };
 
+
+
 //USSLESS
-PnlVect * Diffuse_cours_histo(double spot, double drift, double vol) {
-	double dt = 1;
+static PnlVect * Diffuse_cours_histo(double spot, double drift, double vol) {
+	double dt = 1.0/52.0;
 	PnlVect * Historique = pnl_vect_create(260);
 	pnl_vect_set(Historique, 0, spot);
 	PnlRng * rng = pnl_rng_create(PNL_RNG_MERSENNE);
@@ -92,6 +82,50 @@ PnlVect * Diffuse_cours_histo(double spot, double drift, double vol) {
 	}
 	return Historique;
 }
+template<typename T, typename A>
+static void CreerFichierData(std::vector<T,A> vec, std::string nomFichier) {
+	std::ofstream fichier(nomFichier, std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert
+	if(fichier)
+	{
+		for(unsigned int i = 0; i < vec.size(); ++i) {
+		
+			fichier << vec[i] << std::endl;
+		}
+		fichier.close();
+	}
+	else
+		std::cerr << "Impossible d'ouvrir le fichier !" << std::endl;
+
+}
+
+static std::string CreateStrData(std::string delimiter, PnlVect * histo) {
+	std::string tmp = "";
+	int j = 0;
+	for(int i = 0; i < histo->size; ++ i) {
+		if(j == 100) j = 0;
+		long double tmp1 = pnl_vect_get(histo, j);
+		if (i == (histo->size -1)) {
+			tmp += std::to_string(tmp1);
+		} else {
+			tmp += std::to_string(tmp1);
+			tmp += delimiter;
+		}
+		++j;
+	}
+	return tmp;
+}
+
+static void CreationDataHisto(std::string nomFichier, double drift, Produit pro) {
+	PnlVect * histo;
+	std::vector<std::string> lst_data = std::vector<std::string>();
+	for(int i = 0; i < 4; ++i) {
+		histo = Diffuse_cours_histo(pro.getEquities()[i].value, drift, pro.getEquities()[i].volatility);
+		lst_data.push_back(CreateStrData(",",histo));
+	}
+	CreerFichierData(lst_data, nomFichier);
+}
+
+
 
 //USSLESS NOW
 void Diffuse(PnlMat * histoFixMT, PnlVect *finalSpotMT, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time) {

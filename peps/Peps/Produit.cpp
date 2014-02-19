@@ -75,6 +75,8 @@ void Produit::UpDate_listFx(){}
 
 
 void Produit::LoadDataHisto() {
+
+	//ou histo1 ou histo2
 	fstream fichier("../DATA/data.txt");
 	vector <string> monTableau;
 

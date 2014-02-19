@@ -32,7 +32,7 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, const PnlVect * 
 		
 		Diffuse_from_t_all_Asset(produit, drift, vol, l_vecAlea, l_choleskyCor, l_spot);
 		
-		// normalement en sortie de boucle, spot contient la valeur en t+dt de tous les actifs, on met ces valeurs dans la matrice path
+		//spot contient la valeur en t+dt de tous les actifs, on met ces valeurs dans la matrice path
 		pnl_mat_set_col(path, l_spot, k+1);
 		pnl_vect_free(&l_vecAlea);
 		pnl_mat_free(&l_choleskyCor);

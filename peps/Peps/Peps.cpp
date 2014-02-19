@@ -25,6 +25,9 @@ int main(int argc, char **argv)
 	Produit produit = Produit();
 	Model model = Model(NBPATH);
 
+	//Générateur data
+	//CreationDataHisto("../DATA/histo1.txt", 0.05, produit);
+
 	PnlVect * delta = pnl_vect_create(produit.getEquities().size());
 	PnlVect * gamma = pnl_vect_create(produit.getEquities().size());
 	
@@ -48,30 +51,33 @@ int main(int argc, char **argv)
 			price_couverture = price - pnl_vect_scalar_prod(delta, l_spot);
 			
 		} else {
-			PnlVect * l_diffDelta = pnl_vect_copy(vec_delta[vec_delta.size()-2]);
+			//PnlVect * l_diffDelta = pnl_vect_copy(vec_delta[vec_delta.size()-2]);
 			//pnl_vect_print(vec_delta[vec_delta.size()-2]);
-			pnl_vect_minus_vect(l_diffDelta, delta);
-			pnl_vect_mult_double(l_diffDelta, -1);
-			price_couverture = price_couverture * exp(-TAUX_ACTUALISATION*DT) - pnl_vect_scalar_prod(l_diffDelta, l_spot);
-			pnl_vect_free(&l_diffDelta);
+			//pnl_vect_minus_vect(l_diffDelta, delta);
+			//pnl_vect_mult_double(l_diffDelta, -1);
+			price_couverture = price_couverture * exp(-TAUX_ACTUALISATION*DT) - pnl_vect_scalar_prod(delta, l_spot) + pnl_vect_scalar_prod(vec_delta[vec_delta.size()-2], l_spot);
+			//pnl_vect_free(&l_diffDelta);
 		}
 		vec_priceCouverture.push_back(price_couverture);
-	//	std::cout << "Spot : " << std::endl;
-		//pnl_vect_print(l_spot);
 		pnl_vect_free(&l_spot);
 	}
 
+	//Création fichiers d'export
 	CreerFichierData(vec_price, "../DATA/prix.txt");
 	CreerFichierData(vec_priceCouverture, "../DATA/couverture.txt");
+	std::vector<double> vecbisdelta;
+	for(int i = 0 ; i< vec_delta.size(); ++i ) {
+		vecbisdelta.push_back(pnl_vect_get(vec_delta[i], 0));
+	}
+	CreerFichierData(vecbisdelta, "../DATA/delta.txt");
 
 
-	//desaclouer le vecteur de delta
 	pnl_vect_free(&delta);
 	pnl_vect_free(&gamma);
 	
-	//pnl_vect_print(model.Diffuse_cours_histo(produit.getEquities()[3].value, 0.05/52, produit.getEquities()[3].volatility/52));
 	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 	std::cout<<"printf: "<< duration <<'\n';
+	
 	while (getchar() != '\n') ;
 
 	_CrtDumpMemoryLeaks();
