@@ -12,10 +12,8 @@
 
 int main(int argc, char **argv)
 {
-	std::clock_t start;
-	double duration;
-
-	start = std::clock();
+	Pesp_Timer _timer = Pesp_Timer();
+	_timer.Start();
 
 	double price = 0, priceSquare = 0;
 	
@@ -43,7 +41,7 @@ int main(int argc, char **argv)
 
 	PnlMat *l_histoFix = pnl_mat_create(produit.getEquities().size(), moteur.mvec_fixingDate.size());
 	// ICI creer la matrice path complete et surement histofix aussi
-	
+
 	//Pricing pour chaque t
 	for (int t=0; t<250; t++){
 		std::cout<< t <<std::endl;
@@ -99,9 +97,8 @@ int main(int argc, char **argv)
 	pnl_vect_free(&delta);
 	pnl_vect_free(&gamma);
 	pnl_mat_free(&l_histoFix);
-	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-	std::cout<<"printf: "<< duration <<'\n';
-	
+
+			_timer.GetTime("Temps exec : ");
 	while (getchar() != '\n') ;
 
 	_CrtDumpMemoryLeaks();

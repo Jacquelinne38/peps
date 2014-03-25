@@ -12,6 +12,8 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 	//Sert à simplifier la lecture du code. 
 	m_sizeEquityProduct = produit->getEquities().size();
 	m_model = model;
+	_timer = Pesp_Timer();
+	_timer.Start();
 
 	m_rng = pnl_rng_create (PNL_RNG_MERSENNE);
 	pnl_rng_sseed (m_rng, time(NULL));
@@ -48,6 +50,7 @@ bool MC_Compute::isRemb(PnlMat * coursHisto, int time) {
 
 int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_histoFix, int time)
 {
+
 	//reset obligatoire des paramètres
 	*sumPrice = 0;
 	*priceSquare = 0;
@@ -72,9 +75,11 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	//Ici la matrice l_past contient les valeurs historiques sur les colonnes de 0 à time
 
 	//Monte carlo
+	Timer().GetTime("Loading data price");
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
 		//PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
 		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
+		//Timer().GetTime("Diffuse");
 		//pnl_mat_print(l_past);  OK
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
 		// et les valeurs simulees de time + 1 a la derniere
@@ -83,11 +88,15 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
+		//Timer().GetTime("getPathFix");
 		//pnl_mat_print(l_histoFix);   OK
 		PriceProduct(l_histoFix, &l_payoff, time);
+		//Timer().GetTime("Price");
 		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
+		//Timer().GetTime("Compute grec");
 		*sumPrice += l_payoff;
-		//pnl_mat_free(&l_histoFix);		
+		//pnl_mat_free(&l_histoFix);	
+		//while(1);
 	}
 
 	//Moyenne du prix du delta et du gamma

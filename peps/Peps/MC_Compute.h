@@ -19,6 +19,8 @@ private:
 	Model * m_model;
 	int m_sizeEquityProduct;
 	DISCRETISATION_TYPE m_discretisation;
+	Pesp_Timer _timer;
+
 	/*
 	* Déclaration du vecteur spot
 	* return vecteur des prix spot
@@ -106,6 +108,8 @@ public :
 	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_hisotFix, int time); 
 	inline bool MC_Compute::Condition_Remb(PnlMat * past, int time);
 	void payoff();
+	Pesp_Timer Timer() const { return _timer; }
+	void Timer(Pesp_Timer val) { _timer = val; }
 
 };
 
