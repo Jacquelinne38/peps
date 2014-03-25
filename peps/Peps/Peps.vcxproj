@@ -98,6 +98,7 @@
     <ClInclude Include="MC_Compute.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Parameter.h" />
+    <ClInclude Include="Pesp_Timer.h" />
     <ClInclude Include="Produit.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -110,6 +111,7 @@
     <ClCompile Include="MC_Compute.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Peps.cpp" />
+    <ClCompile Include="Pesp_Timer.cpp" />
     <ClCompile Include="Produit.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
