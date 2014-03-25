@@ -101,7 +101,7 @@ public :
 	* out gamma
 	* renvoi -10 si la t trop grand par rapport au remboursement
 	*/
-	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time); 
+	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_hisotFix, int time); 
 	inline bool MC_Compute::Condition_Remb(PnlMat * past, int time);
 	void payoff();
 

@@ -46,7 +46,7 @@ bool MC_Compute::isRemb(PnlMat * coursHisto, int time) {
 	return tmp;
 }
 
-int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, int time)
+int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_histoFix, int time)
 {
 	//reset obligatoire des paramètres
 	*sumPrice = 0;
@@ -64,17 +64,18 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	PnlVect * l_vol = GetInitVol();
 	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
-
+	//pnl_mat_print(l_coursHisto);  OK
 	if(isRemb(l_coursHisto, time))
 		return -10;
 	TronqCoursHisto(l_coursHisto, l_past, time);
+	//pnl_mat_print(l_past); OK
 	//Ici la matrice l_past contient les valeurs historiques sur les colonnes de 0 à time
 
 	//Monte carlo
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
+		//PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
 		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
-
+		//pnl_mat_print(l_past);  OK
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
 		// et les valeurs simulees de time + 1 a la derniere
 		
@@ -82,14 +83,16 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
+		//pnl_mat_print(l_histoFix);   OK
 		PriceProduct(l_histoFix, &l_payoff, time);
 		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
 		*sumPrice += l_payoff;
-		pnl_mat_free(&l_histoFix);		
+		//pnl_mat_free(&l_histoFix);		
 	}
 
 	//Moyenne du prix du delta et du gamma
 	*sumPrice /= m_model->Nb_Path();
+
 	pnl_vect_div_double(sumDelta,  m_model->Nb_Path());
 	//pnl_vect_div_double(sumGamma,  m_model->Nb_Path());
 
@@ -104,8 +107,11 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time) {
 	//Renta est la matrice des rentabilites avec autant de lignes que d'actifs et 4 colonnes car il y a 4 intervales entres les dates de fixing (5dates)
-	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, PAS);
+	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() - 1);
 	Rent(histoFix, l_renta);
+	//std::cout<< "SANS SHIFTE" <<std::endl;
+	//pnl_mat_print(l_renta);
+	//std::cout<< "\n" <<std::endl;
 	// On peut ensuite cacluler le prix ici le payoff en fait c'est le prix (il faut qu'on change le nom)
 	*payoff = Price2(l_renta, time);
 	pnl_mat_free(&l_renta);
@@ -125,11 +131,10 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 
-
 	for (int l = 0; l < m_sizeEquityProduct; l++) {
 			pnl_mat_clone(l_pastShPos, past);
 			pnl_mat_clone(l_pastShNeg, past);
-			for (int n = time; n < PAS; n++){
+			for (int n = time + 1; n < PAS; n++){
 				// On shifte positivement et negativement
 				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*(1+H);
 				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*(1-H);
@@ -141,15 +146,31 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			//reset matrice
 			pnl_mat_set_zero(l_rentNeg);
 			pnl_mat_set_zero(l_rentPos);
-			
+
 			//calcul des rentabilites pour chacune des matrices de histofix shifte
 			Rent(l_histoFixShPos,l_rentPos);
 			Rent(l_histoFixShNeg,l_rentNeg);
 
 			// Calcul le payoff a partir de la matrice des rentabilites
 			ld_payoffPos = Price2(l_rentPos, time);
-			ld_payoffNeg = Price2(l_rentNeg, time);	
+			ld_payoffNeg = Price2(l_rentNeg, time);
+		/*	
+			std::cout<< payoff<<std::endl;
+			std::cout<< "\n"<<std::endl;
 
+			std::cout<< "ShiftPos" << std::endl;
+			pnl_mat_print(l_rentPos);
+			std::cout<< "\n"<<std::endl;
+			std::cout<< ld_payoffPos<<std::endl;
+			std::cout<< "\n"<<std::endl;
+			
+
+			std::cout<< "shiftNeg" << std::endl;
+			pnl_mat_print(l_rentNeg);
+			std::cout<< "\n"<<std::endl;
+			std::cout<< ld_payoffNeg<<std::endl;
+			std::cout<< "\n"<<std::endl;
+			*/			
 			pnl_vect_set(l_delta, l, ((ld_payoffPos-ld_payoffNeg)/(2*H)));
 			//pnl_vect_set(l_gamma, l ,((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
 			
@@ -202,16 +223,16 @@ inline double MC_Compute::Compute_dt(int date)
 inline double MC_Compute::Discount(double value, int date, int time)
 {
 	//Pour le moment le taux sans risque est la c'est pas la qu'il devra etre
-	return (value*exp(-(((double)date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
+	return (value*exp(-((date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
 }
 
 inline double MC_Compute::Price2(const PnlMat *rent, int time)
 {
-	double minCol = 0;
+	double minCol;
 	double val = 0;
 	for (int i = 0; i < rent->n; i++)
 	{
-		minCol = 0;
+		minCol = pnl_mat_get(rent,0,i);
 		for (int j = 0; j < rent->m; j++)
 		{
 			if (pnl_mat_get(rent, j, i) < minCol)
@@ -222,15 +243,22 @@ inline double MC_Compute::Price2(const PnlMat *rent, int time)
 		//!!!!!!\\\ i +1 ? et i!= 4 ???
 		if ((minCol > -0.1) && (i != 3))
 		{
-			//pnl_mat_print(rent);
-		    return Discount(REMB_ANTI, mvec_fixingDate[i], time);
+			// Si on entre ici c'est qu'il y a un remboursement anticipé
+			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
+			// time est la date à laquelle on calcul le prix
+			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
+		    return Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
 		}
 	}
 	PnlVect *perf = pnl_vect_create(rent->m);
 	pnl_mat_get_col(perf, rent, rent->n - 1);
+
+	//std::cout<< "VECTEUR DE PERFORMANCE DONT ON CALCUL LA PERF LISSSE" << std::endl;
+	//pnl_vect_print(perf);
+
 	val = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
 	pnl_vect_free(&perf);
-	//return Discount(val, (rent->n -1), time);
+	//std::cout << "remboursement en T "<< val << std::endl;
 	return Discount(val, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
 }
 
@@ -251,7 +279,7 @@ inline void MC_Compute::Perf_Boost(const PnlVect *perf, PnlVect * ret)
 inline double MC_Compute::Perf_Liss(const PnlVect *spot)
 {
 	double val;
-	double ret = 0;
+	double ret = 0.0;
 	PnlVect *res =	 pnl_vect_create(spot->size);
 	Perf_Boost(spot, res);
 	for (int i = 0; i < res->size; i++)

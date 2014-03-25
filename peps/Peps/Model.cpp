@@ -26,6 +26,7 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, const PnlVect * 
 		PnlVect * l_vecAlea = pnl_vect_create(l_nbEq);
 		pnl_vect_rng_normal_d(l_vecAlea, l_nbEq, rng);
 	
+		// Ca ca doit etre en dur dans parameters a priori
 		// Cholesky de la matrice de correlation
 		PnlMat * l_choleskyCor = pnl_mat_copy(produit->getMatCor());
 		pnl_mat_chol(l_choleskyCor);

@@ -1,0 +1,42 @@
+﻿La génération a démarré 18/03/2014 12:33:49.
+     1>Projet "C:\Users\Tifenn\peps\peps-master\peps\Peps\Peps.vcxproj" sur le nœud 2 (build cible(s)).
+     1>InitializeBuildStatus:
+         Création de "Release\Peps.unsuccessfulbuild", car "AlwaysCreate" a été spécifié.
+       ClCompile:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\works\pnl-win32-1.6.0\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Release\Peps.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+     1>c:\users\tifenn\peps\peps-master\peps\peps\Utils.h(70): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned long', perte possible de données
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\works\pnl-win32-1.6.0\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\Peps.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Equity.cpp Fx.cpp MC_Compute.cpp Model.cpp Peps.cpp Produit.cpp
+         Equity.cpp
+         Fx.cpp
+         MC_Compute.cpp
+     1>MC_Compute.cpp(17): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned long', perte possible de données
+         Model.cpp
+         Peps.cpp
+     1>Peps.cpp(93): warning C4018: '<' : incompatibilité signed/unsigned
+         Produit.cpp
+       Link:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Tifenn\peps\peps-master\peps\Release\Peps.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\works\pnl-win32-1.6.0\lib" libpnl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\Peps.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Tifenn\peps\peps-master\peps\Release\Peps.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Tifenn\peps\peps-master\peps\Release\Peps.lib" /MACHINE:X86 Release\Equity.obj
+         Release\Fx.obj
+         Release\MC_Compute.obj
+         Release\Model.obj
+         Release\Peps.obj
+         Release\Produit.obj
+         Release\stdafx.obj
+         Génération de code en cours
+         Fin de la génération du code
+         Peps.vcxproj -> C:\Users\Tifenn\peps\peps-master\peps\Release\Peps.exe
+       Manifest:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Tifenn\peps\peps-master\peps\Release\Peps.exe;#1" /manifest Release\Peps.exe.intermediate.manifest
+       PostBuildEvent:
+         xcopy /d /y "C:\works\pnl-win32-1.6.0\lib\*.*" "C:\Users\Tifenn\peps\peps-master\peps\Release\"
+         :VCEnd
+         0 fichier(s) copié(s)
+       FinalizeBuildStatus:
+         Suppression du fichier "Release\Peps.unsuccessfulbuild".
+         Mise à jour de l'horodatage "Release\Peps.lastbuildstate".
+     1>Génération du projet "C:\Users\Tifenn\peps\peps-master\peps\Peps\Peps.vcxproj" terminée (build cible(s)).
+
+La génération a réussi.
+
+Temps écoulé 00:00:07.02
