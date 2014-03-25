@@ -88,6 +88,8 @@ private:
 	*/
 	double Compute_dt(int date);
 
+	int ComputeDateFix(int date);
+
 public :
 	MC_Compute(Produit * produit, Model * model);
 	~MC_Compute();

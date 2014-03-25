@@ -109,7 +109,7 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 	//Renta est la matrice des rentabilites avec autant de lignes que d'actifs et 4 colonnes car il y a 4 intervales entres les dates de fixing (5dates)
 	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() - 1);
 	Rent(histoFix, l_renta);
-	//std::cout<< "SANS SHIFTE" <<std::endl;
+	//std::cout<< "SANS SHIFT" <<std::endl;
 	//pnl_mat_print(l_renta);
 	//std::cout<< "\n" <<std::endl;
 	// On peut ensuite cacluler le prix ici le payoff en fait c'est le prix (il faut qu'on change le nom)
@@ -120,40 +120,51 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 
 inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * past, const double payoff, PnlVect* l_vol, PnlVect* l_drift, int time) {
 	
-	PnlMat *l_pastShPos = pnl_mat_create(past->m, past->n);
-	PnlMat *l_pastShNeg = pnl_mat_create(past->m, past->n);
+	//PnlMat *l_pastShPos = pnl_mat_create(past->m, past->n);
+	//PnlMat *l_pastShNeg = pnl_mat_create(past->m, past->n);
 	PnlMat *l_histoFixShPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
-	PnlMat * l_histoFixShNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
+	//PnlMat * l_histoFixShNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
 	PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
-	PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size()- 1);
+	//PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size()- 1);
 	PnlVect *l_gamma = pnl_vect_create(m_sizeEquityProduct);
 	PnlVect *l_delta = pnl_vect_create(m_sizeEquityProduct);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 
 	for (int l = 0; l < m_sizeEquityProduct; l++) {
-			pnl_mat_clone(l_pastShPos, past);
-			pnl_mat_clone(l_pastShNeg, past);
-			for (int n = time + 1; n < PAS; n++){
+			//pnl_mat_clone(l_pastShPos, past);
+			//pnl_mat_clone(l_pastShNeg, past);
+			/*for (int n = time + 1; n < PAS; n++){
 				// On shifte positivement et negativement
 				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*(1+H);
 				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*(1-H);
-			}
+			}*/
 			//Icii on selectionne les dates de fixing et on retourne l'histoFixShPos et l_histoFixShNeg
-			getPathFix(l_pastShPos, l_histoFixShPos, mvec_fixingDate);
-			getPathFix(l_pastShNeg, l_histoFixShNeg, mvec_fixingDate);
-	
+			getPathFix(past, l_histoFixShPos, mvec_fixingDate);
+			//getPathFix(l_pastShNeg, l_histoFixShNeg, mvec_fixingDate);
+			//Positif
+			for (int i = ComputeDateFix(time); i < l_histoFixShPos->n; i++)
+			{
+				MLET(l_histoFixShPos,l,i) = (MGET(l_histoFixShPos,l,i))*(1+H);
+			}
 			//reset matrice
-			pnl_mat_set_zero(l_rentNeg);
-			pnl_mat_set_zero(l_rentPos);
+			//pnl_mat_set_zero(l_rentNeg);
+			//pnl_mat_set_zero(l_rentPos);
 
 			//calcul des rentabilites pour chacune des matrices de histofix shifte
 			Rent(l_histoFixShPos,l_rentPos);
-			Rent(l_histoFixShNeg,l_rentNeg);
-
+			//Rent(l_histoFixShNeg,l_rentNeg);
+			
 			// Calcul le payoff a partir de la matrice des rentabilites
 			ld_payoffPos = Price2(l_rentPos, time);
-			ld_payoffNeg = Price2(l_rentNeg, time);
+
+			//Negatif
+			for (int i = ComputeDateFix(time); i < l_histoFixShPos->n; i++)
+			{
+				MLET(l_histoFixShPos,l,i) = (MGET(l_histoFixShPos,l,i))*(1-2*H);
+			}
+			Rent(l_histoFixShPos,l_rentPos);  
+			ld_payoffNeg = Price2(l_rentPos, time);
 		/*	
 			std::cout<< payoff<<std::endl;
 			std::cout<< "\n"<<std::endl;
@@ -184,13 +195,13 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 
 	//libération ressource
 	pnl_mat_free(&l_histoFixShPos);
-	pnl_mat_free(&l_histoFixShNeg);
+	//pnl_mat_free(&l_histoFixShNeg);
 	pnl_vect_free(&l_gamma);
 	pnl_vect_free(&l_delta);
-	pnl_mat_free(&l_pastShPos);
-	pnl_mat_free(&l_pastShNeg);
+	//pnl_mat_free(&l_pastShPos);
+	//pnl_mat_free(&l_pastShNeg);
 	pnl_mat_free(&l_rentPos);
-	pnl_mat_free(&l_rentNeg);
+	//	pnl_mat_free(&l_rentNeg);
 }
 
 MC_Compute::~MC_Compute()
@@ -215,6 +226,39 @@ inline double MC_Compute::Compute_dt(int date)
 		} else 
 		{
 			return (365 - (date % 365))/365;
+		}
+	}
+}
+
+inline int MC_Compute::ComputeDateFix(int time)
+{
+	if (m_discretisation = WEEK) {
+		if (time < 104)
+		{
+			return 1;
+		} else if (time < 156)
+		{
+			return 2;
+		} else if (time < 208) 
+		{
+			return 3;
+		} else 
+		{
+			return 4;
+		}
+	} else {
+		if (time < 104*7)
+		{
+			return 1;
+		} else if (time < 156*7)
+		{
+			return 2;
+		} else if (time < 208*7)
+		{
+			return 3;
+		} else 
+		{
+			return 4;
 		}
 	}
 }
