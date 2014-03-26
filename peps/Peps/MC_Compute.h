@@ -80,7 +80,7 @@ private:
 	/*
 	* Renvoi true si il y a eu lieu a un remboursement avant la date t passé en paramètre
 	*/
-	bool MC_Compute::isRemb(PnlMat * coursHisto, int time);
+	bool MC_Compute::isRemb(const PnlMat * coursHisto, int time);
 
 	/*@param in v
 	* @pram in v0
@@ -109,7 +109,7 @@ public :
 	* renvoi -10 si la t trop grand par rapport au remboursement
 	*/
 	int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_hisotFix, int time); 
-	inline bool MC_Compute::Condition_Remb(PnlMat * past, int time);
+	inline bool MC_Compute::Condition_Remb(const PnlMat * past, int time);
 	void payoff();
 	Pesp_Timer Timer() const { return _timer; }
 	void Timer(Pesp_Timer val) { _timer = val; }

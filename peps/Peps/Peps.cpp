@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
 	//Pricing pour chaque t
 	for (int t=0; t<250; t++){
-		std::cout<< t <<std::endl;
+		//std::cout<< t <<std::endl;
 		int ret = moteur.Price(&price, &priceSquare, delta, gamma, l_histoFix, t);
 		if (ret == -10) break;
 		else if (ret != 0) std::cout << "Bug" << std::endl;

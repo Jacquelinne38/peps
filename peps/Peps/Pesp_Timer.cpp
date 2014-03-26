@@ -8,9 +8,10 @@ void Pesp_Timer::Start() {
 }
 
 void Pesp_Timer::GetTime(std::string txt) {
-	Stop();
-	//this->duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+	//Stop();
+	this->duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 	std::cout<< txt << " : " << this->duration <<'\n';
+	//Start();
 }
 
 void Pesp_Timer::Stop() {

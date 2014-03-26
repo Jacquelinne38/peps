@@ -25,7 +25,7 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 }
 
 
-bool MC_Compute::isRemb(PnlMat * coursHisto, int time) {
+bool MC_Compute::isRemb(const PnlMat * coursHisto, int time) {
 	bool tmp = false;
 	if(time > mvec_fixingDate[1]){
 		if(Condition_Remb(coursHisto, mvec_fixingDate[1])){
@@ -50,57 +50,39 @@ bool MC_Compute::isRemb(PnlMat * coursHisto, int time) {
 
 int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_histoFix, int time)
 {
-
 	//reset obligatoire des paramètres
 	*sumPrice = 0;
 	*priceSquare = 0;
-	pnl_vect_set_zero(sumDelta);
-	pnl_vect_set_zero(sumGamma);
+	double l_payoff = 0;
+	PnlMat * l_coursHisto = m_produit->getMatHisto();
+	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
+	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
+
 	//check model parameter
 	if(!m_model->CheckParameter()) return -1;
-	//Pour l'instant c'est nous qui générons la matrice historique il faudra dans le future récupérer les cours sur internet
-	PnlMat * l_coursHisto = m_produit->getMatHisto();
-
-	double l_payoff = 0;
-	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
-	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
-	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
-	//pnl_mat_print(l_coursHisto);  OK
 	if(isRemb(l_coursHisto, time))
 		return -10;
 	TronqCoursHisto(l_coursHisto, l_past, time);
-	//pnl_mat_print(l_past); OK
-	//Ici la matrice l_past contient les valeurs historiques sur les colonnes de 0 à time
 
-	//Monte carlo
-
+	pnl_vect_set_zero(sumDelta);
+	pnl_vect_set_zero(sumGamma);
 	
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		//PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
+		_timer.Start();
 		m_model->Diffuse_from_t(l_past, l_drift, m_produit, m_rng, time);
-		//Timer().GetTime("Diffuse");
-		//pnl_mat_print(l_past);  OK
-		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
-		// et les valeurs simulees de time + 1 a la derniere
-		
-		// A partir de Past on calcul le prix et le delta et le gamma
-
+		_timer.GetTime("Diffuse");
 		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
-		//Timer().GetTime("getPathFix");
-		//pnl_mat_print(l_histoFix);   OK
-
+		_timer.GetTime("getPathFix");
 		PriceProduct(l_histoFix, &l_payoff, time);
-		
-		//Timer().GetTime("Price");
-		_timer.Start();
+	//	_timer.Start();
 		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_payoff, l_drift, time);
-		_timer.Stop();
-		//Timer().GetTime("Compute grec");
+		//_timer.Stop();
+		_timer.GetTime("Compute grec");
 		*sumPrice += l_payoff;
-		//pnl_mat_free(&l_histoFix);	
-		//while(1);
+		while(1);
 	}
+
 	_timer.GetTime("Durée compute grec");
 	//Moyenne du prix du delta et du gamma
 	*sumPrice /= m_model->Nb_Path();
@@ -116,13 +98,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 }
 
 inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time) {
-	//Renta est la matrice des rentabilites avec autant de lignes que d'actifs et 4 colonnes car il y a 4 intervales entres les dates de fixing (5dates)
 	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() - 1);
 	RentFromMat(histoFix, l_renta);
-	//std::cout<< "SANS SHIFT" <<std::endl;
-	//pnl_mat_print(l_renta);
-	//std::cout<< "\n" <<std::endl;
-	// On peut ensuite cacluler le prix ici le payoff en fait c'est le prix (il faut qu'on change le nom)
 	*payoff = DiscountedPayoff(l_renta, time);
 	pnl_mat_free(&l_renta);
 }
@@ -377,7 +354,7 @@ inline void MC_Compute::RentVect(PnlVect * V, PnlVect * V0, PnlVect * res) {
 	}
 }
 
-inline bool MC_Compute::Condition_Remb(PnlMat * past, int time){
+inline bool MC_Compute::Condition_Remb(const PnlMat * past, int time){
 	bool condSortie = false;
 	PnlVect * S0 = pnl_vect_create(past->m);
 	PnlVect * S1 = pnl_vect_create(past->m);
