@@ -41,7 +41,7 @@ private:
 	* @param in matricte histofix
 	* @param in payoff
 	*/
-    inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * histoFix, const double payoff, PnlVect* l_vol, PnlVect* l_drift, int time);
+    inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * histoFix, const double payoff, PnlVect* l_drift, int time);
 
 
 	/*

@@ -19,6 +19,10 @@ private :
 
 	PnlMat *m_historique;
 	PnlMat *m_matCor;
+	PnlMat *m_matCholCorr;
+	PnlVect *m_volatility;
+	
+
 	void Produit::LoadDataHisto();
 
 	//Manque la déclaration de l'histofixing
@@ -37,4 +41,9 @@ public :
 	std::vector<Equity> getEquities()  { return ListEquit;  };
 	PnlMat * getMatHisto() const { return pnl_mat_copy(m_historique); }
 	PnlMat * getMatCor() { return m_matCor; };
+	void SetInitVol();
+	PnlMat * MatCholCorr() const { return m_matCholCorr; }
+	void MatCholCorr(PnlMat * val) { m_matCholCorr = val; }
+	PnlVect * Volatility() const { return m_volatility; }
+	void Volatility(PnlVect * val) { m_volatility = val; }
 };

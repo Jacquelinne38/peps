@@ -56,15 +56,27 @@ Produit::Produit()
 		pnl_mat_set(m_matCor, 4, 2, 0.17);
 		pnl_mat_set(m_matCor, 4, 3, 0.2);
 		pnl_mat_set(m_matCor, 4, 4, 1);*/
-		
-		// on doit aussi initialiser la matrice de corr (gros taff) 
+
+		m_matCholCorr = pnl_mat_copy(this->getMatCor());
+		pnl_mat_chol(m_matCholCorr);
+		SetInitVol();
 }
 
+
+//vol est a desallouer en dehors
+void Produit::SetInitVol() {
+	this->m_volatility = pnl_vect_create(this->getEquities().size());
+	for(int k = 0; k < this->getEquities().size(); k++){
+		pnl_vect_set(this->m_volatility, k, this->getEquities()[k].volatility);
+	}	
+}
 
 Produit::~Produit()
 {
 	pnl_mat_free(&m_matCor);
 	pnl_mat_free(&m_historique);
+	pnl_mat_free(&m_matCholCorr);
+	pnl_vect_free(&m_volatility);
 }
 
 // Ces fonctions doivent prendre le temps en parametre

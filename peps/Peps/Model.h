@@ -12,8 +12,8 @@ private :
 	/*
 	*Diffuse les trajectoires pour chacun des actifs
 	*/
-	void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vol, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
-
+	//void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vol, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
+	void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
 public : 
 
 	Model(int nbPath);
@@ -26,6 +26,6 @@ public :
 	/*
 	*@param out path set de 0 à time avec les cours historiques et de time + 1 à PAS avec les valeurs simulées
 	*/
-	void Model::Diffuse_from_t(PnlMat * Path, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time);
+	void Model::Diffuse_from_t(PnlMat * Path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time);
 };
 
