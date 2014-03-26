@@ -17,7 +17,8 @@ void TronqCoursHisto(const PnlMat * histo, PnlMat * outTronq, int time) {
 	if(histo->m != outTronq->m || histo->n != outTronq->n) throw std::logic_error("[FAIL] TronqCoursHisto : matrice non compatible");
 	if(time > histo->n || time < 0) throw std::logic_error("[FAIL] TronqCoursHisto : time value incompatible");
 
-	pnl_mat_set_zero(outTronq);
+	//pnl_mat_set_zero(outTronq);
+	#pragma omp parallel for
 	for (int i = 0 ; i <= time; ++i) {
 		pnl_mat_get_col(tmp, histo, i);
 		pnl_mat_set_col(outTronq, tmp, i);
