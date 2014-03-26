@@ -66,14 +66,15 @@ private:
 	*/
 	inline void MC_Compute::Perf_Boost(const PnlVect *perf, PnlVect * ret);
 	//Fonction qui calcule les rentabilités à chaque date de constatation
-	inline void Rent(const PnlMat *histoFix, PnlMat *res);
+	inline void RentFromMat(const PnlMat *histoFix, PnlMat *res);
 	/*double MC_Compute::Diffusion(const double spot, const double drift, const double dt, const double nbAlea, const PnlMat *matCor, const  Produit produit, const int equity);
 	double MC_Compute::ComputeNextStep(const double drift, 
 								   const double volatility, 
 								   const double dt, 
 								   const double nbAlea,
 								   const PnlMat *matCor);*/
-
+	inline void MC_Compute::RentFromVect(const PnlVect *vect, PnlVect *res);
+	inline void MC_Compute::RentFromVectHisto(const PnlVect *vect, PnlVect *res, int time);
 	/*
 	* Renvoi true si il y a eu lieu a un remboursement avant la date t passé en paramètre
 	*/
