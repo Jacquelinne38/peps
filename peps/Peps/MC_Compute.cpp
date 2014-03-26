@@ -95,13 +95,11 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		PriceProduct(l_histoFix, &l_payoff, time);
 		
 		//Timer().GetTime("Price");
-<<<<<<< HEAD
-		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, GetInitVol(), l_drift, time);
-=======
+
 		_timer.Start();
-		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_payoff, l_vol, l_drift, time);
+		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, GetInitVol(), l_drift, time);
 		_timer.Stop();
->>>>>>> 179911d42eea038b6cad2b2aa24dfadd7caf985d
+
 		//Timer().GetTime("Compute grec");
 		*sumPrice += l_payoff;
 		//pnl_mat_free(&l_histoFix);	
