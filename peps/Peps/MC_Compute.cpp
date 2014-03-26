@@ -63,8 +63,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 	double l_payoff = 0;
 	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
-	//PnlVect * l_spot = GetInitSpot();
-	//PnlVect * l_vol = GetInitVol();
+	PnlVect * l_spot = GetInitSpot();
+	PnlVect * l_vol = GetInitVol();
 	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
 	//pnl_mat_print(l_coursHisto);  OK
@@ -79,7 +79,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
 		//PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
-		m_model->Diffuse_from_t(l_past, l_drift, GetInitVol(), m_produit, m_rng, time);
+		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
 		//Timer().GetTime("Diffuse");
 		//pnl_mat_print(l_past);  OK
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
@@ -95,11 +95,9 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		PriceProduct(l_histoFix, &l_payoff, time);
 		
 		//Timer().GetTime("Price");
-
 		_timer.Start();
-		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, GetInitVol(), l_drift, time);
+		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_payoff, l_vol, l_drift, time);
 		_timer.Stop();
-
 		//Timer().GetTime("Compute grec");
 		*sumPrice += l_payoff;
 		//pnl_mat_free(&l_histoFix);	
@@ -113,8 +111,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	//pnl_vect_div_double(sumGamma,  m_model->Nb_Path());
 
 	pnl_vect_free(&l_drift);
-	//pnl_vect_free(&l_spot);
-	//pnl_vect_free(&l_vol);
+	pnl_vect_free(&l_spot);
+	pnl_vect_free(&l_vol);
 	pnl_mat_free(&l_past);
 	pnl_mat_free(&l_coursHisto);
 
@@ -137,33 +135,33 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * path2, const double payoff, PnlVect* l_vol, PnlVect* l_drift, int time) {
 	
 	PnlMat *path = pnl_mat_copy(path2);
-	PnlMat *l_rent = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
-	int li_dateFixing =  ComputeDateFix(time);
+	PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
-	
+	int li_dateFixing =  ComputeDateFix(time);
+
 	for (int i = 0; i < m_sizeEquityProduct; i++) {
 			//Positif
 			for (int j = li_dateFixing; j < path->n; j++)
 			{
 				MLET(path,i,j) = (MGET(path,i,j))*(1+H);
 			}
-			//A voir si on peu optimiser en prennant juste l'actif et non toute la matrice
-			//car ici on calcule seulement pour un actif or on boucle sur tous
-			RentFromMat(path,l_rent);
+
+			//calcul des rentabilites pour chacune des matrices de histofix shifte
+			RentFromMat(path,l_rentPos);
 			// Calcul le payoff a partir de la matrice des rentabilites
-			ld_payoffPos = DiscountedPayoff(l_rent, time);
+			ld_payoffPos = DiscountedPayoff(l_rentPos, time);
 			//Negatif
 			for (int j = li_dateFixing; j < path->n; j++)
 			{
 				MLET(path,i,j) = MGET(path,i,j)*(1-H)/(1+H);
 			}
-			RentFromMat(path,l_rent);  
-			ld_payoffNeg = DiscountedPayoff(l_rent, time);
+			RentFromMat(path,l_rentPos);  
+			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);		
 			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H)));
 			//pnl_vect_set(sumGamma, l ,GET(sumGamma, i)+((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
 			
-			for (int j = li_dateFixing; j < path->n; j++)
+			for (int j = ComputeDateFix(time); j < path->n; j++)
 			{
 				MLET(path,i,j) = (MGET(path,i,j))/(1-H);
 			}
@@ -172,7 +170,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 
 	//libération ressource
 	pnl_mat_free(&path);
-	pnl_mat_free(&l_rent);
+	pnl_mat_free(&l_rentPos);
 }
 
 MC_Compute::~MC_Compute()
@@ -241,7 +239,6 @@ inline double MC_Compute::Discount(double value, int date, int time)
 	return (value*exp(-((date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
 }
 
-
 inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
 {
 	double payoff = 0;
@@ -256,7 +253,7 @@ inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
 			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
 			// time est la date à laquelle on calcul le prix
 			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
-		    return Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
+			return Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
 		}
 	}
 	PnlVect *perf = pnl_vect_create(rent->m);
