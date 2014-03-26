@@ -127,82 +127,41 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 	//pnl_mat_print(l_renta);
 	//std::cout<< "\n" <<std::endl;
 	// On peut ensuite cacluler le prix ici le payoff en fait c'est le prix (il faut qu'on change le nom)
-	*payoff = Price2(l_renta, time);
+	*payoff = DiscountedPayoff(l_renta, time);
 	pnl_mat_free(&l_renta);
 }
 
 
 inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * path2, const double payoff, PnlVect* l_vol, PnlVect* l_drift, int time) {
 	
-	//PnlMat *l_pastShPos = pnl_mat_create(past->m, past->n);
-	//PnlMat *l_pastShNeg = pnl_mat_create(past->m, past->n);
 	PnlMat *path = pnl_mat_copy(path2);
-	//PnlMat *tmp = pnl_mat_create(path2->)
-	//PnlMat * l_histoFixShNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
-	PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
-	//PnlMat *l_rentNeg = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size()- 1);
+	PnlMat *l_rent = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
+	int li_dateFixing =  ComputeDateFix(time);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
-	int li_dateFixing =  ComputeDateFix(time);
-
+	
 	for (int i = 0; i < m_sizeEquityProduct; i++) {
-			//pnl_mat_clone(l_pastShPos, past);
-			//pnl_mat_clone(l_pastShNeg, past);
-			/*for (int n = time + 1; n < PAS; n++){
-				// On shifte positivement et negativement
-				MLET(l_pastShPos,l,n)=(MGET(past,l,n))*(1+H);
-				MLET(l_pastShNeg,l,n)=(MGET(past,l,n))*(1-H);
-			}*/
-			//Icii on selectionne les dates de fixing et on retourne l'histoFixShPos et l_histoFixShNeg
-			//getPathFix(l_pastShNeg, l_histoFixShNeg, mvec_fixingDate);
-
 			//Positif
 			for (int j = li_dateFixing; j < path->n; j++)
 			{
 				MLET(path,i,j) = (MGET(path,i,j))*(1+H);
 			}
-
-			//reset matrice
-			//pnl_mat_set_zero(l_rentNeg);
-			//pnl_mat_set_zero(l_rentPos);
-
-			//calcul des rentabilites pour chacune des matrices de histofix shifte
-			RentFromMat(path,l_rentPos);
-			//Rent(l_histoFixShNeg,l_rentNeg);
-			
+			//A voir si on peu optimiser en prennant juste l'actif et non toute la matrice
+			//car ici on calcule seulement pour un actif or on boucle sur tous
+			RentFromMat(path,l_rent);
 			// Calcul le payoff a partir de la matrice des rentabilites
-			ld_payoffPos = Price2(l_rentPos, time);
-
-
-
+			ld_payoffPos = DiscountedPayoff(l_rent, time);
 			//Negatif
 			for (int j = li_dateFixing; j < path->n; j++)
 			{
 				MLET(path,i,j) = MGET(path,i,j)*(1-H)/(1+H);
 			}
-			RentFromMat(path,l_rentPos);  
-			ld_payoffNeg = Price2(l_rentPos, time);
-		/*	
-			std::cout<< payoff<<std::endl;
-			std::cout<< "\n"<<std::endl;
-
-			std::cout<< "ShiftPos" << std::endl;
-			pnl_mat_print(l_rentPos);
-			std::cout<< "\n"<<std::endl;
-			std::cout<< ld_payoffPos<<std::endl;
-			std::cout<< "\n"<<std::endl;
-			
-
-			std::cout<< "shiftNeg" << std::endl;
-			pnl_mat_print(l_rentNeg);
-			std::cout<< "\n"<<std::endl;
-			std::cout<< ld_payoffNeg<<std::endl;
-			std::cout<< "\n"<<std::endl;
-			*/			
+			RentFromMat(path,l_rent);  
+			ld_payoffNeg = DiscountedPayoff(l_rent, time);
 			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H)));
 			//pnl_vect_set(sumGamma, l ,GET(sumGamma, i)+((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
 			
-			for (int j = ComputeDateFix(time); j < path->n; j++)
+			for (int j = li_dateFixing; j < path->n; j++)
 			{
 				MLET(path,i,j) = (MGET(path,i,j))/(1-H);
 			}
@@ -211,11 +170,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 
 	//libération ressource
 	pnl_mat_free(&path);
-	pnl_mat_free(&l_rentPos);
-	//pnl_mat_free(&l_histoFixShNeg);
-	//pnl_mat_free(&l_pastShPos);
-	//pnl_mat_free(&l_pastShNeg);
-	//	pnl_mat_free(&l_rentNeg);
+	pnl_mat_free(&l_rent);
 }
 
 MC_Compute::~MC_Compute()
@@ -284,22 +239,16 @@ inline double MC_Compute::Discount(double value, int date, int time)
 	return (value*exp(-((date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
 }
 
-inline double MC_Compute::Price2(const PnlMat *rent, int time)
+
+inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
 {
-	double minCol;
-	double val = 0;
-	for (int i = 0; i < rent->n; i++)
-	{
-		minCol = pnl_mat_get(rent,0,i);
-		for (int j = 0; j < rent->m; j++)
-		{
-			if (pnl_mat_get(rent, j, i) < minCol)
-			{
-				minCol = pnl_mat_get(rent, j, i);
-			}
-		}
+	double payoff = 0;
+	PnlVect *tmp = pnl_vect_create(rent->n);
+	for (int i = 0; i < rent->n -1; i++)
+	{	
 		//!!!!!!\\\ i +1 ? et i!= 4 ???
-		if ((minCol > -0.1) && (i != 3))
+		pnl_mat_get_col(tmp, rent, i);
+		if ((pnl_vect_min(tmp) > -0.1))
 		{
 			// Si on entre ici c'est qu'il y a un remboursement anticipé
 			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
@@ -314,10 +263,11 @@ inline double MC_Compute::Price2(const PnlMat *rent, int time)
 	//std::cout<< "VECTEUR DE PERFORMANCE DONT ON CALCUL LA PERF LISSSE" << std::endl;
 	//pnl_vect_print(perf);
 
-	val = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
+	payoff = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
 	pnl_vect_free(&perf);
 	//std::cout << "remboursement en T "<< val << std::endl;
-	return Discount(val, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
+	pnl_vect_free(&tmp);
+	return Discount(payoff, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
 }
 
 inline void MC_Compute::Perf_Boost(const PnlVect *perf, PnlVect * ret)

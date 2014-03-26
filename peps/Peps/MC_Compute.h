@@ -49,7 +49,7 @@ private:
 	* @param payoff out
 	*/
 	inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time);
-	inline double Price2(const PnlMat *rent, int time);
+	inline double DiscountedPayoff(const PnlMat *rent, int time);
 	/*
 	* @param in temps
 	* @pram in value : valeur a actualiser à t0
