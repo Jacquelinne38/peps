@@ -63,8 +63,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 	double l_payoff = 0;
 	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
-	PnlVect * l_spot = GetInitSpot();
-	PnlVect * l_vol = GetInitVol();
+	//PnlVect * l_spot = GetInitSpot();
+	//PnlVect * l_vol = GetInitVol();
 	// La matrice past va contenir le passe (ie les valeurs historiques jusqua time)
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
 	//pnl_mat_print(l_coursHisto);  OK
@@ -78,7 +78,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	Timer().GetTime("Loading data price");
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
 		//PnlMat *l_histoFix = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size());
-		m_model->Diffuse_from_t(l_past, l_drift, l_vol, m_produit, m_rng, time);
+		m_model->Diffuse_from_t(l_past, l_drift, GetInitVol(), m_produit, m_rng, time);
 		//Timer().GetTime("Diffuse");
 		//pnl_mat_print(l_past);  OK
 		// en sortie la matrice past contient les valeurs historiques sur les colonnes de 0 a time
@@ -92,7 +92,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		//pnl_mat_print(l_histoFix);   OK
 		PriceProduct(l_histoFix, &l_payoff, time);
 		//Timer().GetTime("Price");
-		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, l_vol, l_drift, time);
+		ComputeGrec(sumDelta, sumGamma, l_past, l_payoff, GetInitVol(), l_drift, time);
 		//Timer().GetTime("Compute grec");
 		*sumPrice += l_payoff;
 		//pnl_mat_free(&l_histoFix);	
@@ -106,8 +106,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	//pnl_vect_div_double(sumGamma,  m_model->Nb_Path());
 
 	pnl_vect_free(&l_drift);
-	pnl_vect_free(&l_spot);
-	pnl_vect_free(&l_vol);
+	//pnl_vect_free(&l_spot);
+	//pnl_vect_free(&l_vol);
 	pnl_mat_free(&l_past);
 	pnl_mat_free(&l_coursHisto);
 
