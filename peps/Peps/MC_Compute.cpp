@@ -147,7 +147,8 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 				MLET(path,i,j) = (MGET(path,i,j))*(1+H);
 			}
 
-			//calcul des rentabilites pour chacune des matrices de histofix shifte
+			//A voir si on peu optimiser en prennant juste l'actif et non toute la matrice
+			//car ici on calcule seulement pour un actif or on boucle sur tous
 			RentFromMat(path,l_rentPos);
 			// Calcul le payoff a partir de la matrice des rentabilites
 			ld_payoffPos = DiscountedPayoff(l_rentPos, time);
@@ -166,8 +167,6 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 				MLET(path,i,j) = (MGET(path,i,j))/(1-H);
 			}
 	}
-	
-
 	//libération ressource
 	pnl_mat_free(&path);
 	pnl_mat_free(&l_rentPos);
@@ -239,13 +238,10 @@ inline double MC_Compute::Discount(double value, int date, int time)
 	return (value*exp(-((date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
 }
 
-inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
-{
-	double payoff = 0;
+bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, double * valueRemboursement) {
 	PnlVect *tmp = pnl_vect_create(rent->n);
 	for (int i = 0; i < rent->n -1; i++)
 	{	
-		//!!!!!!\\\ i +1 ? et i!= 4 ???
 		pnl_mat_get_col(tmp, rent, i);
 		if ((pnl_vect_min(tmp) > -0.1))
 		{
@@ -253,20 +249,28 @@ inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
 			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
 			// time est la date à laquelle on calcul le prix
 			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
-			return Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
+			*valueRemboursement = Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
+			return true;
 		}
 	}
+	pnl_vect_free(&tmp);
+	return false;
+}
+
+double MC_Compute::DiscountPayoffFromMaturity(const PnlMat *rent, int time) {
 	PnlVect *perf = pnl_vect_create(rent->m);
 	pnl_mat_get_col(perf, rent, rent->n - 1);
-
-	//std::cout<< "VECTEUR DE PERFORMANCE DONT ON CALCUL LA PERF LISSSE" << std::endl;
-	//pnl_vect_print(perf);
-
-	payoff = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
+	double discounted = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
 	pnl_vect_free(&perf);
-	//std::cout << "remboursement en T "<< val << std::endl;
-	pnl_vect_free(&tmp);
-	return Discount(payoff, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
+	return Discount(discounted, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
+}
+
+inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
+{
+	double discounted = 0;
+	if(CheckIfRemboursementAnticipe(rent, time, &discounted))
+		return discounted;
+	return DiscountPayoffFromMaturity(rent, time);
 }
 
 inline void MC_Compute::Perf_Boost(const PnlVect *perf, PnlVect * ret)

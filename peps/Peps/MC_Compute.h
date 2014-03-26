@@ -75,6 +75,8 @@ private:
 								   const PnlMat *matCor);*/
 	inline void MC_Compute::RentFromVect(const PnlVect *vect, PnlVect *res);
 	inline void MC_Compute::RentFromVectHisto(const PnlVect *vect, PnlVect *res, int time);
+	double MC_Compute::DiscountPayoffFromMaturity(const PnlMat *rent, int time);
+	bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, double * valueRemboursement);
 	/*
 	* Renvoi true si il y a eu lieu a un remboursement avant la date t passé en paramètre
 	*/
