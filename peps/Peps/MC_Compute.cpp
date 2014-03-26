@@ -127,7 +127,7 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 	//pnl_mat_print(l_renta);
 	//std::cout<< "\n" <<std::endl;
 	// On peut ensuite cacluler le prix ici le payoff en fait c'est le prix (il faut qu'on change le nom)
-	*payoff = Price2(l_renta, time);
+	*payoff = DiscountedPayoff(l_renta, time);
 	pnl_mat_free(&l_renta);
 }
 
@@ -171,7 +171,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			//Rent(l_histoFixShNeg,l_rentNeg);
 			
 			// Calcul le payoff a partir de la matrice des rentabilites
-			ld_payoffPos = Price2(l_rentPos, time);
+			ld_payoffPos = DiscountedPayoff(l_rentPos, time);
 
 
 
@@ -181,7 +181,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 				MLET(path,i,j) = MGET(path,i,j)*(1-H)/(1+H);
 			}
 			RentFromMat(path,l_rentPos);  
-			ld_payoffNeg = Price2(l_rentPos, time);
+			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);
 		/*	
 			std::cout<< payoff<<std::endl;
 			std::cout<< "\n"<<std::endl;
@@ -284,28 +284,21 @@ inline double MC_Compute::Discount(double value, int date, int time)
 	return (value*exp(-((date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
 }
 
-inline double MC_Compute::Price2(const PnlMat *rent, int time)
+inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)
 {
-	double minCol;
-	double val = 0;
-	for (int i = 0; i < rent->n; i++)
-	{
-		minCol = pnl_mat_get(rent,0,i);
-		for (int j = 0; j < rent->m; j++)
-		{
-			if (pnl_mat_get(rent, j, i) < minCol)
-			{
-				minCol = pnl_mat_get(rent, j, i);
-			}
-		}
+	double payoff = 0;
+	PnlVect *tmp = pnl_vect_create(rent->n);
+	for (int i = 0; i < rent->n -1; i++)
+	{	
 		//!!!!!!\\\ i +1 ? et i!= 4 ???
-		if ((minCol > -0.1) && (i != 3))
+		pnl_mat_get_col(tmp, rent, i);
+		if ((pnl_vect_min(tmp) > -0.1))
 		{
 			// Si on entre ici c'est qu'il y a un remboursement anticipé
 			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
 			// time est la date à laquelle on calcul le prix
 			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
-		    return Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
+			return Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
 		}
 	}
 	PnlVect *perf = pnl_vect_create(rent->m);
@@ -314,10 +307,11 @@ inline double MC_Compute::Price2(const PnlMat *rent, int time)
 	//std::cout<< "VECTEUR DE PERFORMANCE DONT ON CALCUL LA PERF LISSSE" << std::endl;
 	//pnl_vect_print(perf);
 
-	val = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
+	payoff = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
 	pnl_vect_free(&perf);
 	//std::cout << "remboursement en T "<< val << std::endl;
-	return Discount(val, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
+	pnl_vect_free(&tmp);
+	return Discount(payoff, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
 }
 
 inline void MC_Compute::Perf_Boost(const PnlVect *perf, PnlVect * ret)
