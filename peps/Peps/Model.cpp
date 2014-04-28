@@ -85,6 +85,33 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produi
 	pnl_vect_free(&l_spot);
 }
 
+
+void Model::Simul_Market(std::vector<PnlVect *> &vec_delta, 
+						 std::vector<double> &vec_priceCouverture, 
+						 std::vector<double> &vec_actifs_risq, 
+						 std::vector<double> &vec_sans_risq,
+						 const PnlVect * delta, 
+						 const PnlVect* spot, 
+						 const int time) {
+	double price_couverture = 0;
+	double actifs_risq = 0;
+	double sans_risq = 0;
+	if (time == 0){
+		actifs_risq = pnl_vect_scalar_prod(delta, spot);
+		sans_risq = 1.0 - pnl_vect_scalar_prod(delta, spot);
+		price_couverture = actifs_risq + sans_risq; 
+	} else {
+		actifs_risq = pnl_vect_scalar_prod(delta, spot);
+		sans_risq = vec_sans_risq[vec_sans_risq.size() -1] * exp(TAUX_ACTUALISATION * m_DT) - pnl_vect_scalar_prod(delta, spot) + pnl_vect_scalar_prod(vec_delta[vec_delta.size()-2], spot);
+		price_couverture = actifs_risq + sans_risq;
+	}
+	if ( PRINTCOUVERTURE )
+		std::cout << "Ris : " << actifs_risq << "   Sans : " << sans_risq << " Price : " << price_couverture << std::endl;
+	vec_priceCouverture.push_back(price_couverture);
+	vec_actifs_risq.push_back(actifs_risq);
+	vec_sans_risq.push_back(sans_risq);
+}
+
 bool Model::CheckParameter() {
 	bool tmp = true;
 	if(!(m_nbPath > 1)) tmp = false;

@@ -73,7 +73,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		//_timer.GetTime("getPathFix");
 		PriceProduct(l_histoFix, &l_payoff, time);
 	//	_timer.Start();
-		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_payoff, l_drift, time);
+		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_past, l_payoff, l_drift, time);
 		//_timer.Stop();
 		//_timer.GetTime("Compute grec");
 		*sumPrice += l_payoff;
@@ -101,9 +101,9 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 }
 
 
-inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * path2, const double payoff, PnlVect* l_drift, int time) {
+inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * pathTmp, const PnlMat* past, const double payoff, PnlVect* l_drift, int time) {
 	
-	PnlMat *path = pnl_mat_copy(path2);
+	PnlMat *pathFix = pnl_mat_copy(pathTmp);
 	PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, m_model->mvec_fixingDate.size() -1);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
@@ -111,33 +111,33 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 
 	for (int i = 0; i < m_sizeEquityProduct; i++) {
 			//Positif
-			for (int j = li_dateFixing; j < path->n; j++)
+			for (int j = li_dateFixing; j < pathFix->n; j++)
 			{
-				MLET(path,i,j) = (MGET(path,i,j))*(1+H);
+				MLET(pathFix,i,j) = (MGET(pathFix,i,j))*(1+H);
 			}
 
 			//A voir si on peu optimiser en prennant juste l'actif et non toute la matrice
 			//car ici on calcule seulement pour un actif or on boucle sur tous
-			RentFromMat(path,l_rentPos);
+			RentFromMat(pathFix,l_rentPos);
 			// Calcul le payoff a partir de la matrice des rentabilites
 			ld_payoffPos = DiscountedPayoff(l_rentPos, time);
 			//Negatif
-			for (int j = li_dateFixing; j < path->n; j++)
+			for (int j = li_dateFixing; j < pathFix->n; j++)
 			{
-				MLET(path,i,j) = MGET(path,i,j)*(1-H)/(1+H);
+				MLET(pathFix,i,j) = MGET(pathFix,i,j)*(1-H)/(1+H);
 			}
-			RentFromMat(path,l_rentPos);
+			RentFromMat(pathFix,l_rentPos);
 			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);	
-			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H)));
+			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H*pnl_mat_get(past, i, time))));
 			//pnl_vect_set(sumGamma, l ,GET(sumGamma, i)+((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
 
-			for (int j = ComputeDateFix(time); j < path->n; j++)
+			for (int j = ComputeDateFix(time); j < pathFix->n; j++)
 			{
-				MLET(path,i,j) = (MGET(path,i,j))/(1-H);
+				MLET(pathFix,i,j) = (MGET(pathFix,i,j))/(1-H);
 			}
 	}
 	//libération ressource
-	pnl_mat_free(&path);
+	pnl_mat_free(&pathFix);
 	pnl_mat_free(&l_rentPos);
 }
 

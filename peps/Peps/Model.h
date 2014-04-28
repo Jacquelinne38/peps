@@ -40,6 +40,19 @@ public :
 	*/
 	void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time,  std::vector<int> lst_time, DISCRETISATION_TYPE l_discretisation);
 	void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time);
+
+	/*
+	* Calcule de la couverture risqué et non risqué
+	*
+	*/
+	void Model::Simul_Market(
+		std::vector<PnlVect *> &vec_delta, 
+		std::vector<double> &vec_priceCouverture, 
+		std::vector<double> &vec_actifs_risq, 
+		std::vector<double> &vec_sans_risq,
+		const PnlVect * delta, 
+		const PnlVect* spot, 
+		const int time);
 	std::vector<int> mvec_fixingDate;
 	DISCRETISATION_TYPE Discretisation() const { return m_discretisation; }
 	double NBDISCRETISATION() const { return m_NBDISCRETISATION; }

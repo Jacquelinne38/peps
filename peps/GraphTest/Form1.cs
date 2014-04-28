@@ -28,11 +28,11 @@ namespace GraphTest
            chart1.Series["delta"].ChartType = SeriesChartType.Spline;
             //chart1.Series["1.23"].ChartType = SeriesChartType.Spline;
             chart1.Series["Couverture"].ChartType = SeriesChartType.Spline;
-            for (int i = 0; i < lst_price.Count; i++)
+          /*  for (int i = 0; i < lst_price.Count; i++)
             {
                 chart1.Series["delta"].Points.AddXY(i, lst_price[i]);
 
-            }
+            }*/
             //for(int i = 0; i < 260; i++) {
             //    chart1.Series["1.23"].Points.AddXY(i, 1.23);
             //}

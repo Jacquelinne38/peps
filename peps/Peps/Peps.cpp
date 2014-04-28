@@ -21,11 +21,7 @@ int main(int argc, char **argv)
 	double price = 0, priceSquare = 0;
 
 	
-	// variable locales utiles pour le calcul du prix de couverture
-	// elles doivent bouger dans la fonctio qi sera cree pour ca
-	double price_couverture = 0;
-	double actifs_risq = 0;
-	double sans_risq = 0;
+
 	std::vector<double> vec_actifs_risq;
 	std::vector<double> vec_sans_risq;
 	std::vector<double> vec_priceCouverture;
@@ -62,26 +58,9 @@ int main(int argc, char **argv)
 		pnl_mat_get_col(l_spot, l_histo, t);
 		pnl_mat_free(&l_histo);
 
+		model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t);
 		
-		///////////// LA PARTIE QUI CONCERNE LE CALCUL DE LA COUVERTURE DOIT ETRE FAIT AILLEURS
-		if (t==0){
-			actifs_risq = pnl_vect_scalar_prod(delta, l_spot);
-			sans_risq = 1.0 - pnl_vect_scalar_prod(delta, l_spot);
-			price_couverture = actifs_risq + sans_risq; 
-		} else {
-			//PnlVect * l_diffDelta = pnl_vect_copy(vec_delta[vec_delta.size()-2]);
-			//pnl_vect_minus_vect(l_diffDelta, delta);
-			//pnl_vect_mult_double(l_diffDelta, -1);
-			//pnl_vect_print(l_diffDelta);
-			actifs_risq = pnl_vect_scalar_prod(delta, l_spot);
-			sans_risq = sans_risq * exp(TAUX_ACTUALISATION*model.DT()) - pnl_vect_scalar_prod(delta, l_spot) + pnl_vect_scalar_prod(vec_delta[vec_delta.size()-2], l_spot);
-			price_couverture = actifs_risq + sans_risq;
-			//pnl_vect_free(&l_diffDelta);
-		}
-		std::cout << "Ris : " << actifs_risq << "   Sans : " << sans_risq << " Price : " << price_couverture << std::endl;
-		vec_priceCouverture.push_back(price_couverture);
-		vec_actifs_risq.push_back(actifs_risq);
-		vec_sans_risq.push_back(sans_risq);
+
 		pnl_vect_free(&l_spot);
 	}
 	//pnl_mat_free(&l_histoFix);
