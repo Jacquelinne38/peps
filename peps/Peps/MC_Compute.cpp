@@ -3,10 +3,8 @@
 #include "test.h"
 
 
-
 MC_Compute::MC_Compute(Produit * produit, Model * model)
 {
-	m_discretisation = WEEK;
 	m_produit = produit;
 
 	//Sert à simplifier la lecture du code. 
@@ -19,26 +17,24 @@ MC_Compute::MC_Compute(Produit * produit, Model * model)
 	pnl_rng_sseed (m_rng, time(NULL));
 
 	//Vecteur de date de fixing
-	static const int arr[] = {FIXING0, FIXING1, FIXING2, FIXING3, FIXING4};
-	std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-	mvec_fixingDate = lvec_fixingDate;
+
 }
 
 
 bool MC_Compute::isRemb(const PnlMat * coursHisto, int time) {
 	bool tmp = false;
-	if(time > mvec_fixingDate[1]){
-		if(Condition_Remb(coursHisto, mvec_fixingDate[1])){
+	if(time > m_model->mvec_fixingDate[1]){
+		if(Condition_Remb(coursHisto, m_model->mvec_fixingDate[1])){
 			std::cout<< "LE PAYOFF A DEJA ETE TOUCHE EN t1"<<std::endl;
 			return true;
 		}
-		if (time > mvec_fixingDate[2]){
-			if(Condition_Remb(coursHisto, mvec_fixingDate[2])){
+		if (time > m_model->mvec_fixingDate[2]){
+			if(Condition_Remb(coursHisto, m_model->mvec_fixingDate[2])){
 				std::cout<< "LE PAYOFF A DEJA ETE TOUCHE EN t2"<<std::endl;
 				return true;
 			}
-			if (time > mvec_fixingDate[3]){
-				if(Condition_Remb(coursHisto, mvec_fixingDate[3])){
+			if (time > m_model->mvec_fixingDate[3]){
+				if(Condition_Remb(coursHisto, m_model->mvec_fixingDate[3])){
 					std::cout<< "LE PAYOFF A DEJA ETE TOUCHE EN t3"<<std::endl;
 					return true;
 				}
@@ -55,9 +51,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	*priceSquare = 0;
 	double l_payoff = 0;
 	PnlMat * l_coursHisto = m_produit->getMatHisto();
-	//voir ici si c'est bien par h
-	//!!!!!!!!!!!!!/
-	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, H);
+	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, DRIFT);
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
 
 	//check model parameter
@@ -71,10 +65,11 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
 		//_timer.Start();
-		m_model->Diffuse_from_t(l_past, l_drift, m_produit, m_rng, time, mvec_fixingDate, m_discretisation);
+		//!!! changer le model connais mvcec et dis
+		m_model->Diffuse_from_t(l_past, l_drift, m_produit, m_rng, time, m_model->mvec_fixingDate, m_model->Discretisation());
 		//_timer.GetTime("Diffuse");
 		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
-		getPathFix(l_past, l_histoFix, mvec_fixingDate);
+		getPathFix(l_past, l_histoFix, m_model->mvec_fixingDate);
 		//_timer.GetTime("getPathFix");
 		PriceProduct(l_histoFix, &l_payoff, time);
 	//	_timer.Start();
@@ -99,7 +94,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 }
 
 inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time) {
-	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() - 1);
+	PnlMat *l_renta = pnl_mat_create(m_sizeEquityProduct, m_model->mvec_fixingDate.size() - 1);
 	RentFromMat(histoFix, l_renta);
 	*payoff = DiscountedPayoff(l_renta, time);
 	pnl_mat_free(&l_renta);
@@ -109,7 +104,7 @@ inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, i
 inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * path2, const double payoff, PnlVect* l_drift, int time) {
 	
 	PnlMat *path = pnl_mat_copy(path2);
-	PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, mvec_fixingDate.size() -1);
+	PnlMat *l_rentPos = pnl_mat_create(m_sizeEquityProduct, m_model->mvec_fixingDate.size() -1);
 	double ld_payoffPos = 0;
 	double ld_payoffNeg = 0;
 	int li_dateFixing =  ComputeDateFix(time);
@@ -155,7 +150,7 @@ MC_Compute::~MC_Compute()
 
 inline int MC_Compute::ComputeDateFix(int time)
 {
-	if (m_discretisation = WEEK) {
+	if (m_model->Discretisation() == WEEK) {
 		if (time < 104)
 		{
 			return 1;
@@ -190,16 +185,13 @@ inline int MC_Compute::ComputeDateFix(int time)
 inline double MC_Compute::Discount(double value, int date, int time)
 {
 	//Pour le moment le taux sans risque est la c'est pas la qu'il devra etre
-	return (value*exp(-((date-time)/NBSEMAINE * TAUX_ACTUALISATION)));
+	return (value*exp(-((date-time)/m_model->NBDISCRETISATION() * TAUX_ACTUALISATION)));
 }
 
 bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, double * valueRemboursement) {
 	PnlVect *tmp = pnl_vect_create(rent->n);
 	for (int i = 0; i < rent->n -1; i++)
 	{	
-		//!!!!!!!!!! crash a 100k
-		//if(time == 29)
-		//	time = 29;
 		pnl_mat_get_col(tmp, rent, i);
 		if ((pnl_vect_min(tmp) > -0.1))
 		{
@@ -207,7 +199,7 @@ bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, dou
 			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
 			// time est la date à laquelle on calcul le prix
 			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
-			*valueRemboursement = Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
+			*valueRemboursement = Discount(REMB_ANTI, m_model->mvec_fixingDate[i+1], time);
 			pnl_vect_free(&tmp);
 			return true;
 		}
@@ -221,7 +213,7 @@ double MC_Compute::DiscountPayoffFromMaturity(const PnlMat *rent, int time) {
 	pnl_mat_get_col(perf, rent, rent->n - 1);
 	double discounted = std::max(1.0, REMB_N_ANTI + Perf_Liss(perf));
 	pnl_vect_free(&perf);
-	return Discount(discounted, mvec_fixingDate[mvec_fixingDate.size() - 1], time);
+	return Discount(discounted, m_model->mvec_fixingDate[m_model->mvec_fixingDate.size() - 1], time);
 }
 
 inline double MC_Compute::DiscountedPayoff(const PnlMat *rent, int time)

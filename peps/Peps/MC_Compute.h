@@ -17,7 +17,6 @@ private:
 	Produit * m_produit;
 	Model * m_model;
 	int m_sizeEquityProduct;
-	DISCRETISATION_TYPE m_discretisation;
 	Pesp_Timer _timer;
 
 	/*
@@ -94,11 +93,13 @@ private:
 
 	int ComputeDateFix(int date);
 
+	
+
 public :
 	MC_Compute(Produit * produit, Model * model);
 	~MC_Compute();
 
-	std::vector<int> mvec_fixingDate;
+
 
 	/*
 	* out price

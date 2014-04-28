@@ -2,6 +2,8 @@
 #include "MC_Compute.h"
 #include "Model.h"
 
+
+
 void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot) {
 	PnlVect * tmp2;
 	double tmp;
@@ -10,9 +12,9 @@ void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, co
 	tmp2 = pnl_mat_mult_vect(choleskyCor, produit->Volatility());
 	//#pragma omp parallel for
 	for (int j = 0; j < produit->getEquities().size(); ++j){ 
-		l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(DT);		
+		l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(m_DT);		
 		tmp = pnl_vect_get(tmp2, j) ;
-		l_compo2 = tmp * pnl_vect_get(vecAlea, j) * sqrt((double)(DT));
+		l_compo2 = tmp * pnl_vect_get(vecAlea, j) * sqrt((double)(m_DT));
 		pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
 	}
 	pnl_vect_free(&tmp2);
@@ -25,9 +27,9 @@ void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect
 	tmp2 = pnl_mat_mult_vect(choleskyCor, produit->Volatility());
 	//#pragma omp parallel for
 	for (int j = 0; j < produit->getEquities().size(); ++j){ 
-		l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*DT);		
+		l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*m_DT);		
 		tmp = pnl_vect_get(tmp2, j) ;
-		l_compo2 = tmp * pnl_vect_get(vecAlea, j) * sqrt((double)(dt*DT));
+		l_compo2 = tmp * pnl_vect_get(vecAlea, j) * sqrt((double)(dt*m_DT));
 		pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
 	}
 	pnl_vect_free(&tmp2);
@@ -92,9 +94,36 @@ bool Model::CheckParameter() {
 
 Model::Model(int nbPath)
 {
+	setDiscretisation(DISCRETISATION);
 	m_nbPath = nbPath;
 
 }
+
+void Model::setDiscretisation(DISCRETISATION_TYPE type) {
+	m_discretisation = type;
+	if(type == WEEK) {
+		m_DT = 1.0/52.0;
+		m_NBDISCRETISATION = 52.0;
+		m_FINALDATE = 260;
+		static const int arr[] = {FIXING0, FIXING1, FIXING2, FIXING3, FIXING4};
+		std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+		mvec_fixingDate = lvec_fixingDate;
+	}
+	else if (type == DAY) {
+		m_DT = 1.0/364.0;
+		m_NBDISCRETISATION = 364.0;
+		m_FINALDATE = 260*4;
+		static const int arr[] = {FIXING0*7, FIXING1*7, FIXING2*7, FIXING3*7, FIXING4*7};
+		std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+		mvec_fixingDate = lvec_fixingDate;
+	}
+	else {
+		m_DT = -1;
+		m_NBDISCRETISATION = -1;
+		std::cout << "[*] ERROR DISCRETISATION TYPE NOT CORRECTLY SET" << std::endl;
+	}
+}
+
 
 
 

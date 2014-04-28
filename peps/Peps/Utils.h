@@ -2,7 +2,8 @@
 #include "stdafx.h"
 #include "Produit.h"
 
-enum DISCRETISATION_TYPE { DAY, WEEK };
+
+
 
 
 static inline double Compute_dt(int date, DISCRETISATION_TYPE l_discretisation, std::vector<int> lst_time)

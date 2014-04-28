@@ -7,9 +7,11 @@
 #include "Model.h"
 
 #define _CRTDBG_MAP_ALLOC
-#define _DEBUG
+//#define _DEBUG 0
 #include <stdlib.h>
 #include <crtdbg.h>
+
+
 
 int main(int argc, char **argv)
 {
@@ -35,17 +37,15 @@ int main(int argc, char **argv)
 
 	//Générateur data
 	//CreationDataHisto("../DATA/histo1.txt", 0.05, produit);
-
+	MC_Compute moteur = MC_Compute(&produit, &model);
 	PnlVect * delta = pnl_vect_create(produit.getEquities().size());
 	PnlVect * gamma = pnl_vect_create(produit.getEquities().size());
-	
-	MC_Compute moteur = MC_Compute(&produit, &model);
 
-	PnlMat *l_histoFix = pnl_mat_create(produit.getEquities().size(), moteur.mvec_fixingDate.size());
+	PnlMat *l_histoFix = pnl_mat_create(produit.getEquities().size(), model.mvec_fixingDate.size());
 	// ICI creer la matrice path complete et surement histofix aussi
 
 	//Pricing pour chaque t
-	for (int t=0; t<250; t++){
+	for (int t=0; t<model.FINALDATE(); t++){
 		//std::cout<< t <<std::endl;
 		int ret = moteur.Price(&price, &priceSquare, delta, gamma, l_histoFix, t);
 		if (ret == -10) break;
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 		///////////// LA PARTIE QUI CONCERNE LE CALCUL DE LA COUVERTURE DOIT ETRE FAIT AILLEURS
 		if (t==0){
 			actifs_risq = pnl_vect_scalar_prod(delta, l_spot);
-			sans_risq = price - pnl_vect_scalar_prod(delta, l_spot);
+			sans_risq = 1.0 - pnl_vect_scalar_prod(delta, l_spot);
 			price_couverture = actifs_risq + sans_risq; 
 		} else {
 			//PnlVect * l_diffDelta = pnl_vect_copy(vec_delta[vec_delta.size()-2]);
@@ -74,10 +74,11 @@ int main(int argc, char **argv)
 			//pnl_vect_mult_double(l_diffDelta, -1);
 			//pnl_vect_print(l_diffDelta);
 			actifs_risq = pnl_vect_scalar_prod(delta, l_spot);
-			sans_risq = sans_risq * exp(TAUX_ACTUALISATION*DT) - pnl_vect_scalar_prod(delta, l_spot) + pnl_vect_scalar_prod(vec_delta[vec_delta.size()-2], l_spot);
+			sans_risq = sans_risq * exp(TAUX_ACTUALISATION*model.DT()) - pnl_vect_scalar_prod(delta, l_spot) + pnl_vect_scalar_prod(vec_delta[vec_delta.size()-2], l_spot);
 			price_couverture = actifs_risq + sans_risq;
 			//pnl_vect_free(&l_diffDelta);
 		}
+		std::cout << "Ris : " << actifs_risq << "   Sans : " << sans_risq << " Price : " << price_couverture << std::endl;
 		vec_priceCouverture.push_back(price_couverture);
 		vec_actifs_risq.push_back(actifs_risq);
 		vec_sans_risq.push_back(sans_risq);
