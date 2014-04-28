@@ -2,6 +2,33 @@
 #include "stdafx.h"
 #include "Produit.h"
 
+enum DISCRETISATION_TYPE { DAY, WEEK };
+
+
+static inline double Compute_dt(int date, DISCRETISATION_TYPE l_discretisation, std::vector<int> lst_time)
+{
+/*	if (l_discretisation = WEEK) {
+		if (date < 104)
+		{
+			return (104 - date)/52;
+		} else 
+		{
+			return (52 - (date % 52))/52;
+		}
+	} else {
+		if (date < 104*7)
+		{
+			return (104*7 - date)/365;
+		} else 
+		{
+			return (365 - (date % 365))/365;
+		}
+	}*/
+	for (int i = 0; i < lst_time.size() - 1; ++i) {
+		if (date < lst_time[i+1])
+			return (lst_time[i+1] - date);
+	}
+}
 
 
 static void print(double price, double squarePrice, const PnlVect * delta, const PnlVect * gamma, int nbPath) {

@@ -7,7 +7,6 @@ class MC_Compute
 {
 private:
 
-	enum DISCRETISATION_TYPE { DAY, WEEK };
 
 	double T;
 	double K;

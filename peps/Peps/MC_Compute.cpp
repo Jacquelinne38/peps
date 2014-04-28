@@ -55,7 +55,9 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	*priceSquare = 0;
 	double l_payoff = 0;
 	PnlMat * l_coursHisto = m_produit->getMatHisto();
-	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, 0.05);
+	//voir ici si c'est bien par h
+	//!!!!!!!!!!!!!/
+	PnlVect *l_drift = pnl_vect_create_from_double(m_sizeEquityProduct, H);
 	PnlMat * l_past = pnl_mat_create(l_coursHisto->m, l_coursHisto->n);
 
 	//check model parameter
@@ -68,22 +70,21 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 	pnl_vect_set_zero(sumGamma);
 	
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
-		_timer.Start();
-		m_model->Diffuse_from_t(l_past, l_drift, m_produit, m_rng, time);
-		_timer.GetTime("Diffuse");
+		//_timer.Start();
+		m_model->Diffuse_from_t(l_past, l_drift, m_produit, m_rng, time, mvec_fixingDate, m_discretisation);
+		//_timer.GetTime("Diffuse");
 		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
 		getPathFix(l_past, l_histoFix, mvec_fixingDate);
-		_timer.GetTime("getPathFix");
+		//_timer.GetTime("getPathFix");
 		PriceProduct(l_histoFix, &l_payoff, time);
 	//	_timer.Start();
 		ComputeGrec(sumDelta, sumGamma, l_histoFix, l_payoff, l_drift, time);
 		//_timer.Stop();
-		_timer.GetTime("Compute grec");
+		//_timer.GetTime("Compute grec");
 		*sumPrice += l_payoff;
-		while(1);
 	}
 
-	_timer.GetTime("Durée compute grec");
+	//_timer.GetTime("Durée compute grec");
 	//Moyenne du prix du delta et du gamma
 	*sumPrice /= m_model->Nb_Path();
 
@@ -130,11 +131,11 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			{
 				MLET(path,i,j) = MGET(path,i,j)*(1-H)/(1+H);
 			}
-			RentFromMat(path,l_rentPos);  
-			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);		
+			RentFromMat(path,l_rentPos);
+			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);	
 			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H)));
 			//pnl_vect_set(sumGamma, l ,GET(sumGamma, i)+((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
-			
+
 			for (int j = ComputeDateFix(time); j < path->n; j++)
 			{
 				MLET(path,i,j) = (MGET(path,i,j))/(1-H);
@@ -150,26 +151,7 @@ MC_Compute::~MC_Compute()
 }
 
 
-inline double MC_Compute::Compute_dt(int date)
-{
-	if (m_discretisation = WEEK) {
-		if (date < 104)
-		{
-			return (104 - date)/52;
-		} else 
-		{
-			return (52 - (date % 52))/52;
-		}
-	} else {
-		if (date < 104*7)
-		{
-			return (104*7 - date)/365;
-		} else 
-		{
-			return (365 - (date % 365))/365;
-		}
-	}
-}
+
 
 inline int MC_Compute::ComputeDateFix(int time)
 {
@@ -215,6 +197,9 @@ bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, dou
 	PnlVect *tmp = pnl_vect_create(rent->n);
 	for (int i = 0; i < rent->n -1; i++)
 	{	
+		//!!!!!!!!!! crash a 100k
+		//if(time == 29)
+		//	time = 29;
 		pnl_mat_get_col(tmp, rent, i);
 		if ((pnl_vect_min(tmp) > -0.1))
 		{
@@ -223,6 +208,7 @@ bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, dou
 			// time est la date à laquelle on calcul le prix
 			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
 			*valueRemboursement = Discount(REMB_ANTI, mvec_fixingDate[i+1], time);
+			pnl_vect_free(&tmp);
 			return true;
 		}
 	}

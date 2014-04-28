@@ -7,6 +7,7 @@
 #include "Model.h"
 
 #define _CRTDBG_MAP_ALLOC
+#define _DEBUG
 #include <stdlib.h>
 #include <crtdbg.h>
 
@@ -16,6 +17,7 @@ int main(int argc, char **argv)
 	_timer.Start();
 
 	double price = 0, priceSquare = 0;
+
 	
 	// variable locales utiles pour le calcul du prix de couverture
 	// elles doivent bouger dans la fonctio qi sera cree pour ca
@@ -54,8 +56,11 @@ int main(int argc, char **argv)
 
 		// a mettre dans une fonction du genre refresh spot
 		// declarer l_spot avant
-		PnlVect * l_spot = pnl_vect_create(produit.getMatHisto()->m);
-		pnl_mat_get_col(l_spot, produit.getMatHisto(), t);
+
+		PnlMat * l_histo =  produit.getMatHisto();
+		PnlVect * l_spot = pnl_vect_create(l_histo->m);
+		pnl_mat_get_col(l_spot, l_histo, t);
+		pnl_mat_free(&l_histo);
 
 		
 		///////////// LA PARTIE QUI CONCERNE LE CALCUL DE LA COUVERTURE DOIT ETRE FAIT AILLEURS
@@ -88,7 +93,7 @@ int main(int argc, char **argv)
 	CreerFichierData(vec_sans_risq, "../DATA/sans_risq.txt");
 
 	std::vector<double> vecbisdelta;
-	for(int i = 0 ; i< vec_delta.size(); ++i ) {
+	for(unsigned int i = 0 ; i< vec_delta.size(); ++i ) {
 		vecbisdelta.push_back(pnl_vect_get(vec_delta[i], 0));
 	}
 	CreerFichierData(vecbisdelta, "../DATA/delta.txt");
@@ -99,10 +104,10 @@ int main(int argc, char **argv)
 	pnl_mat_free(&l_histoFix);
 
 			_timer.GetTime("Temps exec : ");
-	while (getchar() != '\n') ;
+
 
 	_CrtDumpMemoryLeaks();
-
+		while (getchar() != '\n') ;
 	return 0;
 
 }

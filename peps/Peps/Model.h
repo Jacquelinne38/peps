@@ -1,5 +1,6 @@
 #pragma once
 #include "pnl/pnl_random.h"
+#include "Utils.h"
 
 
 class Model
@@ -14,6 +15,8 @@ private :
 	*/
 	//void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vol, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
 	void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
+	void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot,const int dt);
+	std::vector<int> Model::getFixingDateFromt(int time, std::vector<int> lst_time);
 public : 
 
 	Model(int nbPath);
@@ -26,6 +29,8 @@ public :
 	/*
 	*@param out path set de 0 à time avec les cours historiques et de time + 1 à PAS avec les valeurs simulées
 	*/
-	void Model::Diffuse_from_t(PnlMat * Path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time);
+	void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time,  std::vector<int> lst_time, DISCRETISATION_TYPE l_discretisation);
+	void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time);
+
 };
 

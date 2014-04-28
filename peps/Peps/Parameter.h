@@ -1,6 +1,6 @@
 #pragma once
 //Monté carlo
-#define NBPATH 1000
+#define NBPATH 1000000
 static const double PERF_MAX = 0.25;
 static const double PERF_MIN = -0.50;
 #define NB_ACTIFS 4
