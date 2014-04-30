@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="peps" Class="DataPepsDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=pizzix-game-pc\SQLEXPRESS;Initial Catalog=peps;Integrated Security=True" SettingsObjectName="DALAssetDotNet.Properties.Settings" SettingsPropertyName="pepsConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="peps.AssetsInfo" Member="AssetsInfo">
+    <Type Name="AssetsInfo">
+      <Column Name="namego" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="nameyh" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="fullname" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="sector" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="country" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="currency" Type="System.String" DbType="VarChar(5)" CanBeNull="true" />
+      <Association Name="AssetsInfo_AssetsValue" Member="AssetsValue" ThisKey="namego" OtherKey="namego" Type="AssetsValue" />
+    </Type>
+  </Table>
+  <Table Name="peps.AssetsValue" Member="AssetsValue">
+    <Type Name="AssetsValue">
+      <Column Name="namego" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="[close]" Member="close" Type="System.Single" DbType="Real" CanBeNull="true" />
+      <Association Name="AssetsInfo_AssetsValue" Member="AssetsInfo" ThisKey="namego" OtherKey="namego" Type="AssetsInfo" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

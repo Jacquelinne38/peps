@@ -5,8 +5,8 @@
 #include <pnl\pnl_matrix_double.h>
 #include <vector>
 #include <algorithm>
-
-class Produit
+#define DLLEXP   __declspec( dllexport )
+class DLLEXP Produit
 {
 
 

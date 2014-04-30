@@ -1,5 +1,8 @@
 #pragma once
-class Fx
+
+#define DLLEXP   __declspec( dllexport )
+
+class DLLEXP Fx
 {
 public:
 	Fx(void);

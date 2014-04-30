@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataPeps">
+  <DataContextMoniker Name="/DataPepsDataContext" />
+  <nestedChildShapes>
+    <classShape Id="2e33e81a-8603-4b25-a345-101e6a15cbab" absoluteBounds="2.125, 2.25, 2, 1.75354248046875">
+      <DataClassMoniker Name="/DataPepsDataContext/AssetsInfo" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6ad2c40c-5755-4470-a707-039b3e1c97e5" absoluteBounds="2.14, 2.71, 1.9700000000000002, 1.19354248046875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="870ed278-6851-4164-a9cb-471b5b06b528" absoluteBounds="7, 2.375, 2, 1.26050048828125">
+      <DataClassMoniker Name="/DataPepsDataContext/AssetsValue" />
+      <nestedChildShapes>
+        <elementListCompartment Id="cd4854ac-6382-4395-8c82-307118a9a679" absoluteBounds="7.015, 2.835, 1.9700000000000002, 0.70050048828125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(4.125 : 3.00525024414063); (7 : 3.00525024414063)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DataPepsDataContext/AssetsInfo/AssetsInfo_AssetsValue" />
+      <nodes>
+        <classShapeMoniker Id="2e33e81a-8603-4b25-a345-101e6a15cbab" />
+        <classShapeMoniker Id="870ed278-6851-4164-a9cb-471b5b06b528" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

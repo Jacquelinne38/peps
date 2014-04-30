@@ -1,8 +1,9 @@
 #pragma once
 #include <string> 
 
+#define DLLEXP   __declspec( dllexport )
 
-class Equity
+class DLLEXP Equity
 {
 public:
 

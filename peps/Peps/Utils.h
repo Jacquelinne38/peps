@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Produit.h"
-
+#define DLLEXP   __declspec( dllexport )
 
 
 
@@ -32,7 +32,7 @@ static inline double Compute_dt(int date, DISCRETISATION_TYPE l_discretisation, 
 }
 
 
-static void print(double price, double squarePrice, const PnlVect * delta, const PnlVect * gamma, int nbPath) {
+ static  void  print(double price, double squarePrice, const PnlVect * delta, const PnlVect * gamma, int nbPath) {
 	if(PRINTPRICE) {
 		std::cout << "AFFICHAGE DES RESULTATS"<< std::endl;
 		std::cout << "[*] Prix : " ;
@@ -153,7 +153,7 @@ static void CreationDataHisto(std::string nomFichier, double drift, Produit pro)
 	CreerFichierData(lst_data, nomFichier);
 }
 
-
+/*
 
 //USSLESS NOW
 void Diffuse(PnlMat * histoFixMT, PnlVect *finalSpotMT, const PnlVect *drift, const PnlVect * vol, Produit * produit, PnlRng * rng, int time) {
@@ -191,7 +191,7 @@ void Diffuse(PnlMat * histoFixMT, PnlVect *finalSpotMT, const PnlVect *drift, co
 	}
 	// ET donc en sortie on a l_histofixMT de rempli et finalspotMT egal a ST
 }
-
+*/
 
 
 			/*

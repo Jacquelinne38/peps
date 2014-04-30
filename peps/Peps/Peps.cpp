@@ -49,7 +49,8 @@ int main(int argc, char **argv)
 		else print(price, priceSquare, delta, gamma ,model.Nb_Path());
 		vec_price.push_back(price);
 		vec_delta.push_back(pnl_vect_copy(delta));
-
+		pnl_vect_print(delta);
+		std::cout << "coucou" << delta->size <<std::endl;
 		// a mettre dans une fonction du genre refresh spot
 		// declarer l_spot avant
 
@@ -67,16 +68,16 @@ int main(int argc, char **argv)
 	////////////////////////////
 
 	//Création fichiers d'export
-	CreerFichierData(vec_price, "../DATA/prix.txt");
-	CreerFichierData(vec_priceCouverture, "../DATA/couverture.txt");
-	CreerFichierData(vec_actifs_risq, "../DATA/actifs_risq.txt");
-	CreerFichierData(vec_sans_risq, "../DATA/sans_risq.txt");
+	CreerFichierData(vec_price, "../../../DATA/prix.txt");
+	CreerFichierData(vec_priceCouverture, "../../../DATA/couverture.txt");
+	CreerFichierData(vec_actifs_risq, "../../../DATA/actifs_risq.txt");
+	CreerFichierData(vec_sans_risq, "../../../DATA/sans_risq.txt");
 
 	std::vector<double> vecbisdelta;
 	for(unsigned int i = 0 ; i< vec_delta.size(); ++i ) {
 		vecbisdelta.push_back(pnl_vect_get(vec_delta[i], 0));
 	}
-	CreerFichierData(vecbisdelta, "../DATA/delta.txt");
+	CreerFichierData(vecbisdelta, "../../../DATA/delta.txt");
 
 
 	pnl_vect_free(&delta);

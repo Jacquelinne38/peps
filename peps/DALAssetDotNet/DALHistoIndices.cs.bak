@@ -1,0 +1,106 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace DALAssetDotNet
+{
+    public static class DALHistoIndices
+    {
+
+        //test function on cac
+        public static List<ChartData> GetCac()
+        {
+            DataHistoContext db = DALAssetDotNet.ContextDb.Connexion;
+
+            List<ChartData> tmp = new List<ChartData>();
+
+            var query = (from p in db.HistoIndices
+                         orderby p.date
+                         select p);
+            
+      
+            foreach (var item in query)
+            {
+              
+                tmp.Add(new ChartData(item.value, item.date));
+            }
+  
+            return tmp;
+        }
+
+        public static List<String> GetIndicesList()
+        {
+            List<String> tmp = new List<string>();
+            DataHistoContext db = DALAssetDotNet.ContextDb.Connexion;
+
+            //TODO
+
+            return tmp;
+        }
+
+        public static List<String> getDistinctAssetName()
+        {
+            DataHistoContext db = DALAssetDotNet.ContextDb.Connexion;
+
+            List<String> tmp = new List<string>();
+
+            var query = (from p in db.HistoComponents
+                         select p.name)
+                                        .Distinct();
+
+            foreach (var item in query)
+            {
+                tmp.Add(item.ToString());
+            }
+
+            return tmp;
+        }
+
+        public static double[] getValueAsset(String nom, int windowWidth)
+        {
+            DataHistoContext db = DALAssetDotNet.ContextDb.Connexion;
+
+            double[] tmp = new double[windowWidth];
+
+            var query = (from action in db.HistoComponents
+                         where action.name == nom
+                         orderby action.date
+                         select action.value);
+
+            var tabquery = query.ToArray();
+
+            //TODO bad compute case tabquery < windowsWidth
+            for (int i = 0; (i < windowWidth) && (i < tabquery.GetLength(0)); ++i)
+            {
+                tmp[i] = tabquery[i];
+            }
+
+            return tmp;
+        }
+
+
+        public static double[] getValueDateAsset(String nom, int windowWidth)
+        {
+            DataHistoContext db = DALAssetDotNet.ContextDb.Connexion;
+
+            double[] tmp = new double[windowWidth];
+
+            var query = (from action in db.HistoComponents
+                         where action.name == nom
+                         orderby action.date
+                         select action.value);
+
+            var tabquery = query.ToArray();
+
+            //TODO bad compute case tabquery < windowsWidth
+            for (int i = 0; (i < windowWidth) && (i < tabquery.GetLength(0)); ++i)
+            {
+                tmp[i] = tabquery[i];
+            }
+
+            return tmp;
+        }
+    }
+
+}

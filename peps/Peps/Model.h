@@ -2,8 +2,8 @@
 #include "pnl/pnl_random.h"
 #include "Utils.h"
 
-
-class Model
+#define DLLEXP   __declspec( dllexport )
+class DLLEXP Model
 {
 
 
@@ -14,10 +14,10 @@ private :
 	*Diffuse les trajectoires pour chacun des actifs
 	*/
 	//void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vol, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
-	void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
-	void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot,const int dt);
-	std::vector<int> Model::getFixingDateFromt(int time, std::vector<int> lst_time);
-	void Model::setDiscretisation(DISCRETISATION_TYPE type);
+	void Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot);
+	void  Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot,const int dt);
+	std::vector<int>  getFixingDateFromt(int time, std::vector<int> lst_time);
+	void  setDiscretisation(DISCRETISATION_TYPE type);
 
 	DISCRETISATION_TYPE m_discretisation;
 

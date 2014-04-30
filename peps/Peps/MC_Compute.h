@@ -3,7 +3,9 @@
 #include "Model.h"
 #include <pnl/pnl_random.h>
 
-class MC_Compute
+#define DLLEXP   __declspec( dllexport )
+
+class DLLEXP MC_Compute
 {
 private:
 

@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
 
-
-class Pesp_Timer
+#define DLLEXP   __declspec( dllexport )
+class DLLEXP Pesp_Timer
 {
 
 

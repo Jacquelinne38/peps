@@ -20,20 +20,38 @@ void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, co
 	pnl_vect_free(&tmp2);
 }
 void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot,const int dt) {
-	PnlVect * tmp2;
-	double tmp;
-	double l_compo1 = 0;
-	double l_compo2 = 0;
-	tmp2 = pnl_mat_mult_vect(choleskyCor, produit->Volatility());
-	//#pragma omp parallel for
-	for (int j = 0; j < produit->getEquities().size(); ++j){ 
-		l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*m_DT);		
-		tmp = pnl_vect_get(tmp2, j) ;
-		l_compo2 = tmp * pnl_vect_get(vecAlea, j) * sqrt((double)(dt*m_DT));
-		pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
-	}
-	pnl_vect_free(&tmp2);
+    PnlVect * tmp2;
+    double tmp;
+    double l_compo1 = 0;
+    double l_compo2 = 0;
+    tmp2 = pnl_mat_mult_vect(choleskyCor, produit->Volatility());
+
+    PnlVect * tmp3 = pnl_vect_create_from_zero(choleskyCor->m);
+    double tmp4;
+   
+    //#pragma omp parallel for
+    for (int j = 0; j < produit->getEquities().size(); ++j){
+       
+        // Premiere version
+        /*
+        l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*m_DT);       
+        tmp = pnl_vect_get(tmp2, j) ;
+        l_compo2 = tmp * pnl_vect_get(vecAlea, j) * sqrt((double)(dt*m_DT));
+        pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
+        */
+       
+        // deuxieme version (je pense que c est la bonne)
+        // Pierre 28/4
+        pnl_mat_get_row(tmp3,choleskyCor, j);
+        tmp4 = pnl_vect_scalar_prod(tmp3, vecAlea);
+        l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*m_DT);   
+        l_compo2 = sqrt((double)(dt*m_DT)) * produit->getEquities()[j].volatility *tmp4;
+        pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
+       
+    }
+    pnl_vect_free(&tmp2);
 }
+
 
 /*
 * Renvoi le nombre de date de fixing entre t et T
