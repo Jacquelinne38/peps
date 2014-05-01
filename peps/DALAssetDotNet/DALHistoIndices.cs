@@ -8,7 +8,7 @@ namespace DALAssetDotNet
     public static class DALHistoIndices
     {
 
-        //test function on cac
+     /*   //test function on cac
         public static List<ChartData> getCac()
         {
             DataHistoDataContext db = DALAssetDotNet.ContextDb.Connexion;
@@ -104,7 +104,7 @@ namespace DALAssetDotNet
                 returnDate = query.ToArray()[i];
             }
             return returnDate;
-        }
+        }*/
 
     }
 

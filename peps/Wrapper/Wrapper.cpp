@@ -3,7 +3,6 @@
 #include "stdafx.h"
 
 #include "Wrapper.h"
-#include "ComputeEngine.h"
 #include "Equity.h"
 
 #include "stdafx.h"
@@ -19,18 +18,20 @@
 #include <crtdbg.h>
 
 
-using namespace ComputeEngine;
-
-
-//namespace Wrapper {
-	//int WrapperClass::getPriceCallEuro() {
-int main(int argc, char **argv) {		
-Pesp_Timer _timer = Pesp_Timer();
+//int main(int argc, char **argv) {		
+namespace Wrapper {
+	int WrapperClass::getPriceCallEuro(array<double, 2>^ assets, int nbActif, int nbDate) {
+		for (int i = 0; i < nbActif; i++)
+		{
+			for (int j = 0; j < nbDate; j++) {
+				Console::Write(assets[i, j]+" ");
+			}
+			Console::WriteLine("");
+		}
+		Pesp_Timer _timer = Pesp_Timer();
 		_timer.Start();
 
 		double price = 0, priceSquare = 0;
-
-
 
 		std::vector<double> vec_actifs_risq;
 		std::vector<double> vec_sans_risq;
@@ -40,6 +41,7 @@ Pesp_Timer _timer = Pesp_Timer();
 		std::vector<PnlVect *> vec_delta;
 		Produit produit = Produit();
 		Model model = Model(NBPATH);
+		
 
 		//Générateur data
 		//CreationDataHisto("../DATA/histo1.txt", 0.05, produit);
@@ -97,7 +99,7 @@ Pesp_Timer _timer = Pesp_Timer();
 
 		_CrtDumpMemoryLeaks();
 		while (getchar() != '\n') ;
-
+		
 		return 0;
 	}
-//}
+}

@@ -18,7 +18,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
@@ -51,11 +51,11 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>C:\works\pnl-win32-1.6.0\include;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Peps;C:\Users\pizzix-game\Documents\GitHub\peps\peps\ComputeEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\works\pnl-win32-1.6.0\include;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Peps</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ComputeEngine.lib;libpnl.lib;peps.lib</AdditionalDependencies>
+      <AdditionalDependencies>libpnl.lib;peps.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\works\pnl-win32-1.6.0\lib;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -64,11 +64,11 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>C:\works\pnl-win32-1.6.0\include;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Peps;C:\Users\pizzix-game\Documents\GitHub\peps\peps\ComputeEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\works\pnl-win32-1.6.0\include;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Peps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ComputeEngine.lib;peps.lib;libpnl.lib</AdditionalDependencies>
+      <AdditionalDependencies>peps.lib;libpnl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\works\pnl-win32-1.6.0\lib;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -98,8 +98,8 @@
     <ResourceCompile Include="app.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ComputeEngine\ComputeEngine.vcxproj">
-      <Project>{3857936a-6854-4a9d-84a6-30249e36ddd4}</Project>
+    <ProjectReference Include="..\DALAssetDotNet\DALAssetDotNet.csproj">
+      <Project>{8e15d056-78da-4717-8f0b-fcec19ed229f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Peps\Peps.vcxproj">
       <Project>{a68b74dc-51f8-48bd-a604-d22ba86ae3a7}</Project>

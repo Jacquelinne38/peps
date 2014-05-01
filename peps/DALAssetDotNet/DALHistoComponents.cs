@@ -7,14 +7,14 @@ namespace DALAssetDotNet
 {
     public static class DALHistoComponents
     {
-        private static List<HistoComponentsData> _histoData = new List<HistoComponentsData>();
+    /*    private static List<HistoComponentsData> _histoData = new List<HistoComponentsData>();
         
         public static List<HistoComponentsData> getHistoComponents()
         {
             DataPepsDataContext db = new DataPepsDataContext();
 
             //speed up 
-       /*     if (!(_histoData.Count > 0))
+           if (!(_histoData.Count > 0))
             {
                 var query = (from p in db.HistoComponents
                              select p);
@@ -25,7 +25,7 @@ namespace DALAssetDotNet
                     _histoData.Add(new HistoComponentsData(item.name, item.date, item.value));
                 }
             }
-            */
+            
             return _histoData;
         }
 
@@ -127,6 +127,6 @@ namespace DALAssetDotNet
                 returnDate.Add(item);
             }
             return returnDate;
-        }
+        }*/
     }
 }

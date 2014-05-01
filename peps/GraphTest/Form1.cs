@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using Wrapper;
+//using Wrapper;
 
 namespace GraphTest
 {
@@ -43,8 +43,8 @@ namespace GraphTest
 //             }
 //             
 // 
-            WrapperClass cl = new WrapperClass();
-            cl.getPriceCallEuro();
+           // WrapperClass cl = new WrapperClass();
+           // cl.getPriceCallEuro();
 
         }
 

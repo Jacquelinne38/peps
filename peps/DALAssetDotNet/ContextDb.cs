@@ -22,10 +22,10 @@ namespace DALAssetDotNet
 
                     _connexion = _connexion ?? new DataPepsDataContext();
                     //poor coding style but works
-                    if (_connexion == null || (_connexion.Connection.State != System.Data.ConnectionState.Open))
-                    {
-                        throw new System.ArgumentException("Parameter cannot be null, no database connexion");
-                    }
+                    //if (_connexion == null || (_connexion.Connection.State != System.Data.ConnectionState.Open))
+                    //{
+                    //    throw new System.ArgumentException("Parameter cannot be null, no database connexion");
+                    //}
                 }
                 catch (Exception e)
                 {

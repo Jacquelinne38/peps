@@ -9,7 +9,7 @@ using namespace std;
 
 Produit::Produit()
 {
-	LoadDataHisto();
+		LoadDataHisto();
 		//dans ce constructeur on doit faire appel aux constructeurs d'equity avec les bons parametres pour creer tous les equity et fx
 		Equity barclays = Equity(100, 0.3, "barclays");
 		Equity sony = Equity (50, 0.3, "sony");

@@ -6,7 +6,7 @@ using System.Text;
 
     public class HistoComponentsData
     {
-        private string _name;
+      /*  private string _name;
 
         public string Name
         {
@@ -33,5 +33,5 @@ using System.Text;
             _name = name;
             _datetime = datetime;
             _value = value;
-        }
+        }*/
 }
