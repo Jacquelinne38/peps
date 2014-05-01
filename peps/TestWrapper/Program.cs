@@ -12,7 +12,7 @@ namespace TestWrapper
     {
         static void Main(string[] args)
         {
-            DataAssetValuesLoader loader = new DataAssetValuesLoader(new DateTime(2004, 1, 1), new DateTime(2005, 1, 1));
+            DataAssetValuesLoader loader = new DataAssetValuesLoader(new DateTime(2004, 1, 1), new DateTime(2006, 1, 1));
             double[,] mat = loader.Matrix;
             
              WrapperClass cl = new WrapperClass();

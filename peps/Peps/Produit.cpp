@@ -7,6 +7,59 @@
 #include <vector>
 using namespace std;
 
+	Produit::Produit(PnlMat * assets, int nbActif, int nbDate) {
+		m_historique = assets;
+		Equity barclays = Equity(100, 0.3, "barclays");
+		Equity sony = Equity (50, 0.3, "sony");
+		//Equity arcelor = Equity (200, 0.25, "arcelor");
+		Equity alcoa = Equity(150, 0.3, "alcoa");
+		Equity daiichi = Equity(75, 0.3, "daiichi");
+		ListEquit.push_back(daiichi);
+		ListEquit.push_back(alcoa);
+		ListEquit.push_back(barclays);
+		ListEquit.push_back(sony);
+		//ListEquit.push_back(arcelor);
+		//Fx y;
+		//ListFx.push_back(y);
+		// clairement ici ne pas mettre 
+		m_matCor = pnl_mat_create(ListEquit.size(),ListEquit.size());
+		pnl_mat_set(m_matCor, 0, 0, 0.09);
+		pnl_mat_set(m_matCor, 0, 1, 0);
+		pnl_mat_set(m_matCor, 0, 2, 0);
+		pnl_mat_set(m_matCor, 0, 3, 0);
+		//pnl_mat_set(m_matCor, 0, 4, 0.38);
+
+		pnl_mat_set(m_matCor, 1, 0, 0);
+		pnl_mat_set(m_matCor, 1, 1, 0.09);
+		pnl_mat_set(m_matCor, 1, 2, 0);
+		pnl_mat_set(m_matCor, 1, 3, 0);
+		//pnl_mat_set(m_matCor, 1, 4, 0.21);
+
+
+		pnl_mat_set(m_matCor, 2, 0, 0);
+		pnl_mat_set(m_matCor, 2, 1, 0);
+		pnl_mat_set(m_matCor, 2, 2, 0.09);
+		pnl_mat_set(m_matCor, 2, 3, 0);
+		//pnl_mat_set(m_matCor, 2, 4, 0.17);
+
+		
+		pnl_mat_set(m_matCor, 3, 0, 0);
+		pnl_mat_set(m_matCor, 3, 1, 0);
+		pnl_mat_set(m_matCor, 3, 2, 0);
+		pnl_mat_set(m_matCor, 3, 3, 0.09);
+		//pnl_mat_set(m_matCor, 3, 4, 0.2);
+
+		/*pnl_mat_set(m_matCor, 4, 0, 0.38);
+		pnl_mat_set(m_matCor, 4, 1, 0.21);
+		pnl_mat_set(m_matCor, 4, 2, 0.17);
+		pnl_mat_set(m_matCor, 4, 3, 0.2);
+		pnl_mat_set(m_matCor, 4, 4, 1);*/
+
+		m_matCholCorr = pnl_mat_copy(this->getMatCor());
+		pnl_mat_chol(m_matCholCorr);
+		SetInitVol();
+}
+
 Produit::Produit()
 {
 		LoadDataHisto();

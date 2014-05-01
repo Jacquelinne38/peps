@@ -21,13 +21,26 @@
 //int main(int argc, char **argv) {		
 namespace Wrapper {
 	int WrapperClass::getPriceCallEuro(array<double, 2>^ assets, int nbActif, int nbDate) {
-		for (int i = 0; i < nbActif; i++)
-		{
-			for (int j = 0; j < nbDate; j++) {
-				Console::Write(assets[i, j]+" ");
+		//double ** actif = (double**)malloc(sizeof(double)*nbActif*nbDate);
+ 		/*for (int i = 0; i < nbActif; i++)
+ 		{
+ 			for (int j = 0; j < nbDate; j++) {
+ 				//Console::Write(assets[i, j]+" ");
+				actif[i, j] = assets[i, j];
+ 			}
+ 			//Console::WriteLine("");
+ 		}*/
+
+
+		//////////////////////!!!
+		nbActif = 4;
+		PnlMat * histo = pnl_mat_create(nbActif, PAS);
+		for(int i = 0 ; i < nbActif; i ++) {
+			for (int j = 0 ; j < PAS; j++) {
+				pnl_mat_set(histo, i,j, assets[i, j]);
 			}
-			Console::WriteLine("");
 		}
+
 		Pesp_Timer _timer = Pesp_Timer();
 		_timer.Start();
 
@@ -39,7 +52,8 @@ namespace Wrapper {
 
 		std::vector<double> vec_price;	
 		std::vector<PnlVect *> vec_delta;
-		Produit produit = Produit();
+		Produit produit = Produit(pnl_mat_copy(histo), nbActif, nbDate);
+		//Produit produit = Produit();
 		Model model = Model(NBPATH);
 		
 
@@ -78,16 +92,16 @@ namespace Wrapper {
 		////////////////////////////
 
 		//Création fichiers d'export
-		CreerFichierData(vec_price, "../../../DATA/prix.txt");
-		CreerFichierData(vec_priceCouverture, "../../../DATA/couverture.txt");
-		CreerFichierData(vec_actifs_risq, "../../../DATA/actifs_risq.txt");
-		CreerFichierData(vec_sans_risq, "../../../DATA/sans_risq.txt");
+		CreerFichierData(vec_price, "../DATA/prix.txt");
+		CreerFichierData(vec_priceCouverture, "../DATA/couverture.txt");
+		CreerFichierData(vec_actifs_risq, "../DATA/actifs_risq.txt");
+		CreerFichierData(vec_sans_risq, "../DATA/sans_risq.txt");
 
 		std::vector<double> vecbisdelta;
 		for(unsigned int i = 0 ; i< vec_delta.size(); ++i ) {
 			vecbisdelta.push_back(pnl_vect_get(vec_delta[i], 0));
 		}
-		CreerFichierData(vecbisdelta, "../../../DATA/delta.txt");
+		CreerFichierData(vecbisdelta, "../DATA/delta.txt");
 
 
 		pnl_vect_free(&delta);

@@ -36,6 +36,8 @@ public :
 	void Fonction();
 	
 	Produit();
+	Produit(PnlMat * assets, int nbActif, int nbDate);
+
 	~Produit();
 
 	std::vector<Equity> getEquities()  { return ListEquit;  };
