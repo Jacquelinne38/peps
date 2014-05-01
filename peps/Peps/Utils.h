@@ -153,6 +153,105 @@ static void CreationDataHisto(std::string nomFichier, double drift, Produit pro)
 	CreerFichierData(lst_data, nomFichier);
 }
 
+/**
+* @author  Pierre
+* @param in vecteurs X et Y
+* @param out correlation entre les deux vecteurs
+* @Retourne un double : la correlation entre les deux vecteurs
+*
+*/
+static double Correl (const PnlVect* X, const PnlVect* Y)
+{
+	int N = X->size;
+	double EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
+	for (size_t i = 0; i < N; i++)
+	{
+		EX += pnl_vect_get(X,i);
+		EY += pnl_vect_get(Y,i);
+		EXY += pnl_vect_get(X,i) * pnl_vect_get(Y,i);
+		EX2 += pnl_vect_get(X,i) * pnl_vect_get(X,i);
+		EY2 += pnl_vect_get(Y,i) * pnl_vect_get(Y,i);
+	}
+	return (N*EXY - EX*EY) / sqrt((N*EX2 - EX*EX) * (N*EY2 - EY*EY));
+}
+
+/**
+* @author Pierre
+* @param in la matrice historique. La valeur de chacun des actifs a chacune des dates
+* @param out la matrice de correlation des actifs
+* @Retourne la matrice de correlation
+* @other etant donne que la matrice histo fait nxT il faut que MatCorr fasse nxn
+*/
+static void Compute_mat_Cor(const PnlMat* Histo, PnlMat* MatCorr)
+{
+	if (MatCorr->m != Histo->m || MatCorr->n != Histo->m)
+	{
+		// ICI lever une erreur
+	}
+	PnlVect* X;
+	PnlVect* Y;
+	for (int j = 0 ; j < Histo->m; j++)
+	{
+		for(int k = 0; k < Histo->m; k++)
+		{
+			pnl_mat_get_row(X, Histo, j);
+			pnl_mat_get_row(Y, Histo, k);
+			pnl_mat_set(MatCorr, j,k, Correl(X,Y));
+		}
+	}
+}
+
+
+/**
+* @author Pierre
+* @param in le vecteur dont on veut calculer la moyenne
+* @Retourne la valeur de la moyenne du vecteur
+* 
+*/
+static double Compute_Mean(const PnlVect * Y)
+{
+	double mean = 0;
+	for(int i = 0; i < Y->size; i++)
+	{
+		mean += pnl_vect_get(Y,i);
+	}
+	return mean/Y->size;
+}
+
+/**
+* @author Pierre
+* @param in le vecteur des valeurs du cours de l'actif
+* @param out la volatilite implicite du vecteur
+* @Retourne la valeur de la volatilite
+* 
+*/
+static double Compute_Volatility(const PnlVect * X)
+{
+	double lnS1 = 0;
+	double lnS2 = 0;
+	double diff = 0;
+	double mean = Compute_Mean(X);
+	double vol = 0;
+	PnlVect * R = pnl_vect_create_from_zero(X->size - 1);
+
+	for (int i = 0 ; i < R->size; i++)
+	{
+		lnS1 = log(pnl_vect_get(X,i));
+		lnS2 = log(pnl_vect_get(X,i+1));
+		diff = lnS1 - lnS2;
+		pnl_vect_set(R,i, diff);
+	}
+	for (int j = 0 ; j < R->size; j++)
+	{
+		vol += pow((pnl_vect_get(R,j) - mean),2);
+	}
+	std::cout<< vol <<std::endl;
+	vol *= 1.0/((double)R->size-1.0);
+	vol = sqrt(vol);
+	return vol;
+}
+
+
 /*
 
 //USSLESS NOW
