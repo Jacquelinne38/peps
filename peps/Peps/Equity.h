@@ -11,6 +11,7 @@ public:
 	double volatility;
 	std::string name;
 	Equity(double spot, double vol, std::string Ename);
+	Equity(double spot, double vol, int);
 	~Equity(void);
 };
 

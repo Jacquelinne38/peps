@@ -9,6 +9,7 @@
       <Column Name="country" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="currency" Type="System.String" DbType="VarChar(5)" CanBeNull="true" />
       <Association Name="AssetsInfo_AssetsValue" Member="AssetsValue" ThisKey="namego" OtherKey="namego" Type="AssetsValue" />
+      <Association Name="AssetsInfo_Volatilite" Member="Volatilite" ThisKey="namego" OtherKey="namego" Type="Volatilite" />
     </Type>
   </Table>
   <Table Name="peps.AssetsValue" Member="AssetsValue">
@@ -17,6 +18,14 @@
       <Column Name="Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="[close]" Member="close" Type="System.Single" DbType="Real" CanBeNull="true" />
       <Association Name="AssetsInfo_AssetsValue" Member="AssetsInfo" ThisKey="namego" OtherKey="namego" Type="AssetsInfo" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Volatilite" Member="Volatilite">
+    <Type Name="Volatilite">
+      <Column Name="namego" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="runId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="vol" Type="System.Single" DbType="Real" CanBeNull="true" />
+      <Association Name="AssetsInfo_Volatilite" Member="AssetsInfo" ThisKey="namego" OtherKey="namego" Type="AssetsInfo" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

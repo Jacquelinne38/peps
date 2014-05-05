@@ -152,28 +152,92 @@ static void CreationDataHisto(std::string nomFichier, double drift, Produit pro)
 	}
 	CreerFichierData(lst_data, nomFichier);
 }
-
 /**
-* @author  Pierre
-* @param in vecteurs X et Y
-* @param out correlation entre les deux vecteurs
-* @Retourne un double : la correlation entre les deux vecteurs
-*
+* @author Pierre
+* @param in le vecteur des valeurs du cours de l'actif
+* @param out la volatilite implicite du vecteur
+* @Retourne la valeur de la volatilite
+* 
 */
-static double Correl (const PnlVect* X, const PnlVect* Y)
+static double Compute_Volatility(const PnlVect * X)
 {
-	int N = X->size;
-	double EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
-	for (size_t i = 0; i < N; i++)
+	double lnS1 = 0;
+	double lnS2 = 0;
+	double diff = 0;
+	double mean = 0;
+	double vol = 0;
+	PnlVect * R = pnl_vect_create_from_zero(X->size - 1);
+
+	for (int i = 0 ; i < R->size; i++)
 	{
-		EX += pnl_vect_get(X,i);
-		EY += pnl_vect_get(Y,i);
-		EXY += pnl_vect_get(X,i) * pnl_vect_get(Y,i);
-		EX2 += pnl_vect_get(X,i) * pnl_vect_get(X,i);
-		EY2 += pnl_vect_get(Y,i) * pnl_vect_get(Y,i);
+		lnS1 = log(pnl_vect_get(X,i));
+		lnS2 = log(pnl_vect_get(X,i+1));
+		diff = lnS2 - lnS1;
+		mean += diff;
+		pnl_vect_set(R,i, diff);
 	}
-	return (N*EXY - EX*EY) / sqrt((N*EX2 - EX*EX) * (N*EY2 - EY*EY));
+	mean /= X->size - 1;
+	for (int j = 0 ; j < R->size; j++)
+	{
+		vol += pow((pnl_vect_get(R,j) - mean),2);
+	}
+	//std::cout<< vol <<std::endl;
+	vol *= 1.0/((double)R->size-1.0);
+	vol = sqrt(vol);
+	pnl_vect_free(&R);
+	return vol;
 }
+
+
+
+ /**
+ * @author  Pierre
+ * @param in vecteurs X et Y
+ * @param out correlation entre les deux vecteurs
+ * @Retourne un double : la correlation entre les deux vecteurs
+ *
+ */
+  static double Correl (const PnlVect* X, const PnlVect* Y)
+  {
+  	int N = X->size;
+  	double EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
+  	for (size_t i = 0; i < N; i++)
+  	{
+  		EX += pnl_vect_get(X,i);
+  		EY += pnl_vect_get(Y,i);
+  		EXY += pnl_vect_get(X,i) * pnl_vect_get(Y,i);
+  		EX2 += pnl_vect_get(X,i) * pnl_vect_get(X,i);
+  		EY2 += pnl_vect_get(Y,i) * pnl_vect_get(Y,i);
+  	}
+  	return (N*EXY - EX*EY) / sqrt((N*EX2 - EX*EX) * (N*EY2 - EY*EY));
+  }
+
+// 
+// static double Correl(const PnlVect * X, const PnlVect * Y)
+// {
+// 	double volX = Compute_Volatility(X);
+// 	double volY = Compute_Volatility(Y);
+// 
+// 	double meanX;
+// 	double meanY;
+// 	double multR;
+// 	double retX;
+// 	double retY;
+// 	double ret;
+// 
+// 	for (int i = 0; i< X->size - 1; i++)
+// 	{
+// 		retX = log(pnl_vect_get(X, i+1)) - log(pnl_vect_get(X, i));
+// 		retY = log(pnl_vect_get(Y,i+1)) - log(pnl_vect_get(Y,i));
+// 		meanX += retX;
+// 		meanY += retY;
+// 		multR += retX*retY;
+// 	}
+// 	meanX /= X->size - 1;
+// 	meanY /= X->size - 1;
+// 	ret = (multR - X->size*meanX*meanY)/((X->size - 1)*volX*volY);
+// 	return ret;
+// }
 
 /**
 * @author Pierre
@@ -188,8 +252,8 @@ static void Compute_mat_Cor(const PnlMat* Histo, PnlMat* MatCorr)
 	{
 		// ICI lever une erreur
 	}
-	PnlVect* X;
-	PnlVect* Y;
+	PnlVect* X = pnl_vect_create(Histo->m);
+	PnlVect* Y = pnl_vect_create(Histo->m);
 	for (int j = 0 ; j < Histo->m; j++)
 	{
 		for(int k = 0; k < Histo->m; k++)
@@ -199,6 +263,8 @@ static void Compute_mat_Cor(const PnlMat* Histo, PnlMat* MatCorr)
 			pnl_mat_set(MatCorr, j,k, Correl(X,Y));
 		}
 	}
+	pnl_vect_free(&X);
+	pnl_vect_free(&Y);
 }
 
 
@@ -216,39 +282,6 @@ static double Compute_Mean(const PnlVect * Y)
 		mean += pnl_vect_get(Y,i);
 	}
 	return mean/Y->size;
-}
-
-/**
-* @author Pierre
-* @param in le vecteur des valeurs du cours de l'actif
-* @param out la volatilite implicite du vecteur
-* @Retourne la valeur de la volatilite
-* 
-*/
-static double Compute_Volatility(const PnlVect * X)
-{
-	double lnS1 = 0;
-	double lnS2 = 0;
-	double diff = 0;
-	double mean = Compute_Mean(X);
-	double vol = 0;
-	PnlVect * R = pnl_vect_create_from_zero(X->size - 1);
-
-	for (int i = 0 ; i < R->size; i++)
-	{
-		lnS1 = log(pnl_vect_get(X,i));
-		lnS2 = log(pnl_vect_get(X,i+1));
-		diff = lnS1 - lnS2;
-		pnl_vect_set(R,i, diff);
-	}
-	for (int j = 0 ; j < R->size; j++)
-	{
-		vol += pow((pnl_vect_get(R,j) - mean),2);
-	}
-	std::cout<< vol <<std::endl;
-	vol *= 1.0/((double)R->size-1.0);
-	vol = sqrt(vol);
-	return vol;
 }
 
 

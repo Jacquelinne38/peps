@@ -45,7 +45,7 @@ void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect
         pnl_mat_get_row(tmp3,choleskyCor, j);
         tmp4 = pnl_vect_scalar_prod(tmp3, vecAlea);
         l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*m_DT);   
-        l_compo2 = sqrt((double)(dt*m_DT)) * produit->getEquities()[j].volatility *tmp4;
+        l_compo2 = sqrt((double)(dt*m_DT)) * produit->getEquities()[j].volatility * tmp4;
         pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
        
     }
@@ -79,10 +79,16 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produi
 		//std::cout << dt << std::endl;
 		Diffuse_of_dt(produit, drift, l_vecAlea, produit->MatCholCorr(), l_spot, dt);
 		//spot contient la valeur en t+dt de tous les actifs, on met ces valeurs dans la matrice path
+		std::cout << path->m << std::endl; 
+		std::cout << path->n << std::endl; 
+		std::cout << l_spot->size << std::endl; 
+		std::cout << fixingDateFromT[k+1] << std::endl;
 		pnl_mat_set_col(path, l_spot, fixingDateFromT[k+1]);
-	//	pnl_vect_print(l_spot);
+
+		//pnl_vect_print(l_spot);
 	}
 //	std::cout << std::endl;
+		
 	pnl_vect_free(&l_vecAlea);
 	pnl_vect_free(&l_spot);
 }
@@ -93,6 +99,7 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produi
 	pnl_mat_get_col(l_spot, path, time);
 	PnlVect * l_vecAlea = pnl_vect_create(l_nbEq);
 	//foreach boucle spot passe de t a t+dt et on inscrit St+dt dans une colone de path
+	//TODO PAS doit être égal au nb que l'on a de date donc produit->nbDate histo size quoi
 	for (int k = time; k < PAS -1 ; k++){
 		pnl_vect_rng_normal_d(l_vecAlea, l_nbEq, rng);
 		Diffuse_from_t_all_Asset(produit, drift, l_vecAlea, produit->MatCholCorr(), l_spot);
@@ -155,8 +162,8 @@ void Model::setDiscretisation(DISCRETISATION_TYPE type) {
 		mvec_fixingDate = lvec_fixingDate;
 	}
 	else if (type == DAY) {
-		m_DT = 1.0/364.0;
-		m_NBDISCRETISATION = 364.0;
+		m_DT = 1.0/260.0;
+		m_NBDISCRETISATION = 260.0;
 		m_FINALDATE = 260*4;
 		static const int arr[] = {FIXING0*7, FIXING1*7, FIXING2*7, FIXING3*7, FIXING4*7};
 		std::vector<int> lvec_fixingDate (arr, arr + sizeof(arr) / sizeof(arr[0]) );

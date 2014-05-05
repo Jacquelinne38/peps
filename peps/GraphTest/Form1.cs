@@ -22,16 +22,16 @@ namespace GraphTest
             List<double> lst_couverture = new List<double>();
             lst_couverture = LectureData(@"../../../DATA/couverture.txt");
             chart1.Series.Clear();
-            chart1.Series.Add("delta");
+            chart1.Series.Add("Prix");
             //chart1.Series.Add("1.23");
             chart1.Series.Add("Couverture");
             // chart1.Series["Price"].AxisLabel = "Price";
-            chart1.Series["delta"].ChartType = SeriesChartType.Spline;
+            chart1.Series["Prix"].ChartType = SeriesChartType.Spline;
             //chart1.Series["1.23"].ChartType = SeriesChartType.Spline;
             chart1.Series["Couverture"].ChartType = SeriesChartType.Spline;
             for (int i = 0; i < lst_price.Count; i++)
             {
-                chart1.Series["delta"].Points.AddXY(i, lst_price[i]);
+                chart1.Series["Prix"].Points.AddXY(i, lst_price[i]);
 
             }
             //for(int i = 0; i < 260; i++) {

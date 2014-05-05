@@ -7,6 +7,19 @@
 #include <vector>
 using namespace std;
 
+Produit::Produit(PnlMat * assets, PnlMat * corr, PnlVect * vol) {
+	m_historique = assets;
+	for(int i = 0; i < assets->m ; ++i) {
+		Equity tmp = Equity(pnl_mat_get(assets, i, 0),pnl_vect_get(vol, i), i);
+		ListEquit.push_back(tmp);
+	}
+	m_matCor = corr;
+	m_matCholCorr = pnl_mat_copy(this->getMatCor());
+	pnl_mat_chol(m_matCholCorr);
+	SetInitVol();
+}
+
+
 	Produit::Produit(PnlMat * assets, int nbActif, int nbDate) {
 		m_historique = assets;
 		Equity barclays = Equity(100, 0.3, "barclays");
@@ -142,7 +155,7 @@ void Produit::UpDate_listFx(){}
 void Produit::LoadDataHisto() {
 
 	//ou histo1 ou histo2
-	fstream fichier("C:/Users/pizzix-game/Documents/GitHub/peps/peps/DATA/data.txt");
+	fstream fichier("C:/Users/pizzix-game/Documents/GitHub/peps/peps/DATA/data2.txt");
 	vector <string> monTableau;
 
 	if ( !fichier )

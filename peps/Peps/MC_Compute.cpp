@@ -46,6 +46,7 @@ bool MC_Compute::isRemb(const PnlMat * coursHisto, int time) {
 
 int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta, PnlVect * sumGamma, PnlMat * l_histoFix, int time)
 {
+	
 	//reset obligatoire des paramètres
 	*sumPrice = 0;
 	*priceSquare = 0;
@@ -62,7 +63,7 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 
 	pnl_vect_set_zero(sumDelta);
 	pnl_vect_set_zero(sumGamma);
-	
+
 	for (int i = 0; i < m_model->Nb_Path(); i++) {
 		//_timer.Start();
 		//!!! changer le model connais mvcec et dis
@@ -340,9 +341,10 @@ inline bool MC_Compute::Condition_Remb(const PnlMat * past, int time){
 	pnl_mat_get_col(S0, past, 0);
 	pnl_mat_get_col(S1, past, time);
 	RentVect(S1, S0, rent);
-	for (int j = 0; j< rent->size; j++){
-		if ( pnl_vect_get(rent, j) > -0.1 ) condSortie = true;
-	}
+	//for (int j = 0; j< rent->size; j++){
+		
+	if ( pnl_vect_min(rent) > -0.1 ) condSortie = true;
+	//}
 	pnl_vect_free(&S0);
 	pnl_vect_free(&S1);
 	pnl_vect_free(&rent);

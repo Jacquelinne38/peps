@@ -5,8 +5,6 @@
 #include "Wrapper.h"
 #include "Equity.h"
 
-#include "stdafx.h"
-
 #include "Wrapper.h"
 #include "MC_Compute.h"
 #include "Produit.h"
@@ -20,26 +18,17 @@
 
 //int main(int argc, char **argv) {		
 namespace Wrapper {
-	int WrapperClass::getPriceCallEuro(array<double, 2>^ assets, int nbActif, int nbDate) {
-		//double ** actif = (double**)malloc(sizeof(double)*nbActif*nbDate);
- 		/*for (int i = 0; i < nbActif; i++)
- 		{
- 			for (int j = 0; j < nbDate; j++) {
- 				//Console::Write(assets[i, j]+" ");
-				actif[i, j] = assets[i, j];
- 			}
- 			//Console::WriteLine("");
- 		}*/
+	int WrapperClass::LaunchComputation(array<double, 2>^ assets, array<double, 1>^ vol, array<double, 2>^ corr, int nbActif, int nbDate) {
+		if(PAS > nbDate)
+			return -1;
 
+		PnlMat * lm_histo = pnl_mat_create(nbActif, PAS);
+		PnlVect * lv_vol = pnl_vect_create(nbActif);
+		PnlMat * lm_corr = pnl_mat_create(nbActif, nbActif);
 
-		//////////////////////!!!
-		nbActif = 4;
-		PnlMat * histo = pnl_mat_create(nbActif, PAS);
-		for(int i = 0 ; i < nbActif; i ++) {
-			for (int j = 0 ; j < PAS; j++) {
-				pnl_mat_set(histo, i,j, assets[i, j]);
-			}
-		}
+		ArrayToPnlMat(lm_histo, assets, nbActif, PAS);
+		ArrayToPnlMat(lm_corr, corr, nbActif, nbActif);
+		ArrayToPnlVect(lv_vol, vol, nbActif);
 
 		Pesp_Timer _timer = Pesp_Timer();
 		_timer.Start();
@@ -52,8 +41,9 @@ namespace Wrapper {
 
 		std::vector<double> vec_price;	
 		std::vector<PnlVect *> vec_delta;
-		Produit produit = Produit(pnl_mat_copy(histo), nbActif, nbDate);
+		//Produit produit = Produit(lm_histo, nbActif, nbDate);
 		//Produit produit = Produit();
+		Produit produit = Produit(lm_histo, lm_corr, lv_vol);
 		Model model = Model(NBPATH);
 		
 
@@ -115,5 +105,70 @@ namespace Wrapper {
 		while (getchar() != '\n') ;
 		
 		return 0;
+	}
+
+	array<double, 1>^ WrapperClass::CalcVol(array<double, 2>^ histo, int nbActif, int nbDate, bool debug) {
+
+		//Passage array to pnlmatarray
+		PnlMat * l_histo = pnl_mat_create(nbActif, nbDate);
+		ArrayToPnlMat(l_histo, histo, nbActif, nbDate);
+
+		PnlVect * lv_vol = pnl_vect_create(nbActif);
+		for(int i = 0 ; i < nbActif; ++ i) {
+			PnlVect * tmp = pnl_vect_create(nbDate);
+			pnl_mat_get_row(tmp, l_histo, i);
+			pnl_vect_set(lv_vol, i, Compute_Volatility(tmp));
+		}
+		if (debug) 
+		{
+			std::ofstream fichier("../DATA/volcalc.txt", std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert
+			if(fichier)
+			{
+				for(int i = 0 ; i < nbActif; ++i) {
+					fichier << "Vol actif : " << i << " value : " << pnl_vect_get(lv_vol, i) << std::endl;
+				}
+				fichier.close();
+			}
+		}
+
+		//c++/cli to c#
+		array<double, 1>^ la_histo = PnlVectToArray(lv_vol);
+		pnl_mat_free(&l_histo);
+		pnl_vect_free(&lv_vol);
+		return la_histo;
+	}
+
+	array<double, 2>^ WrapperClass::CalcCorr(array<double, 2>^ histo, int nbActif, int nbDate, bool debug) {
+		//Passage array to pnlmatarray
+		PnlMat * l_histo = pnl_mat_create(nbActif, nbDate);
+		ArrayToPnlMat(l_histo, histo, nbActif, nbDate);
+
+
+		PnlMat * l_corr = pnl_mat_create(nbActif, nbActif);
+		Compute_mat_Cor(l_histo, l_corr);
+
+		if (debug) {
+			std::ofstream fichier("../DATA/corrcalc.txt", std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert
+			if(fichier)
+			{
+				for(int i = 0; i < l_corr->m; ++i) {
+					fichier << "c(";
+					for(int j = 0 ; j < l_corr->n ; ++j) {
+						fichier << MGET(l_corr, i, j);
+						if(!(j == l_corr->n -1))
+							fichier << ",";
+					}
+					if(!(i == l_corr->n -1))
+						fichier <<"),"; 
+					else 
+						fichier <<")";
+				}
+				fichier.close();
+			}
+		}
+		array<double, 2>^ la_corr = PnlMatToArray(l_corr);
+		pnl_mat_free(&l_corr);
+		pnl_mat_free(&l_histo);
+		return la_corr;
 	}
 }

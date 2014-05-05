@@ -80,6 +80,14 @@ namespace DALAssetDotNet
 				return this.GetTable<AssetsValue>();
 			}
 		}
+		
+		public System.Data.Linq.Table<Volatilite> Volatilite
+		{
+			get
+			{
+				return this.GetTable<Volatilite>();
+			}
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="peps.AssetsInfo")]
@@ -322,6 +330,69 @@ namespace DALAssetDotNet
 				if ((this._close != value))
 				{
 					this._close = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Volatilite")]
+	public partial class Volatilite
+	{
+		
+		private string _namego;
+		
+		private int _runId;
+		
+		private System.Nullable<float> _vol;
+		
+		public Volatilite()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_namego", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
+		public string namego
+		{
+			get
+			{
+				return this._namego;
+			}
+			set
+			{
+				if ((this._namego != value))
+				{
+					this._namego = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_runId", DbType="Int NOT NULL")]
+		public int runId
+		{
+			get
+			{
+				return this._runId;
+			}
+			set
+			{
+				if ((this._runId != value))
+				{
+					this._runId = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_vol", DbType="Real")]
+		public System.Nullable<float> vol
+		{
+			get
+			{
+				return this._vol;
+			}
+			set
+			{
+				if ((this._vol != value))
+				{
+					this._vol = value;
 				}
 			}
 		}

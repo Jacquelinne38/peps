@@ -37,6 +37,7 @@ public :
 	
 	Produit();
 	Produit(PnlMat * assets, int nbActif, int nbDate);
+	Produit::Produit(PnlMat * assets, PnlMat * corr, PnlVect * vol);
 
 	~Produit();
 
