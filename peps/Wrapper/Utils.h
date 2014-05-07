@@ -6,6 +6,15 @@
 
 using namespace System;
 
+
+static System::Collections::Generic::List<double>^ NatifToManaged(std::vector<double> vector) {
+	System::Collections::Generic::List<double>^ lst =  gcnew System::Collections::Generic::List<double>();
+	for(int i = 0 ; i < vector.size(); ++i) {
+		lst->Add(vector[i]);
+	}
+	return lst;
+}
+
 static void ArrayToPnlMat(PnlMat * pnmat, array<double, 2>^ assets, int ligne, int colonne) {
 	for(int i = 0 ; i < ligne; i ++) {
 		for (int j = 0 ; j < colonne; j++) {

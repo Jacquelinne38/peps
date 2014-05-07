@@ -1,19 +1,18 @@
 #pragma once
 //Monté carlo
-#define NBPATH 100
+#define NBPATH 10000
 static const double PERF_MAX = 0.25;
 static const double PERF_MIN = -0.50;
 static const double REMB_ANTI = 1.23;
 static const double REMB_N_ANTI  = 0.98;
-#define PAS 1800
-static const double TAUX_ACTUALISATION = 0.05;
-//Diffuse from t l_dt 
+#define PAS 260
+static const double TAUX_ACTUALISATION = 0.05; 
 
 static const double H = 0.02;
 static const double DRIFT = 0.05;
 
 enum DISCRETISATION_TYPE { DAY, WEEK };
-static const DISCRETISATION_TYPE DISCRETISATION = DAY;
+static const DISCRETISATION_TYPE DISCRETISATION = WEEK;
 //Date de fixing
 #define FIXING0 0
 #define FIXING1 103

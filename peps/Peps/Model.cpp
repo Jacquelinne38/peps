@@ -79,10 +79,10 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produi
 		//std::cout << dt << std::endl;
 		Diffuse_of_dt(produit, drift, l_vecAlea, produit->MatCholCorr(), l_spot, dt);
 		//spot contient la valeur en t+dt de tous les actifs, on met ces valeurs dans la matrice path
-		std::cout << path->m << std::endl; 
+		/*std::cout << path->m << std::endl; 
 		std::cout << path->n << std::endl; 
 		std::cout << l_spot->size << std::endl; 
-		std::cout << fixingDateFromT[k+1] << std::endl;
+		std::cout << fixingDateFromT[k+1] << std::endl;*/
 		pnl_mat_set_col(path, l_spot, fixingDateFromT[k+1]);
 
 		//pnl_vect_print(l_spot);

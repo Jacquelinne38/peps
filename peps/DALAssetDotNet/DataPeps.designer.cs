@@ -33,6 +33,9 @@ namespace DALAssetDotNet
     partial void InsertAssetsInfo(AssetsInfo instance);
     partial void UpdateAssetsInfo(AssetsInfo instance);
     partial void DeleteAssetsInfo(AssetsInfo instance);
+    partial void InsertResult(Result instance);
+    partial void UpdateResult(Result instance);
+    partial void DeleteResult(Result instance);
     #endregion
 		
 		public DataPepsDataContext() : 
@@ -86,6 +89,14 @@ namespace DALAssetDotNet
 			get
 			{
 				return this.GetTable<Volatilite>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Result> Result
+		{
+			get
+			{
+				return this.GetTable<Result>();
 			}
 		}
 	}
@@ -394,6 +405,212 @@ namespace DALAssetDotNet
 				{
 					this._vol = value;
 				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Result")]
+	public partial class Result : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _id;
+		
+		private int _idRun;
+		
+		private System.Nullable<System.DateTime> _date;
+		
+		private System.Nullable<double> _price;
+		
+		private System.Nullable<double> _priceCouverture;
+		
+		private System.Nullable<double> _sansRisque;
+		
+		private System.Nullable<double> _risque;
+		
+    #region Définitions de méthodes d'extensibilité
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(long value);
+    partial void OnidChanged();
+    partial void OnidRunChanging(int value);
+    partial void OnidRunChanged();
+    partial void OndateChanging(System.Nullable<System.DateTime> value);
+    partial void OndateChanged();
+    partial void OnpriceChanging(System.Nullable<double> value);
+    partial void OnpriceChanged();
+    partial void OnpriceCouvertureChanging(System.Nullable<double> value);
+    partial void OnpriceCouvertureChanged();
+    partial void OnsansRisqueChanging(System.Nullable<double> value);
+    partial void OnsansRisqueChanged();
+    partial void OnrisqueChanging(System.Nullable<double> value);
+    partial void OnrisqueChanged();
+    #endregion
+		
+		public Result()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_idRun", DbType="Int NOT NULL")]
+		public int idRun
+		{
+			get
+			{
+				return this._idRun;
+			}
+			set
+			{
+				if ((this._idRun != value))
+				{
+					this.OnidRunChanging(value);
+					this.SendPropertyChanging();
+					this._idRun = value;
+					this.SendPropertyChanged("idRun");
+					this.OnidRunChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_date", DbType="Date")]
+		public System.Nullable<System.DateTime> date
+		{
+			get
+			{
+				return this._date;
+			}
+			set
+			{
+				if ((this._date != value))
+				{
+					this.OndateChanging(value);
+					this.SendPropertyChanging();
+					this._date = value;
+					this.SendPropertyChanged("date");
+					this.OndateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_price", DbType="Float")]
+		public System.Nullable<double> price
+		{
+			get
+			{
+				return this._price;
+			}
+			set
+			{
+				if ((this._price != value))
+				{
+					this.OnpriceChanging(value);
+					this.SendPropertyChanging();
+					this._price = value;
+					this.SendPropertyChanged("price");
+					this.OnpriceChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_priceCouverture", DbType="Float")]
+		public System.Nullable<double> priceCouverture
+		{
+			get
+			{
+				return this._priceCouverture;
+			}
+			set
+			{
+				if ((this._priceCouverture != value))
+				{
+					this.OnpriceCouvertureChanging(value);
+					this.SendPropertyChanging();
+					this._priceCouverture = value;
+					this.SendPropertyChanged("priceCouverture");
+					this.OnpriceCouvertureChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_sansRisque", DbType="Float")]
+		public System.Nullable<double> sansRisque
+		{
+			get
+			{
+				return this._sansRisque;
+			}
+			set
+			{
+				if ((this._sansRisque != value))
+				{
+					this.OnsansRisqueChanging(value);
+					this.SendPropertyChanging();
+					this._sansRisque = value;
+					this.SendPropertyChanged("sansRisque");
+					this.OnsansRisqueChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_risque", DbType="Float")]
+		public System.Nullable<double> risque
+		{
+			get
+			{
+				return this._risque;
+			}
+			set
+			{
+				if ((this._risque != value))
+				{
+					this.OnrisqueChanging(value);
+					this.SendPropertyChanging();
+					this._risque = value;
+					this.SendPropertyChanged("risque");
+					this.OnrisqueChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 	}

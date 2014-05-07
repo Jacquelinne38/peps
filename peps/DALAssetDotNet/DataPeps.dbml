@@ -28,4 +28,15 @@
       <Association Name="AssetsInfo_Volatilite" Member="AssetsInfo" ThisKey="namego" OtherKey="namego" Type="AssetsInfo" IsForeignKey="true" />
     </Type>
   </Table>
+  <Table Name="dbo.Result" Member="Result">
+    <Type Name="Result">
+      <Column Name="id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="idRun" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="date" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="price" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="priceCouverture" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="sansRisque" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="risque" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </Type>
+  </Table>
 </Database>

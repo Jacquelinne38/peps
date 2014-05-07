@@ -14,14 +14,23 @@
 //#define _DEBUG 0
 #include <stdlib.h>
 #include <crtdbg.h>
-
+#include <list>
 
 //int main(int argc, char **argv) {		
 namespace Wrapper {
-	int WrapperClass::LaunchComputation(array<double, 2>^ assets, array<double, 1>^ vol, array<double, 2>^ corr, int nbActif, int nbDate) {
+	int WrapperClass::LaunchComputation(array<double, 2>^ assets, 
+		array<double, 1>^ vol, 
+		array<double, 2>^ corr, 
+		int nbActif,
+		int nbDate,
+		System::Collections::Generic::List<double>^% list_price,
+		System::Collections::Generic::List<double>^% list_priceCouverture,
+		System::Collections::Generic::List<double>^% list_sans_risq,
+		System::Collections::Generic::List<double>^% list_actifs_risq
+		) {
 		if(PAS > nbDate)
 			return -1;
-
+		//nbActif = 5;
 		PnlMat * lm_histo = pnl_mat_create(nbActif, PAS);
 		PnlVect * lv_vol = pnl_vect_create(nbActif);
 		PnlMat * lm_corr = pnl_mat_create(nbActif, nbActif);
@@ -87,6 +96,11 @@ namespace Wrapper {
 		CreerFichierData(vec_actifs_risq, "../DATA/actifs_risq.txt");
 		CreerFichierData(vec_sans_risq, "../DATA/sans_risq.txt");
 
+		list_price = NatifToManaged(vec_price);
+		list_priceCouverture = NatifToManaged(vec_priceCouverture);
+		list_actifs_risq = NatifToManaged(vec_actifs_risq);
+		list_sans_risq = NatifToManaged(vec_sans_risq);
+
 		std::vector<double> vecbisdelta;
 		for(unsigned int i = 0 ; i< vec_delta.size(); ++i ) {
 			vecbisdelta.push_back(pnl_vect_get(vec_delta[i], 0));
@@ -102,7 +116,7 @@ namespace Wrapper {
 
 
 		_CrtDumpMemoryLeaks();
-		while (getchar() != '\n') ;
+		//while (getchar() != '\n') ;
 		
 		return 0;
 	}

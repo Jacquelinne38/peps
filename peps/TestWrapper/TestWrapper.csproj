@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAssetValuesLoader.cs" />
+    <Compile Include="DataResultEncoder.cs" />
     <Compile Include="DataVolEncoder.cs" />
     <Compile Include="DataVolLoader.cs" />
     <Compile Include="Program.cs" />
