@@ -13,7 +13,11 @@ namespace DALAssetDotNet
 
             List<String> tmp = new List<string>();
 
-            var query = (from p in db.AssetsInfo
+            var query = (
+                
+                from p in db.AssetsInfo
+               // where p.currency != "JPY" & p.currency !="GBX" & p.currency != "HKD"
+                
                          select p.namego)
                                         .Distinct();
 

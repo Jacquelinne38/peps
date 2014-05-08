@@ -71,6 +71,8 @@ int MC_Compute::Price(double * sumPrice, double *priceSquare, PnlVect * sumDelta
 		//_timer.GetTime("Diffuse");
 		//Pour calculer le prix nous avons besoins des valeurs des sous jacents qu'au date de fixing getPathFix retourne les valeurs des sous jacents aux dates de fixing
 		getPathFix(l_past, l_histoFix, m_model->mvec_fixingDate);
+		//pnl_mat_print(l_past);
+		
 		//_timer.GetTime("getPathFix");
 		PriceProduct(l_histoFix, &l_payoff, time);
 	//	_timer.Start();
@@ -111,6 +113,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 	int li_dateFixing =  ComputeDateFix(time);
 
 	for (int i = 0; i < m_sizeEquityProduct; i++) {
+			//pnl_mat_print(pathFix);
 			//Positif
 			for (int j = li_dateFixing; j < pathFix->n; j++)
 			{
@@ -166,13 +169,13 @@ inline int MC_Compute::ComputeDateFix(int time)
 			return 4;
 		}
 	} else {
-		if (time < 104*7)
+		if (time < 104*5)
 		{
 			return 1;
-		} else if (time < 156*7)
+		} else if (time < 156*5)
 		{
 			return 2;
-		} else if (time < 208*7)
+		} else if (time < 208*5)
 		{
 			return 3;
 		} else 
@@ -275,13 +278,15 @@ inline double MC_Compute::Perf_Liss(const PnlVect *spot)
 inline void MC_Compute::RentFromMat(const PnlMat *mat, PnlMat *res)
 {
 	//TODO Quand on aura 20 actifs vérifié si ce n'est pas intéressant de parallèliser pour l'instant non
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for (int i = 0; i < mat->n - 1; i++)
 	{
 		for (int j = 0; j < mat->m; j++) {
 			pnl_mat_set(res, j, i, (MGET(mat, j,  i + 1) / MGET(mat, j, 0)) - 1);
 		}
 	}
+	//std::cout << "Rentabilité" << std::endl;
+	//pnl_mat_print(res);
 }
 /**
 * @author Yannick Pierre

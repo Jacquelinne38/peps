@@ -35,7 +35,7 @@ namespace Wrapper {
 		PnlVect * lv_vol = pnl_vect_create(nbActif);
 		PnlMat * lm_corr = pnl_mat_create(nbActif, nbActif);
 
-		ArrayToPnlMat(lm_histo, assets, nbActif, PAS);
+		ArrayHistoToPnlMat(lm_histo, assets, nbActif, PAS);
 		ArrayToPnlMat(lm_corr, corr, nbActif, nbActif);
 		ArrayToPnlVect(lv_vol, vol, nbActif);
 
@@ -72,6 +72,7 @@ namespace Wrapper {
 			if (ret == -10) break;
 			else if (ret != 0) std::cout << "Bug" << std::endl;
 			else print(price, priceSquare, delta, gamma ,model.Nb_Path());
+
 			vec_price.push_back(price);
 			vec_delta.push_back(pnl_vect_copy(delta));
 			// a mettre dans une fonction du genre refresh spot
@@ -80,12 +81,13 @@ namespace Wrapper {
 			PnlMat * l_histo =  produit.getMatHisto();
 			PnlVect * l_spot = pnl_vect_create(l_histo->m);
 			pnl_mat_get_col(l_spot, l_histo, t);
+			//pnl_mat_print(l_histo);
 			pnl_mat_free(&l_histo);
 
-			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t);
-
-
+			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t, price);
 			pnl_vect_free(&l_spot);
+			//if (price > 1.23)
+			//	break;
 		}
 		//pnl_mat_free(&l_histoFix);
 		////////////////////////////
@@ -160,6 +162,9 @@ namespace Wrapper {
 
 		PnlMat * l_corr = pnl_mat_create(nbActif, nbActif);
 		Compute_mat_Cor(l_histo, l_corr);
+		for(int i = 0 ; i < l_corr->n; ++i) {
+					pnl_mat_set_diag(l_corr, 1, i);
+		}
 
 		if (debug) {
 			std::ofstream fichier("../DATA/corrcalc.txt", std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert

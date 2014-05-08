@@ -111,7 +111,6 @@
     <ClCompile Include="Fx.cpp" />
     <ClCompile Include="MC_Compute.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Peps.cpp" />
     <ClCompile Include="Pesp_Timer.cpp" />
     <ClCompile Include="Produit.cpp" />
     <ClCompile Include="stdafx.cpp">

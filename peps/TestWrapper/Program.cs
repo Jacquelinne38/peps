@@ -14,7 +14,7 @@ namespace TestWrapper
         {
             DataAssetValuesLoader loader = new DataAssetValuesLoader(new DateTime(2004, 1, 1), new DateTime(2006, 1, 1));
             double[,] mat = loader.Matrix;
-            DataAssetValuesLoader loaderNext = new DataAssetValuesLoader(new DateTime(2006, 2, 2), new DateTime(2014, 1, 1));
+            DataAssetValuesLoader loaderNext = new DataAssetValuesLoader(new DateTime(2006, 2, 2), new DateTime(2014, 4, 4));
             double[,] matNext = loaderNext.Matrix;
             
             double[] vol;
