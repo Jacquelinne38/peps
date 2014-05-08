@@ -13,6 +13,8 @@ namespace PepsClient
         void Application_Start(object sender, EventArgs e)
         {
             // Code qui s'exécute au démarrage de l'application
+            String _path = String.Concat(System.Environment.GetEnvironmentVariable("PATH"), ";", @"C:\Users\pizzix-game\Documents\GitHub\peps\peps\PepsClient\bin");
+            System.Environment.SetEnvironmentVariable("PATH", _path, EnvironmentVariableTarget.Process);
 
         }
 

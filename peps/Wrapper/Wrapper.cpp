@@ -159,11 +159,10 @@ namespace Wrapper {
 		PnlMat * l_histo = pnl_mat_create(nbActif, nbDate);
 		ArrayToPnlMat(l_histo, histo, nbActif, nbDate);
 
-
 		PnlMat * l_corr = pnl_mat_create(nbActif, nbActif);
 		Compute_mat_Cor(l_histo, l_corr);
 		for(int i = 0 ; i < l_corr->n; ++i) {
-					pnl_mat_set_diag(l_corr, 1, i);
+			pnl_mat_set(l_corr, i, i , 1.0);
 		}
 
 		if (debug) {

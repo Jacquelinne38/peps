@@ -65,6 +65,7 @@
     <Compile Include="DALHistoComponents.cs" />
     <Compile Include="DALHistoComponentsIndices.cs" />
     <Compile Include="DALHistoIndices.cs" />
+    <Compile Include="DALParameter.cs" />
     <Compile Include="DALResult.cs" />
     <Compile Include="DataPeps.cs">
       <DependentUpon>DataPeps.dbml</DependentUpon>

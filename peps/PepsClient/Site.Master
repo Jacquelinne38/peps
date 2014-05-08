@@ -36,6 +36,8 @@
                         <asp:MenuItem NavigateUrl="~/About.aspx" Text="L'équipe"/>
                         <asp:MenuItem NavigateUrl="~/Account/Pricer.aspx" Text="Pricer"/>
                         <asp:MenuItem NavigateUrl="~/Account/Produit.aspx" Text="Produit"/>
+                        <asp:MenuItem NavigateUrl="~/Account/CalcParameter.aspx" Text="Matrix parameters" />
+                        <asp:MenuItem NavigateUrl="~/Account/Compute_parameter.aspx" Text="Compute parameters" />
                     </Items>
                 </asp:Menu>
             </div>

@@ -191,27 +191,27 @@ static double Compute_Volatility(const PnlVect * X)
 
 
 ///*
-// **
-// * @author  Pierre
-// * @param in vecteurs X et Y
-// * @param out correlation entre les deux vecteurs
-// * @Retourne un double : la correlation entre les deux vecteurs
-// *
-// */
-//  static double Correl (const PnlVect* X, const PnlVect* Y)
-//  {
-//  	int N = X->size;
-//  	double EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
-//  	for (size_t i = 0; i < N; i++)
-//  	{
-//  		EX += pnl_vect_get(X,i);
-//  		EY += pnl_vect_get(Y,i);
-//  		EXY += pnl_vect_get(X,i) * pnl_vect_get(Y,i);
-//  		EX2 += pnl_vect_get(X,i) * pnl_vect_get(X,i);
-//  		EY2 += pnl_vect_get(Y,i) * pnl_vect_get(Y,i);
-//  	}
-//  	return ((N*EXY - EX*EY) / sqrt((N*EX2 - EX*EX) * (N*EY2 - EY*EY)))/PAS;
-//  }
+//	**
+//	* @author  Pierre
+//	* @param in vecteurs X et Y
+//	* @param out correlation entre les deux vecteurs
+//	* @Retourne un double : la correlation entre les deux vecteurs
+//	*
+//	*/
+//	static double Correl (const PnlVect* X, const PnlVect* Y)
+//{
+//	int N = X->size;
+//	double EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
+//	for (size_t i = 0; i < N; i++)
+//	{
+//		EX += pnl_vect_get(X,i);
+//		EY += pnl_vect_get(Y,i);
+//		EXY += pnl_vect_get(X,i) * pnl_vect_get(Y,i);
+//		EX2 += pnl_vect_get(X,i) * pnl_vect_get(X,i);
+//		EY2 += pnl_vect_get(Y,i) * pnl_vect_get(Y,i);
+//	}
+//	return ((N*EXY - EX*EY) / sqrt((N*EX2 - EX*EX) * (N*EY2 - EY*EY)))/PAS;
+//}
 //
 
   static double Correl(const PnlVect * X, const PnlVect * Y)

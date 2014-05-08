@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="peps" Class="DataPepsDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=pizzix-game-pc\SQLEXPRESS;Initial Catalog=peps;Integrated Security=True" SettingsObjectName="DALAssetDotNet.Properties.Settings" SettingsPropertyName="pepsConnectionString" Provider="System.Data.SqlClient" />
+  <Connection Mode="AppSettings" ConnectionString="Data Source=pizzix-game-pc\SQLEXPRESS;Initial Catalog=peps;Persist Security Info=True;User ID=pizzix" SettingsObjectName="DALAssetDotNet.Properties.Settings" SettingsPropertyName="pepsConnectionString1" Provider="System.Data.SqlClient" />
   <Table Name="peps.AssetsInfo" Member="AssetsInfo">
     <Type Name="AssetsInfo">
       <Column Name="namego" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -9,7 +9,6 @@
       <Column Name="country" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="currency" Type="System.String" DbType="VarChar(5)" CanBeNull="true" />
       <Association Name="AssetsInfo_AssetsValue" Member="AssetsValue" ThisKey="namego" OtherKey="namego" Type="AssetsValue" />
-      <Association Name="AssetsInfo_Volatilite" Member="Volatilite" ThisKey="namego" OtherKey="namego" Type="Volatilite" />
     </Type>
   </Table>
   <Table Name="peps.AssetsValue" Member="AssetsValue">
@@ -18,14 +17,6 @@
       <Column Name="Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="[close]" Member="close" Type="System.Single" DbType="Real" CanBeNull="true" />
       <Association Name="AssetsInfo_AssetsValue" Member="AssetsInfo" ThisKey="namego" OtherKey="namego" Type="AssetsInfo" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.Volatilite" Member="Volatilite">
-    <Type Name="Volatilite">
-      <Column Name="namego" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
-      <Column Name="runId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="vol" Type="System.Single" DbType="Real" CanBeNull="true" />
-      <Association Name="AssetsInfo_Volatilite" Member="AssetsInfo" ThisKey="namego" OtherKey="namego" Type="AssetsInfo" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Result" Member="Result">
@@ -37,6 +28,49 @@
       <Column Name="priceCouverture" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="sansRisque" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="risque" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Correlation" Member="Correlation">
+    <Type Name="Correlation">
+      <Column Name="id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="runId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="[AMS:DSM]" Member="AMS_DSM" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[AMS:MT]" Member="AMS_MT" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[ETR:DB1]" Member="ETR_DB1" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[ETR:IFX]" Member="ETR_IFX" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[HEL:NOKIV]" Member="HEL_NOKIV" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[HKG:0857]" Member="HKG_0857" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[LON:BARC]" Member="LON_BARC" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:AA]" Member="NYSE_AA" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:CTL]" Member="NYSE_CTL" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:DYN]" Member="NYSE_DYN" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:GE]" Member="NYSE_GE" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:HOG]" Member="NYSE_HOG" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:IP]" Member="NYSE_IP" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:JCP]" Member="NYSE_JCP" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:MHFI]" Member="NYSE_MHFI" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[NYSE:TIF]" Member="NYSE_TIF" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[TSE:BB]" Member="TSE_BB" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[TYO:4568]" Member="TYO_4568" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[TYO:7974]" Member="TYO_7974" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="[TYO:8058]" Member="TYO_8058" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Volatility" Member="Volatility">
+    <Type Name="Volatility">
+      <Column Name="id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="runId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="namego" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="vol" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.InfoRunId" Member="InfoRunId">
+    <Type Name="InfoRunId">
+      <Column Name="id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="runId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="dateBegin" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="dateEnd" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="note" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
     </Type>
   </Table>
 </Database>
