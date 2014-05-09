@@ -59,6 +59,7 @@
     <Content Include="Account\Compute_Parameter.aspx" />
     <Content Include="Account\Login.aspx" />
     <Content Include="Account\Pricer.aspx" />
+    <Content Include="Account\PricerNewComputation.aspx" />
     <Content Include="Account\Produit.aspx" />
     <Content Include="Account\Register.aspx" />
     <Content Include="img\yannick.jpg" />
@@ -129,6 +130,13 @@
     </Compile>
     <Compile Include="Account\Pricer.aspx.designer.cs">
       <DependentUpon>Pricer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Account\PricerNewComputation.aspx.cs">
+      <DependentUpon>PricerNewComputation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Account\PricerNewComputation.aspx.designer.cs">
+      <DependentUpon>PricerNewComputation.aspx</DependentUpon>
     </Compile>
     <Compile Include="Account\Produit.aspx.cs">
       <DependentUpon>Produit.aspx</DependentUpon>

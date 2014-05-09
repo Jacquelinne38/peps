@@ -21,13 +21,12 @@ void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, co
 }
 void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect * vecAlea, const PnlMat * choleskyCor, PnlVect * spot,const int dt) {
     PnlVect * tmp2;
-    double tmp;
+    double tmp = 0;
     double l_compo1 = 0;
     double l_compo2 = 0;
     tmp2 = pnl_mat_mult_vect(choleskyCor, produit->Volatility());
-
     PnlVect * tmp3 = pnl_vect_create_from_zero(choleskyCor->m);
-    double tmp4;
+    double tmp4 = 0;
    
     //#pragma omp parallel for
     for (int j = 0; j < produit->getEquities().size(); ++j){
@@ -37,9 +36,6 @@ void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect
         tmp4 = pnl_vect_scalar_prod(tmp3, vecAlea);
         l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(dt*m_DT);  
         l_compo2 = sqrt((double)(dt*m_DT)) * produit->getEquities()[j].volatility * tmp4;
-		if(j == 1) {
-			//std::cout <<  exp(l_compo1 + l_compo2) << std::endl;
-		}
         pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
        
     }
@@ -64,6 +60,7 @@ std::vector<int> Model::getFixingDateFromt(int time, std::vector<int> lst_time) 
 void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produit, PnlRng * rng, int time,  std::vector<int> lst_time, DISCRETISATION_TYPE l_discretisation) {
 	const int l_nbEq = produit->getEquities().size();
 	PnlVect * l_spot = pnl_vect_create(l_nbEq);
+	pnl_vect_set_zero(l_spot);
 	pnl_mat_get_col(l_spot, path, time);
 	PnlVect * l_vecAlea = pnl_vect_create(l_nbEq);
 	std::vector<int> fixingDateFromT = getFixingDateFromt(time, lst_time);
@@ -71,20 +68,10 @@ void Model::Diffuse_from_t(PnlMat * path, const PnlVect *drift, Produit * produi
 	for (int k = 0; k < fixingDateFromT.size() - 1; k++){
 		pnl_vect_rng_normal_d(l_vecAlea, l_nbEq, rng);
 		int dt = Compute_dt(fixingDateFromT[k], l_discretisation, lst_time);
-		//std::cout << dt << std::endl;
 		Diffuse_of_dt(produit, drift, l_vecAlea, produit->MatCholCorr(), l_spot, dt);
 		//spot contient la valeur en t+dt de tous les actifs, on met ces valeurs dans la matrice path
-		/*std::cout << path->m << std::endl; 
-		std::cout << path->n << std::endl; 
-		std::cout << l_spot->size << std::endl; 
-		std::cout << fixingDateFromT[k+1] << std::endl;*/
-		pnl_mat_set_col(path, l_spot, fixingDateFromT[k+1]);
-			//std::cout << std::endl ;
-		//pnl_vect_print(l_spot);
+		pnl_mat_set_col(path, l_spot, fixingDateFromT[k+1]);	
 	}
-	//std::cout << std::endl <<  std::endl;
-	//pnl_mat_print(path);
-//	std::cout << std::endl;
 		
 	pnl_vect_free(&l_vecAlea);
 	pnl_vect_free(&l_spot);
@@ -122,7 +109,6 @@ void Model::Simul_Market(std::vector<PnlVect *> &vec_delta,
 	if (time == 0){
 		actifs_risq = pnl_vect_scalar_prod(delta, spot);
 		sans_risq = prix - pnl_vect_scalar_prod(delta, spot);
-		//pnl_vect_print(spot);
 		price_couverture = actifs_risq + sans_risq; 
 	} else {
 		actifs_risq = pnl_vect_scalar_prod(delta, spot);
@@ -133,7 +119,7 @@ void Model::Simul_Market(std::vector<PnlVect *> &vec_delta,
 		pnl_vect_print(spot);
 		std::cout << "Actualis : " << actu << std::endl << "Delta spot : " << deltaSpot <<std::endl << "Prod cal delta n-1 : "<< deltamoins << std::endl;
 		sans_risq = actu - deltaSpot + deltamoins;
-		price_couverture = actifs_risq + sans_risq;
+		price_couverture = (actifs_risq + sans_risq);
 	}
 	if ( PRINTCOUVERTURE )
 		std::cout << "Ris : " << actifs_risq << "   Sans : " << sans_risq << " Price : " << price_couverture << std::endl;

@@ -18,6 +18,11 @@
 
 //int main(int argc, char **argv) {		
 namespace Wrapper {
+
+
+	//Fonction qui sert d'interface entre le c# et le c++ ici c'est du c++ cli.
+	//Cette la fonction de calcule qui est appelé par le projet TestWrapper qui est lui même appelé par le projet web.
+	//C'est ici que tout ce passe.
 	int WrapperClass::LaunchComputation(array<double, 2>^ assets, 
 		array<double, 1>^ vol, 
 		array<double, 2>^ corr, 
@@ -30,8 +35,12 @@ namespace Wrapper {
 		) {
 		if(PAS > nbDate)
 			return -1;
-		//nbActif = 5;
+		//nbActif = 15;
 		PnlMat * lm_histo = pnl_mat_create(nbActif, PAS);
+		array<double, 2>^ tmp = PnlMatToArray(lm_histo);
+
+		
+		std::cout << std::endl;
 		PnlVect * lv_vol = pnl_vect_create(nbActif);
 		PnlMat * lm_corr = pnl_mat_create(nbActif, nbActif);
 
@@ -51,8 +60,8 @@ namespace Wrapper {
 		std::vector<double> vec_price;	
 		std::vector<PnlVect *> vec_delta;
 		//Produit produit = Produit(lm_histo, nbActif, nbDate);
-		//Produit produit = Produit();
-		Produit produit = Produit(lm_histo, lm_corr, lv_vol);
+		Produit produit = Produit();
+		//Produit produit = Produit(lm_histo, lm_corr, lv_vol);
 		Model model = Model(NBPATH);
 		
 
@@ -81,7 +90,6 @@ namespace Wrapper {
 			PnlMat * l_histo =  produit.getMatHisto();
 			PnlVect * l_spot = pnl_vect_create(l_histo->m);
 			pnl_mat_get_col(l_spot, l_histo, t);
-			//pnl_mat_print(l_histo);
 			pnl_mat_free(&l_histo);
 
 			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t, price);
@@ -123,6 +131,9 @@ namespace Wrapper {
 		return 0;
 	}
 
+
+		//Fonction qui sert d'interface entre le c# et le c++ ici c'est du c++ cli.
+	//Cette fonction retourne la volatilité en fonction des valeurs historique 
 	array<double, 1>^ WrapperClass::CalcVol(array<double, 2>^ histo, int nbActif, int nbDate, bool debug) {
 
 		//Passage array to pnlmatarray
@@ -153,7 +164,8 @@ namespace Wrapper {
 		pnl_vect_free(&lv_vol);
 		return la_histo;
 	}
-
+	//Fonction qui sert d'interface entre le c# et le c++ ici c'est du c++ cli.
+	//Cette fonction retourne la corrélation en fonction des valeurs historique 
 	array<double, 2>^ WrapperClass::CalcCorr(array<double, 2>^ histo, int nbActif, int nbDate, bool debug) {
 		//Passage array to pnlmatarray
 		PnlMat * l_histo = pnl_mat_create(nbActif, nbDate);

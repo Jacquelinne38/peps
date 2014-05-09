@@ -181,7 +181,6 @@ static double Compute_Volatility(const PnlVect * X)
 	{
 		vol += pow((pnl_vect_get(R,j) - mean),2);
 	}
-	//std::cout<< vol <<std::endl;
 	vol *= 1.0/((double)R->size-1.0);
 	vol /= PAS;
 	vol = sqrt(vol);
@@ -218,13 +217,12 @@ static double Compute_Volatility(const PnlVect * X)
   {
 	  double volX = Compute_Volatility(X);
 	  double volY = Compute_Volatility(Y);
-
-	  double meanX;
-	  double meanY;
-	  double multR;
-	  double retX;
-	  double retY;
-	  double ret;
+	  double meanX = 0;
+	  double meanY = 0;
+	  double multR = 0;
+	  double retX = 0;
+	  double retY = 0;
+	  double ret = 0;
 
 	  for (int i = 0; i< X->size - 1; i++)
 	  {
@@ -233,6 +231,7 @@ static double Compute_Volatility(const PnlVect * X)
 		  meanX += retX;
 		  meanY += retY;
 		  multR += retX*retY;
+		  	 
 	  }
 	  meanX /= X->size - 1;
 	  meanY /= X->size - 1;

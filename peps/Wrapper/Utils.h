@@ -8,6 +8,13 @@
 using namespace System;
 
 
+/************************************************************************/
+/* 
+		Classe utils pour transfert de donnée entre code managé et non managé.
+
+*/
+/************************************************************************/
+
 static System::Collections::Generic::List<double>^ NatifToManaged(std::vector<double> vector) {
 	System::Collections::Generic::List<double>^ lst =  gcnew System::Collections::Generic::List<double>();
 	for(int i = 0 ; i < vector.size(); ++i) {

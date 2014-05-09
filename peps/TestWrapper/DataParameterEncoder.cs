@@ -11,7 +11,7 @@ namespace TestWrapper
     public static class DataParameterEncoder
     {
 
-
+        //Fonction d'entrée du projet web, qui permet de calculer les nouvelles corrélation et volatilité
         public static int LaunchParameterComputation(DateTime begin, DateTime end)
         {
             DataAssetValuesLoader loader = new DataAssetValuesLoader(begin, end);
