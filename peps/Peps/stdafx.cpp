@@ -4,6 +4,3 @@
 
 #include "stdafx.h"
 
-
-// TODO: faites référence aux en-têtes supplémentaires nécessaires dans STDAFX.H
-// absents de ce fichier

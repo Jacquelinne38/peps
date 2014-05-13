@@ -32,7 +32,3 @@
 #include "Parameter.h"
 #include "Utils.h"
 #include "Pesp_Timer.h"
-
-
-
-// TODO: faites référence ici aux en-têtes supplémentaires nécessaires au programme
