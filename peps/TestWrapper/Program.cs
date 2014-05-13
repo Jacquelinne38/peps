@@ -31,7 +31,11 @@ namespace TestWrapper
             List<double> priceCouverture = new List<double>();
             List<double> sansRisque = new List<double>();
             List<double> risque = new List<double>();
-            
+            double[,] compoAll = new double[1,1];
+
+            double[] debug = new double[20];
+
+
              WrapperClass cl = new WrapperClass();
              corr = cl.CalcCorr(mat, loader.LstassetName.Count, loader.LstassetDate.Count, true);
              vol = cl.CalcVol(mat, loader.LstassetName.Count, loader.LstassetDate.Count, false);
@@ -43,10 +47,13 @@ namespace TestWrapper
                                   ref price,
                                   ref priceCouverture,
                                   ref sansRisque, 
-                                  ref risque
+                                  ref risque,
+                                  ref compoAll
                                   );
 
-             DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque);
+           
+
+                 DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque);
 
              Console.WriteLine("Done");
         }

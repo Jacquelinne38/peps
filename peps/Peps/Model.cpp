@@ -102,7 +102,10 @@ void Model::Simul_Market(std::vector<PnlVect *> &vec_delta,
 						 const PnlVect * delta, 
 						 const PnlVect* spot, 
 						 const int time, 
-						 const double prix	) {
+						 const double prix,
+						 PnlMat * compoAll
+						 ) {
+	PnlVect * compo_t = pnl_vect_create(spot->size);
 	double price_couverture = 0;
 	double actifs_risq = 0;
 	double sans_risq = 0;
@@ -123,9 +126,21 @@ void Model::Simul_Market(std::vector<PnlVect *> &vec_delta,
 	}
 	if ( PRINTCOUVERTURE )
 		std::cout << "Ris : " << actifs_risq << "   Sans : " << sans_risq << " Price : " << price_couverture << std::endl;
+
+	for(int i = 0; i < spot->size; ++i) {
+		double compo =  (pnl_vect_get(delta, i) * pnl_vect_get(spot, i))/actifs_risq;
+		pnl_vect_set(compo_t, i, compo);
+	}
+
+
 	vec_priceCouverture.push_back(price_couverture);
 	vec_actifs_risq.push_back(actifs_risq);
 	vec_sans_risq.push_back(sans_risq);
+	pnl_mat_set_col(compoAll, compo_t, time);
+		//pnl_vect_print(compo_t);
+	pnl_vect_free(&compo_t);
+
+	//free(vec_compoT);
 }
 
 bool Model::CheckParameter() {

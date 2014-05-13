@@ -31,18 +31,22 @@ namespace Wrapper {
 		System::Collections::Generic::List<double>^% list_price,
 		System::Collections::Generic::List<double>^% list_priceCouverture,
 		System::Collections::Generic::List<double>^% list_sans_risq,
-		System::Collections::Generic::List<double>^% list_actifs_risq
+		System::Collections::Generic::List<double>^% list_actifs_risq,
+		array<double, 2>^% compoCli
 		) {
+
 		if(PAS > nbDate)
 			return -1;
 		//nbActif = 15;
 		PnlMat * lm_histo = pnl_mat_create(nbActif, PAS);
 		array<double, 2>^ tmp = PnlMatToArray(lm_histo);
+		
 
 		
 		std::cout << std::endl;
 		PnlVect * lv_vol = pnl_vect_create(nbActif);
 		PnlMat * lm_corr = pnl_mat_create(nbActif, nbActif);
+
 
 		ArrayHistoToPnlMat(lm_histo, assets, nbActif, PAS);
 		ArrayToPnlMat(lm_corr, corr, nbActif, nbActif);
@@ -60,8 +64,8 @@ namespace Wrapper {
 		std::vector<double> vec_price;	
 		std::vector<PnlVect *> vec_delta;
 		//Produit produit = Produit(lm_histo, nbActif, nbDate);
-		Produit produit = Produit();
-		//Produit produit = Produit(lm_histo, lm_corr, lv_vol);
+		//Produit produit = Produit();
+		Produit produit = Produit(lm_histo, lm_corr, lv_vol);
 		Model model = Model(NBPATH);
 		
 
@@ -74,6 +78,8 @@ namespace Wrapper {
 		PnlMat *l_histoFix = pnl_mat_create(produit.getEquities().size(), model.mvec_fixingDate.size());
 		// ICI creer la matrice path complete et surement histofix aussi
 
+		//Composition
+		PnlMat * compoPortefeuille = pnl_mat_create(produit.getEquities().size(), model.FINALDATE());
 		//Pricing pour chaque t
 		for (int t=0; t<model.FINALDATE(); t++){
 			//std::cout<< t <<std::endl;
@@ -92,7 +98,7 @@ namespace Wrapper {
 			pnl_mat_get_col(l_spot, l_histo, t);
 			pnl_mat_free(&l_histo);
 
-			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t, price);
+			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t, price, compoPortefeuille);
 			pnl_vect_free(&l_spot);
 			//if (price > 1.23)
 			//	break;
@@ -110,6 +116,9 @@ namespace Wrapper {
 		list_priceCouverture = NatifToManaged(vec_priceCouverture);
 		list_actifs_risq = NatifToManaged(vec_actifs_risq);
 		list_sans_risq = NatifToManaged(vec_sans_risq);
+		//pnl_mat_print(compoPortefeuille);
+		compoCli = PnlMatToArray(compoPortefeuille);
+
 
 		std::vector<double> vecbisdelta;
 		for(unsigned int i = 0 ; i< vec_delta.size(); ++i ) {
