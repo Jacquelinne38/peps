@@ -39,6 +39,7 @@ void Model::Diffuse_of_dt(Produit * produit,const PnlVect * drift, const PnlVect
         pnl_vect_set(spot, j, pnl_vect_get(spot, j) * exp(l_compo1 + l_compo2));
        
     }
+	}
 	pnl_vect_free(&tmp3);
     pnl_vect_free(&tmp2);
 }

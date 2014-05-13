@@ -138,7 +138,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			RentFromMat(pathFix,l_rentPos);
 			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);	
 			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H*pnl_mat_get(past, i, time))));
-			}
+			
 			for (int j = ComputeDateFix(time); j < pathFix->n; j++)
 			{
 				MLET(pathFix,i,j) = (MGET(pathFix,i,j))/(1-H);
@@ -217,23 +217,6 @@ bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, dou
 	return false;
 }
 
-inline bool MC_Compute::Condition_Remb(const PnlMat * past, int time){
-	bool condSortie = false;
-	PnlVect * S0 = pnl_vect_create(past->m);
-	PnlVect * S1 = pnl_vect_create(past->m);
-	PnlVect * rent = pnl_vect_create(past->m);
-	pnl_mat_get_col(S0, past, 0);
-	pnl_mat_get_col(S1, past, time);
-	RentVect(S1, S0, rent);
-	//for (int j = 0; j< rent->size; j++){
-
-	if ( pnl_vect_min(rent) > -0.1 ) condSortie = true;
-	//}
-	pnl_vect_free(&S0);
-	pnl_vect_free(&S1);
-	pnl_vect_free(&rent);
-	return condSortie;
-}
 
 
 double MC_Compute::DiscountPayoffFromMaturity(const PnlMat *rent, int time) {
@@ -358,3 +341,4 @@ inline bool MC_Compute::Condition_Remb(const PnlMat * past, int time){
 	pnl_vect_free(&rent);
 	return condSortie;
 }
+
