@@ -25,7 +25,9 @@ namespace DALAssetDotNet
                                       List<double> prices,
                                       List<double> priceCouvertures,
                                       List<double> sansRisques,
-                                      List<double> risques                    
+                                      List<double> risques,
+                                        double[,] compo  , 
+            List<String> assets
             ) 
         {
            int runid = getLastRunId();
@@ -46,6 +48,29 @@ namespace DALAssetDotNet
             DataPepsDataContext db = ContextDb.Connexion;
             db.Result.InsertAllOnSubmit(results);
             db.SubmitChanges();
+
+
+            //compo
+            List<Composition> compos = new List<Composition>();
+            for( int i = 0; i < compo.GetLength(0); i++) {
+                for(int j = 0; i < dates.Count ; j++) {
+                    Composition tmp = new Composition();
+                    tmp.idRun = runid +1;
+                    tmp.actif = assets[i];
+                    double? val = compo[i, j];
+                    if (val == null)
+                        val = 0;
+                    tmp.value = (compo[i, j]*100);
+                    tmp.date = dates[j];
+                    compos.Add(tmp);
+                }
+            }
+
+            db.Composition.InsertAllOnSubmit(compos);
+            db.SubmitChanges();
+
+
+
             //db.SubmitChanges();
         }
 

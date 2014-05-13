@@ -45,6 +45,9 @@ namespace DALAssetDotNet
     partial void InsertInfoRunId(InfoRunId instance);
     partial void UpdateInfoRunId(InfoRunId instance);
     partial void DeleteInfoRunId(InfoRunId instance);
+    partial void InsertComposition(Composition instance);
+    partial void UpdateComposition(Composition instance);
+    partial void DeleteComposition(Composition instance);
     #endregion
 		
 		public DataPepsDataContext() : 
@@ -122,6 +125,14 @@ namespace DALAssetDotNet
 			get
 			{
 				return this.GetTable<InfoRunId>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Composition> Composition
+		{
+			get
+			{
+				return this.GetTable<Composition>();
 			}
 		}
 	}
@@ -1410,6 +1421,164 @@ namespace DALAssetDotNet
 					this._note = value;
 					this.SendPropertyChanged("note");
 					this.OnnoteChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Composition")]
+	public partial class Composition : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _id;
+		
+		private int _idRun;
+		
+		private string _actif;
+		
+		private System.Nullable<double> _value;
+		
+		private System.Nullable<System.DateTime> _date;
+		
+    #region Définitions de méthodes d'extensibilité
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(long value);
+    partial void OnidChanged();
+    partial void OnidRunChanging(int value);
+    partial void OnidRunChanged();
+    partial void OnactifChanging(string value);
+    partial void OnactifChanged();
+    partial void OnvalueChanging(System.Nullable<double> value);
+    partial void OnvalueChanged();
+    partial void OndateChanging(System.Nullable<System.DateTime> value);
+    partial void OndateChanged();
+    #endregion
+		
+		public Composition()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_idRun", DbType="Int NOT NULL")]
+		public int idRun
+		{
+			get
+			{
+				return this._idRun;
+			}
+			set
+			{
+				if ((this._idRun != value))
+				{
+					this.OnidRunChanging(value);
+					this.SendPropertyChanging();
+					this._idRun = value;
+					this.SendPropertyChanged("idRun");
+					this.OnidRunChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_actif", DbType="VarChar(50)")]
+		public string actif
+		{
+			get
+			{
+				return this._actif;
+			}
+			set
+			{
+				if ((this._actif != value))
+				{
+					this.OnactifChanging(value);
+					this.SendPropertyChanging();
+					this._actif = value;
+					this.SendPropertyChanged("actif");
+					this.OnactifChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_value", DbType="Float")]
+		public System.Nullable<double> value
+		{
+			get
+			{
+				return this._value;
+			}
+			set
+			{
+				if ((this._value != value))
+				{
+					this.OnvalueChanging(value);
+					this.SendPropertyChanging();
+					this._value = value;
+					this.SendPropertyChanged("value");
+					this.OnvalueChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_date", DbType="Date")]
+		public System.Nullable<System.DateTime> date
+		{
+			get
+			{
+				return this._date;
+			}
+			set
+			{
+				if ((this._date != value))
+				{
+					this.OndateChanging(value);
+					this.SendPropertyChanging();
+					this._date = value;
+					this.SendPropertyChanged("date");
+					this.OndateChanged();
 				}
 			}
 		}

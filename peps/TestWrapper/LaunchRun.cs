@@ -18,7 +18,7 @@ namespace TestWrapper
 
             double[] vol;
             double[,] corr;
-            double[,] compoAll = new double[20,260];;
+            double[,] compoAll = new double[1,1];
 
             List<double> price = new List<double>();
             List<double> priceCouverture = new List<double>();
@@ -42,7 +42,7 @@ namespace TestWrapper
                                  ref compoAll
                                  );
 
-            DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque);
+            DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque, compoAll, loaderNext.LstassetName);
 
             Console.WriteLine("Done");
 

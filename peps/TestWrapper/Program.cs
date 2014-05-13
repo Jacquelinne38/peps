@@ -53,7 +53,7 @@ namespace TestWrapper
 
            
 
-                 DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque);
+                 DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque, compoAll, loaderNext.LstassetName);
 
              Console.WriteLine("Done");
         }
