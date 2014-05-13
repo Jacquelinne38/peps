@@ -38,11 +38,9 @@ int main(int argc, char **argv)
 	PnlVect * gamma = pnl_vect_create(produit.getEquities().size());
 
 	PnlMat *l_histoFix = pnl_mat_create(produit.getEquities().size(), model.mvec_fixingDate.size());
-	// ICI creer la matrice path complete et surement histofix aussi
 
 	//Pricing pour chaque t
 	for (int t=0; t<model.FINALDATE(); t++){
-		//std::cout<< t <<std::endl;
 		int ret = moteur.Price(&price, &priceSquare, delta, gamma, l_histoFix, t);
 		if (ret == -10) break;
 		else if (ret != 0) std::cout << "Bug" << std::endl;
@@ -50,9 +48,6 @@ int main(int argc, char **argv)
 		vec_price.push_back(price);
 		vec_delta.push_back(pnl_vect_copy(delta));
 		pnl_vect_print(delta);
-		std::cout << "coucou" << delta->size <<std::endl;
-		// a mettre dans une fonction du genre refresh spot
-		// declarer l_spot avant
 
 		PnlMat * l_histo =  produit.getMatHisto();
 		PnlVect * l_spot = pnl_vect_create(l_histo->m);
@@ -64,8 +59,6 @@ int main(int argc, char **argv)
 
 		pnl_vect_free(&l_spot);
 	}
-	//pnl_mat_free(&l_histoFix);
-	////////////////////////////
 
 	//Création fichiers d'export
 	CreerFichierData(vec_price, "../../../DATA/prix.txt");

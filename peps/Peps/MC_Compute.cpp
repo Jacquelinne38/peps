@@ -111,18 +111,16 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 	int li_dateFixing =  ComputeDateFix(time);
 
 	for (int i = 0; i < m_sizeEquityProduct; i++) {
-			//Positif
+			
 			for (int j = li_dateFixing; j < pathFix->n; j++)
 			{
 				MLET(pathFix,i,j) = (MGET(pathFix,i,j))*(1+H);
 			}
 
-			//A voir si on peu optimiser en prennant juste l'actif et non toute la matrice
-			//car ici on calcule seulement pour un actif or on boucle sur tous
 			RentFromMat(pathFix,l_rentPos);
 			// Calcul le payoff a partir de la matrice des rentabilites
 			ld_payoffPos = DiscountedPayoff(l_rentPos, time);
-			//Negatif
+			
 			for (int j = li_dateFixing; j < pathFix->n; j++)
 			{
 				MLET(pathFix,i,j) = MGET(pathFix,i,j)*(1-H)/(1+H);
@@ -130,7 +128,7 @@ inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const
 			RentFromMat(pathFix,l_rentPos);
 			ld_payoffNeg = DiscountedPayoff(l_rentPos, time);	
 			pnl_vect_set(sumDelta, i, GET(sumDelta, i)+((ld_payoffPos-ld_payoffNeg)/(2*H*pnl_mat_get(past, i, time))));
-			//pnl_vect_set(sumGamma, l ,GET(sumGamma, i)+((ld_payoffPos - 2 * payoff + ld_payoffNeg)/(pow(H,2))));
+			
 
 			for (int j = ComputeDateFix(time); j < pathFix->n; j++)
 			{
@@ -185,7 +183,6 @@ inline int MC_Compute::ComputeDateFix(int time)
 //retourne la valeur actualisée de value
 inline double MC_Compute::Discount(double value, int date, int time)
 {
-	//Pour le moment le taux sans risque est la c'est pas la qu'il devra etre
 	return (value*exp(-((date-time)/m_model->NBDISCRETISATION() * TAUX_ACTUALISATION)));
 }
 
@@ -199,7 +196,6 @@ bool MC_Compute::CheckIfRemboursementAnticipe(const PnlMat * rent, int time, dou
 			// Si on entre ici c'est qu'il y a un remboursement anticipé
 			// mvec_fixingDate[i+1] est la date à laquelle le flux est touchée
 			// time est la date à laquelle on calcul le prix
-			//std::cout << "remboursement anticipé en "<< mvec_fixingDate[i+1] << std::endl;
 			*valueRemboursement = Discount(REMB_ANTI, m_model->mvec_fixingDate[i+1], time);
 			pnl_vect_free(&tmp);
 			return true;
@@ -264,18 +260,9 @@ inline double MC_Compute::Perf_Liss(const PnlVect *spot)
 
 
 
-/**
-* @author Yannick Pierre
-* @param in matrice
-* @param out resultat
-* @Retourne la rentabilité param in avec : rentabilité par rapport à la date zero
-*
-* OKY 25/03
-*/
+
 inline void MC_Compute::RentFromMat(const PnlMat *mat, PnlMat *res)
 {
-	//TODO Quand on aura 20 actifs vérifié si ce n'est pas intéressant de parallèliser pour l'instant non
-	//#pragma omp parallel for
 	for (int i = 0; i < mat->n - 1; i++)
 	{
 		for (int j = 0; j < mat->m; j++) {
@@ -283,32 +270,21 @@ inline void MC_Compute::RentFromMat(const PnlMat *mat, PnlMat *res)
 		}
 	}
 }
-/**
-* @author Yannick Pierre
-* @param in matrice
-* @param out resultat
-* @Retourne la rentabilité param in avec : rentabilité par rapport à la date zero
-*
-* OKY 25/03
-*/
+
 inline void MC_Compute::RentFromVect(const PnlVect *vect, PnlVect *res)
 {
-	//TODO Quand on aura 20 actifs vérifié si ce n'est pas intéressant de parallèliser pour l'instant non
-	//#pragma omp parallel for
 	for (int j = 0; j < vect->size-1; ++j) {
 		pnl_vect_set(res, j, (pnl_vect_get(vect, j + 1) / pnl_vect_get(vect, 0)) - 1);
 	}
 }
 
-inline void MC_Compute::RentFromVectHisto(const PnlVect *vect, PnlVect *res, int time) {
-	//TODO Quand on aura 20 actifs vérifié si ce n'est pas intéressant de parallèliser pour l'instant non
-	//#pragma omp parallel for
+inline void MC_Compute::RentFromVectHisto(const PnlVect *vect, PnlVect *res, int time) 
+{
 	for (int j = time; j < vect->size-1; ++j) {
 		pnl_vect_set(res, j, (pnl_vect_get(vect, j + 1) / pnl_vect_get(vect, 0)) - 1);
 	}
 }
 
-//spot est a desallouer en dehors
 PnlVect * MC_Compute::GetInitSpot() {
 	PnlVect * l_spot = pnl_vect_create(m_sizeEquityProduct);
 	for(int k = 0; k < m_sizeEquityProduct; k++){
@@ -317,7 +293,6 @@ PnlVect * MC_Compute::GetInitSpot() {
 	return l_spot;
 }
 
-//vol est a desallouer en dehors
 PnlVect * MC_Compute::GetInitVol() {
 	PnlVect *vol = pnl_vect_create(m_sizeEquityProduct);
 	for(int k = 0; k < m_sizeEquityProduct; k++){
@@ -341,10 +316,8 @@ inline bool MC_Compute::Condition_Remb(const PnlMat * past, int time){
 	pnl_mat_get_col(S0, past, 0);
 	pnl_mat_get_col(S1, past, time);
 	RentVect(S1, S0, rent);
-	//for (int j = 0; j< rent->size; j++){
 		
 	if ( pnl_vect_min(rent) > -0.1 ) condSortie = true;
-	//}
 	pnl_vect_free(&S0);
 	pnl_vect_free(&S1);
 	pnl_vect_free(&rent);
