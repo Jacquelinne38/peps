@@ -36,10 +36,19 @@ namespace DALAssetDotNet
     partial void InsertResult(Result instance);
     partial void UpdateResult(Result instance);
     partial void DeleteResult(Result instance);
+    partial void InsertCorrelation(Correlation instance);
+    partial void UpdateCorrelation(Correlation instance);
+    partial void DeleteCorrelation(Correlation instance);
+    partial void InsertVolatility(Volatility instance);
+    partial void UpdateVolatility(Volatility instance);
+    partial void DeleteVolatility(Volatility instance);
+    partial void InsertInfoRunId(InfoRunId instance);
+    partial void UpdateInfoRunId(InfoRunId instance);
+    partial void DeleteInfoRunId(InfoRunId instance);
     #endregion
 		
 		public DataPepsDataContext() : 
-				base(global::DALAssetDotNet.Properties.Settings.Default.pepsConnectionString, mappingSource)
+				base(global::DALAssetDotNet.Properties.Settings.Default.pepsConnectionString1, mappingSource)
 		{
 			OnCreated();
 		}
@@ -84,19 +93,35 @@ namespace DALAssetDotNet
 			}
 		}
 		
-		public System.Data.Linq.Table<Volatilite> Volatilite
-		{
-			get
-			{
-				return this.GetTable<Volatilite>();
-			}
-		}
-		
 		public System.Data.Linq.Table<Result> Result
 		{
 			get
 			{
 				return this.GetTable<Result>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Correlation> Correlation
+		{
+			get
+			{
+				return this.GetTable<Correlation>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Volatility> Volatility
+		{
+			get
+			{
+				return this.GetTable<Volatility>();
+			}
+		}
+		
+		public System.Data.Linq.Table<InfoRunId> InfoRunId
+		{
+			get
+			{
+				return this.GetTable<InfoRunId>();
 			}
 		}
 	}
@@ -346,69 +371,6 @@ namespace DALAssetDotNet
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Volatilite")]
-	public partial class Volatilite
-	{
-		
-		private string _namego;
-		
-		private int _runId;
-		
-		private System.Nullable<float> _vol;
-		
-		public Volatilite()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_namego", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
-		public string namego
-		{
-			get
-			{
-				return this._namego;
-			}
-			set
-			{
-				if ((this._namego != value))
-				{
-					this._namego = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_runId", DbType="Int NOT NULL")]
-		public int runId
-		{
-			get
-			{
-				return this._runId;
-			}
-			set
-			{
-				if ((this._runId != value))
-				{
-					this._runId = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_vol", DbType="Real")]
-		public System.Nullable<float> vol
-		{
-			get
-			{
-				return this._vol;
-			}
-			set
-			{
-				if ((this._vol != value))
-				{
-					this._vol = value;
-				}
-			}
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Result")]
 	public partial class Result : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -590,6 +552,864 @@ namespace DALAssetDotNet
 					this._risque = value;
 					this.SendPropertyChanged("risque");
 					this.OnrisqueChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Correlation")]
+	public partial class Correlation : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _id;
+		
+		private int _runId;
+		
+		private System.Nullable<double> _AMS_DSM;
+		
+		private System.Nullable<double> _AMS_MT;
+		
+		private System.Nullable<double> _ETR_DB1;
+		
+		private System.Nullable<double> _ETR_IFX;
+		
+		private System.Nullable<double> _HEL_NOKIV;
+		
+		private System.Nullable<double> _HKG_0857;
+		
+		private System.Nullable<double> _LON_BARC;
+		
+		private System.Nullable<double> _NYSE_AA;
+		
+		private System.Nullable<double> _NYSE_CTL;
+		
+		private System.Nullable<double> _NYSE_DYN;
+		
+		private System.Nullable<double> _NYSE_GE;
+		
+		private System.Nullable<double> _NYSE_HOG;
+		
+		private System.Nullable<double> _NYSE_IP;
+		
+		private System.Nullable<double> _NYSE_JCP;
+		
+		private System.Nullable<double> _NYSE_MHFI;
+		
+		private System.Nullable<double> _NYSE_TIF;
+		
+		private System.Nullable<double> _TSE_BB;
+		
+		private System.Nullable<double> _TYO_4568;
+		
+		private System.Nullable<double> _TYO_7974;
+		
+		private System.Nullable<double> _TYO_8058;
+		
+    #region Définitions de méthodes d'extensibilité
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(long value);
+    partial void OnidChanged();
+    partial void OnrunIdChanging(int value);
+    partial void OnrunIdChanged();
+    partial void OnAMS_DSMChanging(System.Nullable<double> value);
+    partial void OnAMS_DSMChanged();
+    partial void OnAMS_MTChanging(System.Nullable<double> value);
+    partial void OnAMS_MTChanged();
+    partial void OnETR_DB1Changing(System.Nullable<double> value);
+    partial void OnETR_DB1Changed();
+    partial void OnETR_IFXChanging(System.Nullable<double> value);
+    partial void OnETR_IFXChanged();
+    partial void OnHEL_NOKIVChanging(System.Nullable<double> value);
+    partial void OnHEL_NOKIVChanged();
+    partial void OnHKG_0857Changing(System.Nullable<double> value);
+    partial void OnHKG_0857Changed();
+    partial void OnLON_BARCChanging(System.Nullable<double> value);
+    partial void OnLON_BARCChanged();
+    partial void OnNYSE_AAChanging(System.Nullable<double> value);
+    partial void OnNYSE_AAChanged();
+    partial void OnNYSE_CTLChanging(System.Nullable<double> value);
+    partial void OnNYSE_CTLChanged();
+    partial void OnNYSE_DYNChanging(System.Nullable<double> value);
+    partial void OnNYSE_DYNChanged();
+    partial void OnNYSE_GEChanging(System.Nullable<double> value);
+    partial void OnNYSE_GEChanged();
+    partial void OnNYSE_HOGChanging(System.Nullable<double> value);
+    partial void OnNYSE_HOGChanged();
+    partial void OnNYSE_IPChanging(System.Nullable<double> value);
+    partial void OnNYSE_IPChanged();
+    partial void OnNYSE_JCPChanging(System.Nullable<double> value);
+    partial void OnNYSE_JCPChanged();
+    partial void OnNYSE_MHFIChanging(System.Nullable<double> value);
+    partial void OnNYSE_MHFIChanged();
+    partial void OnNYSE_TIFChanging(System.Nullable<double> value);
+    partial void OnNYSE_TIFChanged();
+    partial void OnTSE_BBChanging(System.Nullable<double> value);
+    partial void OnTSE_BBChanged();
+    partial void OnTYO_4568Changing(System.Nullable<double> value);
+    partial void OnTYO_4568Changed();
+    partial void OnTYO_7974Changing(System.Nullable<double> value);
+    partial void OnTYO_7974Changed();
+    partial void OnTYO_8058Changing(System.Nullable<double> value);
+    partial void OnTYO_8058Changed();
+    #endregion
+		
+		public Correlation()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_runId", DbType="Int NOT NULL")]
+		public int runId
+		{
+			get
+			{
+				return this._runId;
+			}
+			set
+			{
+				if ((this._runId != value))
+				{
+					this.OnrunIdChanging(value);
+					this.SendPropertyChanging();
+					this._runId = value;
+					this.SendPropertyChanged("runId");
+					this.OnrunIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[AMS:DSM]", Storage="_AMS_DSM", DbType="Float")]
+		public System.Nullable<double> AMS_DSM
+		{
+			get
+			{
+				return this._AMS_DSM;
+			}
+			set
+			{
+				if ((this._AMS_DSM != value))
+				{
+					this.OnAMS_DSMChanging(value);
+					this.SendPropertyChanging();
+					this._AMS_DSM = value;
+					this.SendPropertyChanged("AMS_DSM");
+					this.OnAMS_DSMChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[AMS:MT]", Storage="_AMS_MT", DbType="Float")]
+		public System.Nullable<double> AMS_MT
+		{
+			get
+			{
+				return this._AMS_MT;
+			}
+			set
+			{
+				if ((this._AMS_MT != value))
+				{
+					this.OnAMS_MTChanging(value);
+					this.SendPropertyChanging();
+					this._AMS_MT = value;
+					this.SendPropertyChanged("AMS_MT");
+					this.OnAMS_MTChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[ETR:DB1]", Storage="_ETR_DB1", DbType="Float")]
+		public System.Nullable<double> ETR_DB1
+		{
+			get
+			{
+				return this._ETR_DB1;
+			}
+			set
+			{
+				if ((this._ETR_DB1 != value))
+				{
+					this.OnETR_DB1Changing(value);
+					this.SendPropertyChanging();
+					this._ETR_DB1 = value;
+					this.SendPropertyChanged("ETR_DB1");
+					this.OnETR_DB1Changed();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[ETR:IFX]", Storage="_ETR_IFX", DbType="Float")]
+		public System.Nullable<double> ETR_IFX
+		{
+			get
+			{
+				return this._ETR_IFX;
+			}
+			set
+			{
+				if ((this._ETR_IFX != value))
+				{
+					this.OnETR_IFXChanging(value);
+					this.SendPropertyChanging();
+					this._ETR_IFX = value;
+					this.SendPropertyChanged("ETR_IFX");
+					this.OnETR_IFXChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[HEL:NOKIV]", Storage="_HEL_NOKIV", DbType="Float")]
+		public System.Nullable<double> HEL_NOKIV
+		{
+			get
+			{
+				return this._HEL_NOKIV;
+			}
+			set
+			{
+				if ((this._HEL_NOKIV != value))
+				{
+					this.OnHEL_NOKIVChanging(value);
+					this.SendPropertyChanging();
+					this._HEL_NOKIV = value;
+					this.SendPropertyChanged("HEL_NOKIV");
+					this.OnHEL_NOKIVChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[HKG:0857]", Storage="_HKG_0857", DbType="Float")]
+		public System.Nullable<double> HKG_0857
+		{
+			get
+			{
+				return this._HKG_0857;
+			}
+			set
+			{
+				if ((this._HKG_0857 != value))
+				{
+					this.OnHKG_0857Changing(value);
+					this.SendPropertyChanging();
+					this._HKG_0857 = value;
+					this.SendPropertyChanged("HKG_0857");
+					this.OnHKG_0857Changed();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[LON:BARC]", Storage="_LON_BARC", DbType="Float")]
+		public System.Nullable<double> LON_BARC
+		{
+			get
+			{
+				return this._LON_BARC;
+			}
+			set
+			{
+				if ((this._LON_BARC != value))
+				{
+					this.OnLON_BARCChanging(value);
+					this.SendPropertyChanging();
+					this._LON_BARC = value;
+					this.SendPropertyChanged("LON_BARC");
+					this.OnLON_BARCChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:AA]", Storage="_NYSE_AA", DbType="Float")]
+		public System.Nullable<double> NYSE_AA
+		{
+			get
+			{
+				return this._NYSE_AA;
+			}
+			set
+			{
+				if ((this._NYSE_AA != value))
+				{
+					this.OnNYSE_AAChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_AA = value;
+					this.SendPropertyChanged("NYSE_AA");
+					this.OnNYSE_AAChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:CTL]", Storage="_NYSE_CTL", DbType="Float")]
+		public System.Nullable<double> NYSE_CTL
+		{
+			get
+			{
+				return this._NYSE_CTL;
+			}
+			set
+			{
+				if ((this._NYSE_CTL != value))
+				{
+					this.OnNYSE_CTLChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_CTL = value;
+					this.SendPropertyChanged("NYSE_CTL");
+					this.OnNYSE_CTLChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:DYN]", Storage="_NYSE_DYN", DbType="Float")]
+		public System.Nullable<double> NYSE_DYN
+		{
+			get
+			{
+				return this._NYSE_DYN;
+			}
+			set
+			{
+				if ((this._NYSE_DYN != value))
+				{
+					this.OnNYSE_DYNChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_DYN = value;
+					this.SendPropertyChanged("NYSE_DYN");
+					this.OnNYSE_DYNChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:GE]", Storage="_NYSE_GE", DbType="Float")]
+		public System.Nullable<double> NYSE_GE
+		{
+			get
+			{
+				return this._NYSE_GE;
+			}
+			set
+			{
+				if ((this._NYSE_GE != value))
+				{
+					this.OnNYSE_GEChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_GE = value;
+					this.SendPropertyChanged("NYSE_GE");
+					this.OnNYSE_GEChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:HOG]", Storage="_NYSE_HOG", DbType="Float")]
+		public System.Nullable<double> NYSE_HOG
+		{
+			get
+			{
+				return this._NYSE_HOG;
+			}
+			set
+			{
+				if ((this._NYSE_HOG != value))
+				{
+					this.OnNYSE_HOGChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_HOG = value;
+					this.SendPropertyChanged("NYSE_HOG");
+					this.OnNYSE_HOGChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:IP]", Storage="_NYSE_IP", DbType="Float")]
+		public System.Nullable<double> NYSE_IP
+		{
+			get
+			{
+				return this._NYSE_IP;
+			}
+			set
+			{
+				if ((this._NYSE_IP != value))
+				{
+					this.OnNYSE_IPChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_IP = value;
+					this.SendPropertyChanged("NYSE_IP");
+					this.OnNYSE_IPChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:JCP]", Storage="_NYSE_JCP", DbType="Float")]
+		public System.Nullable<double> NYSE_JCP
+		{
+			get
+			{
+				return this._NYSE_JCP;
+			}
+			set
+			{
+				if ((this._NYSE_JCP != value))
+				{
+					this.OnNYSE_JCPChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_JCP = value;
+					this.SendPropertyChanged("NYSE_JCP");
+					this.OnNYSE_JCPChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:MHFI]", Storage="_NYSE_MHFI", DbType="Float")]
+		public System.Nullable<double> NYSE_MHFI
+		{
+			get
+			{
+				return this._NYSE_MHFI;
+			}
+			set
+			{
+				if ((this._NYSE_MHFI != value))
+				{
+					this.OnNYSE_MHFIChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_MHFI = value;
+					this.SendPropertyChanged("NYSE_MHFI");
+					this.OnNYSE_MHFIChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[NYSE:TIF]", Storage="_NYSE_TIF", DbType="Float")]
+		public System.Nullable<double> NYSE_TIF
+		{
+			get
+			{
+				return this._NYSE_TIF;
+			}
+			set
+			{
+				if ((this._NYSE_TIF != value))
+				{
+					this.OnNYSE_TIFChanging(value);
+					this.SendPropertyChanging();
+					this._NYSE_TIF = value;
+					this.SendPropertyChanged("NYSE_TIF");
+					this.OnNYSE_TIFChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[TSE:BB]", Storage="_TSE_BB", DbType="Float")]
+		public System.Nullable<double> TSE_BB
+		{
+			get
+			{
+				return this._TSE_BB;
+			}
+			set
+			{
+				if ((this._TSE_BB != value))
+				{
+					this.OnTSE_BBChanging(value);
+					this.SendPropertyChanging();
+					this._TSE_BB = value;
+					this.SendPropertyChanged("TSE_BB");
+					this.OnTSE_BBChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[TYO:4568]", Storage="_TYO_4568", DbType="Float")]
+		public System.Nullable<double> TYO_4568
+		{
+			get
+			{
+				return this._TYO_4568;
+			}
+			set
+			{
+				if ((this._TYO_4568 != value))
+				{
+					this.OnTYO_4568Changing(value);
+					this.SendPropertyChanging();
+					this._TYO_4568 = value;
+					this.SendPropertyChanged("TYO_4568");
+					this.OnTYO_4568Changed();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[TYO:7974]", Storage="_TYO_7974", DbType="Float")]
+		public System.Nullable<double> TYO_7974
+		{
+			get
+			{
+				return this._TYO_7974;
+			}
+			set
+			{
+				if ((this._TYO_7974 != value))
+				{
+					this.OnTYO_7974Changing(value);
+					this.SendPropertyChanging();
+					this._TYO_7974 = value;
+					this.SendPropertyChanged("TYO_7974");
+					this.OnTYO_7974Changed();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[TYO:8058]", Storage="_TYO_8058", DbType="Float")]
+		public System.Nullable<double> TYO_8058
+		{
+			get
+			{
+				return this._TYO_8058;
+			}
+			set
+			{
+				if ((this._TYO_8058 != value))
+				{
+					this.OnTYO_8058Changing(value);
+					this.SendPropertyChanging();
+					this._TYO_8058 = value;
+					this.SendPropertyChanged("TYO_8058");
+					this.OnTYO_8058Changed();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Volatility")]
+	public partial class Volatility : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _id;
+		
+		private int _runId;
+		
+		private string _namego;
+		
+		private System.Nullable<double> _vol;
+		
+    #region Définitions de méthodes d'extensibilité
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(long value);
+    partial void OnidChanged();
+    partial void OnrunIdChanging(int value);
+    partial void OnrunIdChanged();
+    partial void OnnamegoChanging(string value);
+    partial void OnnamegoChanged();
+    partial void OnvolChanging(System.Nullable<double> value);
+    partial void OnvolChanged();
+    #endregion
+		
+		public Volatility()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_runId", DbType="Int NOT NULL")]
+		public int runId
+		{
+			get
+			{
+				return this._runId;
+			}
+			set
+			{
+				if ((this._runId != value))
+				{
+					this.OnrunIdChanging(value);
+					this.SendPropertyChanging();
+					this._runId = value;
+					this.SendPropertyChanged("runId");
+					this.OnrunIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_namego", DbType="VarChar(20)")]
+		public string namego
+		{
+			get
+			{
+				return this._namego;
+			}
+			set
+			{
+				if ((this._namego != value))
+				{
+					this.OnnamegoChanging(value);
+					this.SendPropertyChanging();
+					this._namego = value;
+					this.SendPropertyChanged("namego");
+					this.OnnamegoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_vol", DbType="Float")]
+		public System.Nullable<double> vol
+		{
+			get
+			{
+				return this._vol;
+			}
+			set
+			{
+				if ((this._vol != value))
+				{
+					this.OnvolChanging(value);
+					this.SendPropertyChanging();
+					this._vol = value;
+					this.SendPropertyChanged("vol");
+					this.OnvolChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.InfoRunId")]
+	public partial class InfoRunId : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _id;
+		
+		private int _runId;
+		
+		private System.Nullable<System.DateTime> _dateBegin;
+		
+		private System.Nullable<System.DateTime> _dateEnd;
+		
+		private string _note;
+		
+    #region Définitions de méthodes d'extensibilité
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(long value);
+    partial void OnidChanged();
+    partial void OnrunIdChanging(int value);
+    partial void OnrunIdChanged();
+    partial void OndateBeginChanging(System.Nullable<System.DateTime> value);
+    partial void OndateBeginChanged();
+    partial void OndateEndChanging(System.Nullable<System.DateTime> value);
+    partial void OndateEndChanged();
+    partial void OnnoteChanging(string value);
+    partial void OnnoteChanged();
+    #endregion
+		
+		public InfoRunId()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_runId", DbType="Int NOT NULL")]
+		public int runId
+		{
+			get
+			{
+				return this._runId;
+			}
+			set
+			{
+				if ((this._runId != value))
+				{
+					this.OnrunIdChanging(value);
+					this.SendPropertyChanging();
+					this._runId = value;
+					this.SendPropertyChanged("runId");
+					this.OnrunIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dateBegin", DbType="Date")]
+		public System.Nullable<System.DateTime> dateBegin
+		{
+			get
+			{
+				return this._dateBegin;
+			}
+			set
+			{
+				if ((this._dateBegin != value))
+				{
+					this.OndateBeginChanging(value);
+					this.SendPropertyChanging();
+					this._dateBegin = value;
+					this.SendPropertyChanged("dateBegin");
+					this.OndateBeginChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dateEnd", DbType="Date")]
+		public System.Nullable<System.DateTime> dateEnd
+		{
+			get
+			{
+				return this._dateEnd;
+			}
+			set
+			{
+				if ((this._dateEnd != value))
+				{
+					this.OndateEndChanging(value);
+					this.SendPropertyChanging();
+					this._dateEnd = value;
+					this.SendPropertyChanged("dateEnd");
+					this.OndateEndChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_note", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string note
+		{
+			get
+			{
+				return this._note;
+			}
+			set
+			{
+				if ((this._note != value))
+				{
+					this.OnnoteChanging(value);
+					this.SendPropertyChanging();
+					this._note = value;
+					this.SendPropertyChanged("note");
+					this.OnnoteChanged();
 				}
 			}
 		}

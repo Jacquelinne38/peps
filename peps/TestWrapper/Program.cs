@@ -10,11 +10,18 @@ namespace TestWrapper
 {
     class Program
     {
+        /*
+         * Projet pour tester le mapping du c# à c++/cli
+         * Ce projet peu être lancé en mode .exe ou etre compilé comme une bibliothèque de classe.
+         * C'est le projet d'entrée de notre projet asp.
+         * Bien entendu le main nous sort exclusivement pour nos tests sans app web.
+         * 
+         */ 
         static void Main(string[] args)
         {
             DataAssetValuesLoader loader = new DataAssetValuesLoader(new DateTime(2004, 1, 1), new DateTime(2006, 1, 1));
             double[,] mat = loader.Matrix;
-            DataAssetValuesLoader loaderNext = new DataAssetValuesLoader(new DateTime(2006, 2, 2), new DateTime(2014, 1, 1));
+            DataAssetValuesLoader loaderNext = new DataAssetValuesLoader(new DateTime(2006, 2, 2), new DateTime(2014, 4, 4));
             double[,] matNext = loaderNext.Matrix;
             
             double[] vol;
@@ -24,9 +31,13 @@ namespace TestWrapper
             List<double> priceCouverture = new List<double>();
             List<double> sansRisque = new List<double>();
             List<double> risque = new List<double>();
-            
+            double[,] compoAll = new double[1,1];
+
+            double[] debug = new double[20];
+
+
              WrapperClass cl = new WrapperClass();
-             corr = cl.CalcCorr(mat, loader.LstassetName.Count, loader.LstassetDate.Count, false);
+             corr = cl.CalcCorr(mat, loader.LstassetName.Count, loader.LstassetDate.Count, true);
              vol = cl.CalcVol(mat, loader.LstassetName.Count, loader.LstassetDate.Count, false);
              cl.LaunchComputation(matNext, 
                                   vol, 
@@ -36,13 +47,19 @@ namespace TestWrapper
                                   ref price,
                                   ref priceCouverture,
                                   ref sansRisque, 
-                                  ref risque
+                                  ref risque,
+                                  ref compoAll
                                   );
 
-             DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque);
+           
 
-             Console.WriteLine("coucou");
+                 DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque);
+
+             Console.WriteLine("Done");
         }
+
+
+     
 
         
     }

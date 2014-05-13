@@ -18,6 +18,11 @@
 
 //int main(int argc, char **argv) {		
 namespace Wrapper {
+
+
+	//Fonction qui sert d'interface entre le c# et le c++ ici c'est du c++ cli.
+	//Cette la fonction de calcule qui est appelé par le projet TestWrapper qui est lui même appelé par le projet web.
+	//C'est ici que tout ce passe.
 	int WrapperClass::LaunchComputation(array<double, 2>^ assets, 
 		array<double, 1>^ vol, 
 		array<double, 2>^ corr, 
@@ -26,16 +31,24 @@ namespace Wrapper {
 		System::Collections::Generic::List<double>^% list_price,
 		System::Collections::Generic::List<double>^% list_priceCouverture,
 		System::Collections::Generic::List<double>^% list_sans_risq,
-		System::Collections::Generic::List<double>^% list_actifs_risq
+		System::Collections::Generic::List<double>^% list_actifs_risq,
+		array<double, 2>^% compoCli
 		) {
+
 		if(PAS > nbDate)
 			return -1;
-		//nbActif = 5;
+		//nbActif = 15;
 		PnlMat * lm_histo = pnl_mat_create(nbActif, PAS);
+		array<double, 2>^ tmp = PnlMatToArray(lm_histo);
+		
+
+		
+		std::cout << std::endl;
 		PnlVect * lv_vol = pnl_vect_create(nbActif);
 		PnlMat * lm_corr = pnl_mat_create(nbActif, nbActif);
 
-		ArrayToPnlMat(lm_histo, assets, nbActif, PAS);
+
+		ArrayHistoToPnlMat(lm_histo, assets, nbActif, PAS);
 		ArrayToPnlMat(lm_corr, corr, nbActif, nbActif);
 		ArrayToPnlVect(lv_vol, vol, nbActif);
 
@@ -65,6 +78,8 @@ namespace Wrapper {
 		PnlMat *l_histoFix = pnl_mat_create(produit.getEquities().size(), model.mvec_fixingDate.size());
 		// ICI creer la matrice path complete et surement histofix aussi
 
+		//Composition
+		PnlMat * compoPortefeuille = pnl_mat_create(produit.getEquities().size(), model.FINALDATE());
 		//Pricing pour chaque t
 		for (int t=0; t<model.FINALDATE(); t++){
 			//std::cout<< t <<std::endl;
@@ -72,6 +87,7 @@ namespace Wrapper {
 			if (ret == -10) break;
 			else if (ret != 0) std::cout << "Bug" << std::endl;
 			else print(price, priceSquare, delta, gamma ,model.Nb_Path());
+
 			vec_price.push_back(price);
 			vec_delta.push_back(pnl_vect_copy(delta));
 			// a mettre dans une fonction du genre refresh spot
@@ -82,10 +98,10 @@ namespace Wrapper {
 			pnl_mat_get_col(l_spot, l_histo, t);
 			pnl_mat_free(&l_histo);
 
-			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t);
-
-
+			model.Simul_Market(vec_delta, vec_priceCouverture, vec_actifs_risq, vec_sans_risq, delta, l_spot, t, price, compoPortefeuille);
 			pnl_vect_free(&l_spot);
+			//if (price > 1.23)
+			//	break;
 		}
 		//pnl_mat_free(&l_histoFix);
 		////////////////////////////
@@ -100,6 +116,9 @@ namespace Wrapper {
 		list_priceCouverture = NatifToManaged(vec_priceCouverture);
 		list_actifs_risq = NatifToManaged(vec_actifs_risq);
 		list_sans_risq = NatifToManaged(vec_sans_risq);
+		//pnl_mat_print(compoPortefeuille);
+		compoCli = PnlMatToArray(compoPortefeuille);
+
 
 		std::vector<double> vecbisdelta;
 		for(unsigned int i = 0 ; i< vec_delta.size(); ++i ) {
@@ -121,6 +140,9 @@ namespace Wrapper {
 		return 0;
 	}
 
+
+		//Fonction qui sert d'interface entre le c# et le c++ ici c'est du c++ cli.
+	//Cette fonction retourne la volatilité en fonction des valeurs historique 
 	array<double, 1>^ WrapperClass::CalcVol(array<double, 2>^ histo, int nbActif, int nbDate, bool debug) {
 
 		//Passage array to pnlmatarray
@@ -151,15 +173,18 @@ namespace Wrapper {
 		pnl_vect_free(&lv_vol);
 		return la_histo;
 	}
-
+	//Fonction qui sert d'interface entre le c# et le c++ ici c'est du c++ cli.
+	//Cette fonction retourne la corrélation en fonction des valeurs historique 
 	array<double, 2>^ WrapperClass::CalcCorr(array<double, 2>^ histo, int nbActif, int nbDate, bool debug) {
 		//Passage array to pnlmatarray
 		PnlMat * l_histo = pnl_mat_create(nbActif, nbDate);
 		ArrayToPnlMat(l_histo, histo, nbActif, nbDate);
 
-
 		PnlMat * l_corr = pnl_mat_create(nbActif, nbActif);
 		Compute_mat_Cor(l_histo, l_corr);
+		for(int i = 0 ; i < l_corr->n; ++i) {
+			pnl_mat_set(l_corr, i, i , 1.0);
+		}
 
 		if (debug) {
 			std::ofstream fichier("../DATA/corrcalc.txt", std::ios::out | std::ios::trunc);  // ouverture en écriture avec effacement du fichier ouvert

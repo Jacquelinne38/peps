@@ -53,10 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="Account\CalcParameter.aspx" />
     <Content Include="Account\ChangePassword.aspx" />
     <Content Include="Account\ChangePasswordSuccess.aspx" />
+    <Content Include="Account\Compute_Parameter.aspx" />
     <Content Include="Account\Login.aspx" />
     <Content Include="Account\Pricer.aspx" />
+    <Content Include="Account\PricerNewComputation.aspx" />
     <Content Include="Account\Produit.aspx" />
     <Content Include="Account\Register.aspx" />
     <Content Include="img\yannick.jpg" />
@@ -68,7 +71,9 @@
     <Content Include="Scripts\jquery-1.4.1-vsdoc.js" />
     <Content Include="Scripts\jquery-1.4.1.js" />
     <Content Include="Scripts\jquery-1.4.1.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -84,6 +89,13 @@
     <Compile Include="About.aspx.designer.cs">
       <DependentUpon>About.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Account\CalcParameter.aspx.cs">
+      <DependentUpon>CalcParameter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Account\CalcParameter.aspx.designer.cs">
+      <DependentUpon>CalcParameter.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Account\ChangePassword.aspx.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -98,6 +110,13 @@
     <Compile Include="Account\ChangePasswordSuccess.aspx.designer.cs">
       <DependentUpon>ChangePasswordSuccess.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Account\Compute_Parameter.aspx.cs">
+      <DependentUpon>Compute_Parameter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Account\Compute_Parameter.aspx.designer.cs">
+      <DependentUpon>Compute_Parameter.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -111,6 +130,13 @@
     </Compile>
     <Compile Include="Account\Pricer.aspx.designer.cs">
       <DependentUpon>Pricer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Account\PricerNewComputation.aspx.cs">
+      <DependentUpon>PricerNewComputation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Account\PricerNewComputation.aspx.designer.cs">
+      <DependentUpon>PricerNewComputation.aspx</DependentUpon>
     </Compile>
     <Compile Include="Account\Produit.aspx.cs">
       <DependentUpon>Produit.aspx</DependentUpon>
@@ -144,6 +170,7 @@
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
     </Compile>
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -156,6 +183,10 @@
     <ProjectReference Include="..\DALAssetDotNet\DALAssetDotNet.csproj">
       <Project>{8E15D056-78DA-4717-8F0B-FCEC19ED229F}</Project>
       <Name>DALAssetDotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestWrapper\TestWrapper.csproj">
+      <Project>{7E01E9C3-5521-443F-9F94-1D891C10B2AD}</Project>
+      <Name>TestWrapper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -13,7 +13,19 @@ namespace PepsClient
         void Application_Start(object sender, EventArgs e)
         {
             // Code qui s'exécute au démarrage de l'application
+            String _path = String.Concat(System.Environment.GetEnvironmentVariable("PATH"), ";", @"C:\Users\pizzix-game\Documents\GitHub\peps\peps\PepsClient\bin");
 
+            
+            System.Environment.SetEnvironmentVariable("PATH", _path, EnvironmentVariableTarget.Process);
+            _path = "";
+            _path = String.Concat(System.Environment.GetEnvironmentVariable("PATH"), ";", @"C:\Users\pizzix-game\Documents\GitHub\peps\peps\TestWrapper\obj\x86\Release");
+            System.Environment.SetEnvironmentVariable("PATH", _path, EnvironmentVariableTarget.Process);
+            _path = "";
+            _path = String.Concat(System.Environment.GetEnvironmentVariable("PATH"), ";", @"C:\Users\pizzix-game\Documents\GitHub\peps\peps\Release");
+            System.Environment.SetEnvironmentVariable("PATH", _path, EnvironmentVariableTarget.Process);
+            _path = "";
+            _path = String.Concat(System.Environment.GetEnvironmentVariable("PATH"), ";", @"C:\Users\pizzix-game\Documents\GitHub\peps\peps\Wrapper\Release");
+            System.Environment.SetEnvironmentVariable("PATH", _path, EnvironmentVariableTarget.Process);
         }
 
         void Application_End(object sender, EventArgs e)

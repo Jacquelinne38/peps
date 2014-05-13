@@ -7,6 +7,7 @@ namespace DALAssetDotNet
 {
     public static class  DALResult
     {
+        //renvoi le dernier id utilisé
       public static int getLastRunId()
         {
             DataPepsDataContext db = ContextDb.Connexion;
@@ -18,6 +19,8 @@ namespace DALAssetDotNet
             return result;
         }
 
+
+        //sauvegarde les résultat d'un run
         public static void SaveResult(List<DateTime?> dates,
                                       List<double> prices,
                                       List<double> priceCouvertures,

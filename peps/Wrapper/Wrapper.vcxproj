@@ -58,6 +58,9 @@
       <AdditionalDependencies>libpnl.lib;peps.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\works\pnl-win32-1.6.0\lib;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy ..\Debug\Wrapper.dll ..\PepsClient\bin\Wrapper.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -71,6 +74,9 @@
       <AdditionalDependencies>peps.lib;libpnl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\works\pnl-win32-1.6.0\lib;C:\Users\pizzix-game\Documents\GitHub\peps\peps\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy ..\Release\Wrapper.dll ..\PepsClient\bin\Wrapper.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System" />

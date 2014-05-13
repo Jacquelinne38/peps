@@ -158,14 +158,12 @@ static double Compute_Volatility(const PnlVect * X)
 	{
 		vol += pow((pnl_vect_get(R,j) - mean),2);
 	}
-	//std::cout<< vol <<std::endl;
 	vol *= 1.0/((double)R->size-1.0);
+	vol /= PAS;
 	vol = sqrt(vol);
 	pnl_vect_free(&R);
 	return vol;
 }
-
-
 
  /**
  * @param in vecteurs X et Y
@@ -173,21 +171,32 @@ static double Compute_Volatility(const PnlVect * X)
  * @Retourne un double : la correlation entre les deux vecteurs
  *
  */
-  static double Correl (const PnlVect* X, const PnlVect* Y)
+  static double Correl(const PnlVect * X, const PnlVect * Y)
   {
-  	int N = X->size;
-  	double EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
-  	for (size_t i = 0; i < N; i++)
-  	{
-  		EX += pnl_vect_get(X,i);
-  		EY += pnl_vect_get(Y,i);
-  		EXY += pnl_vect_get(X,i) * pnl_vect_get(Y,i);
-  		EX2 += pnl_vect_get(X,i) * pnl_vect_get(X,i);
-  		EY2 += pnl_vect_get(Y,i) * pnl_vect_get(Y,i);
-  	}
-  	return (N*EXY - EX*EY) / sqrt((N*EX2 - EX*EX) * (N*EY2 - EY*EY));
-  }
+	  double volX = Compute_Volatility(X);
+	  double volY = Compute_Volatility(Y);
+	  double meanX = 0;
+	  double meanY = 0;
+	  double multR = 0;
+	  double retX = 0;
+	  double retY = 0;
+	  double ret = 0;
 
+	  for (int i = 0; i< X->size - 1; i++)
+	  {
+		  retX = log(pnl_vect_get(X, i+1)) - log(pnl_vect_get(X, i));
+		  retY = log(pnl_vect_get(Y,i+1)) - log(pnl_vect_get(Y,i));
+		  meanX += retX;
+		  meanY += retY;
+		  multR += retX*retY;
+		  	 
+	  }
+	  meanX /= X->size - 1;
+	  meanY /= X->size - 1;
+	  ret = (multR - X->size*meanX*meanY)/((X->size - 1)*volX*volY);
+	  ret /= PAS; 
+	  return ret;
+  }
 
 /**
 * @param in la matrice historique. La valeur de chacun des actifs a chacune des dates

@@ -94,7 +94,9 @@ public :
 		std::vector<double> &vec_sans_risq,
 		const PnlVect * delta, 
 		const PnlVect* spot, 
-		const int time);
+		const int time, 
+		const double prix,
+			 PnlMat * compoAll);
 	std::vector<int> mvec_fixingDate;
 	DISCRETISATION_TYPE Discretisation() const { return m_discretisation; }
 	double NBDISCRETISATION() const { return m_NBDISCRETISATION; }

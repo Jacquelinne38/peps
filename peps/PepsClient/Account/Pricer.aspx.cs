@@ -11,12 +11,14 @@ namespace PepsClient.Account
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            SqlDataSource1.SelectParameters["runId"].DefaultValue = DropDownList1.SelectedValue;
         }
 
         protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
         {
             SqlDataSource1.SelectParameters["runId"].DefaultValue =  DropDownList1.SelectedValue;
         }
+
+
     }
 }

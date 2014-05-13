@@ -5,6 +5,8 @@ static const double PERF_MAX = 0.25;
 static const double PERF_MIN = -0.50;
 static const double REMB_ANTI = 1.23;
 static const double REMB_N_ANTI  = 0.98;
+//#define PAS 1820
+//#define PAS 1300
 #define PAS 260
 static const double TAUX_ACTUALISATION = 0.05; 
 

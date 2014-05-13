@@ -5,6 +5,14 @@ using System.Text;
 using DALAssetDotNet;
 
 
+/*
+ * 
+ * Classe très importante. Car elle nous permet de charger les données historique de notre produit.
+ * Nous maximisons le mombre de donnée par le max de date de tous les actifs.
+ * A la fin les actifs qui ont le moins de date son comblé par les valeurs de cloture précédente ou suivante suivant celle qui sont disponible
+ * 
+ */ 
+
 namespace TestWrapper
 {
     class DataAssetValuesLoader
@@ -152,12 +160,9 @@ namespace TestWrapper
                     try
                     {
                         var value = lst.OrderByDescending(x => x.Count).ToArray()[i].Where(x => x.Date == _lstassetDate[j]).First();
-                        //TODO ici on doit créer une liste qui insert le nom de lactif comme ça on pourra savoir dans quel ordre sont les actif dans la matrice
-                        //en faite c'est lst
-                        //penser a faire pareil pour les tableaux de date
                         matrixValues[i, j] = value.close;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
                         matrixValues[i, j] = -1;
                         count++;

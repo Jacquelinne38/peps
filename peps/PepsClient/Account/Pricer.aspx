@@ -27,14 +27,14 @@
             <asp:Parameter Name="runId" Type="Int32" DefaultValue="1" />
           </SelectParameters>
     </asp:SqlDataSource>
-
-    <asp:DropDownList ID="DropDownList1" runat="server" 
+    <p>Select your run : <asp:DropDownList ID="DropDownList1" runat="server" 
         DataSourceID="SqlDataSource2" DataTextField="idRun" DataValueField="idRun" 
         AutoPostBack="True" onselectedindexchanged="DropDownList1_SelectedIndexChanged">
     </asp:DropDownList>
+    </p> 
     <asp:SqlDataSource ID="SqlDataSource2" runat="server" 
         ConnectionString="<%$ ConnectionStrings:pepsConnectionString1 %>" 
         SelectCommand="SELECT DISTINCT [idRun] FROM [Result] WHERE [idRun] > 0 ORDER BY [idRun] desc">
     </asp:SqlDataSource>
-
+  
 </asp:Content>

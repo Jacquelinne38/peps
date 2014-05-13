@@ -9,6 +9,16 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 //using Wrapper;
 
+
+
+/*
+ * 
+ * 
+ * 
+ * Ceci est un projet de débug que nous avons utilisé pour visualiser les résultats avant la mise en place des pages asp.net
+ * Ce projet peu etre maintenant vu comme usless
+ * 
+ */ 
 namespace GraphTest
 {
     public partial class Form1 : Form

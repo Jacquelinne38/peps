@@ -65,9 +65,6 @@
     <ClCompile Include="Fx.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Peps.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="MC_Compute.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>

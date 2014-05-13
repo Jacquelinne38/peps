@@ -76,7 +76,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\works\pnl-win32-1.6.0\include;</AdditionalIncludeDirectories>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,7 +111,6 @@
     <ClCompile Include="Fx.cpp" />
     <ClCompile Include="MC_Compute.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Peps.cpp" />
     <ClCompile Include="Pesp_Timer.cpp" />
     <ClCompile Include="Produit.cpp" />
     <ClCompile Include="stdafx.cpp">

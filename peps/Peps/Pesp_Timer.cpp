@@ -2,7 +2,11 @@
 #include "Pesp_Timer.h"
 
 
-
+/************************************************************************/
+/* Class Peps Timer
+/* Simple class qui nous permet de générer des temps.
+/* Nous avons utilisé cette classe pour calculer par exemple le temps d'exécution de notre code.
+/************************************************************************/
 void Pesp_Timer::Start() {
 	this->start = std::clock();
 }

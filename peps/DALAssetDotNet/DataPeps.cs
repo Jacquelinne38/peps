@@ -1,5 +1,9 @@
 namespace DALAssetDotNet
 {
+    partial class Result
+    {
+    }
+
     partial class DataPepsDataContext
     {
 
