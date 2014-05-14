@@ -25,10 +25,8 @@ private :
 
 	void Produit::LoadDataHisto();
 
-	//Manque la déclaration de l'histofixing
-	// matrice de 5 colonnes(t0, t1, t2, t3 et T) et de (listEquity.length + listFx.length)
+
 public : 
-	// toutes ces fonctions prennent le temps en parametre
 	void UpDat_HistoFixing();
 	void UpDate_ListEquit();
 	void UpDate_listFx();
@@ -41,12 +39,40 @@ public :
 
 	~Produit();
 
+	/* cette méthode retourne la liste des equities qui sont utilisées
+	*/ 
 	std::vector<Equity> getEquities()  { return ListEquit;  };
+	
+	/* Cette méthode retourne la matrice historique
+	* c'est à dire la matrice qui contient pour chaque actif et chaque date la valeur observée sur le marché
+	*/
 	PnlMat * getMatHisto() const { return pnl_mat_copy(m_historique); }
+	
+	/* La méthode getMatCor calcul la matrice de corrélation
+	* Cette matrice contient en (i,j) la corrélation entre l'actif i et j
+	* elle est définie positibe et symétrique
+	*/
 	PnlMat * getMatCor() { return m_matCor; };
+	
+	/* Cette méthode retourne la volatilité des actifs
+	* la volatilité retournée ici n'est pas la volatilité historique
+	*/
 	void SetInitVol();
+
+	/* Méthode qui permet d'accéder à la décomposition de cholesky
+	* de la matrice de corrélation, cette matrice est triangulaire inférieure
+	*/
 	PnlMat * MatCholCorr() const { return m_matCholCorr; }
+
+	/* setter de la matrice de cholesky
+	*/
 	void MatCholCorr(PnlMat * val) { m_matCholCorr = val; }
+	
+	/* getter de la volatlité
+	*/
 	PnlVect * Volatility() const { return m_volatility; }
+	
+	/* setter de la volatilité
+	*/
 	void Volatility(PnlVect * val) { m_volatility = val; }
 };

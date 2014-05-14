@@ -5,7 +5,9 @@
 
 
 
-
+/* Calcul le nombre de jours/semaines entre la date actuelle (contenur dans lst_time)
+* et la prochaine date de fixing
+*/
 static inline double Compute_dt(int date, DISCRETISATION_TYPE l_discretisation, std::vector<int> lst_time)
 {
 	for (int i = 0; i < lst_time.size() - 1; ++i) {
@@ -14,7 +16,10 @@ static inline double Compute_dt(int date, DISCRETISATION_TYPE l_discretisation, 
 	}
 }
 
-
+/* Affichage des résultats
+* on peut afficher le delta du premier actif, le prix.
+* Modifier dans parameter.h la valeur des bouléens pour permettre ou non l'affichage
+*/ 
  static  void  print(double price, double squarePrice, const PnlVect * delta, const PnlVect * gamma, int nbPath) {
 	if(PRINTPRICE) {
 		std::cout << "AFFICHAGE DES RESULTATS"<< std::endl;
@@ -136,6 +141,10 @@ static void CreationDataHisto(std::string nomFichier, double drift, Produit pro)
 	CreerFichierData(lst_data, nomFichier);
 }
 
+/* Calcul de la volatilité à partir d'un vecteur
+* fonction nécessaire au calcul de la volatilité historique
+* @param X le vecteur dont on cherche la volatilité
+*/
 static double Compute_Volatility(const PnlVect * X)
 {
 	double lnS1 = 0;
@@ -225,7 +234,10 @@ static void Compute_mat_Cor(const PnlMat* Histo, PnlMat* MatCorr)
 	pnl_vect_free(&Y);
 }
 
-
+/* Calcul de la moyenne d'un vecteur
+* @param Y
+* le vecteur dont on veut calculer la moyenne
+*/
 static double Compute_Mean(const PnlVect * Y)
 {
 	double mean = 0;

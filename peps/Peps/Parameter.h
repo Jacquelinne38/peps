@@ -1,5 +1,5 @@
 #pragma once
-//Monte carlo
+// nombre de bouclez de Monte-Carlo
 #define NBPATH 100
 static const double PERF_MAX = 0.25;
 static const double PERF_MIN = -0.50;
@@ -15,6 +15,7 @@ static const double DRIFT = 0.05;
 
 enum DISCRETISATION_TYPE { DAY, WEEK };
 static const DISCRETISATION_TYPE DISCRETISATION = WEEK;
+
 //Date de fixing
 #define FIXING0 0
 #define FIXING1 103

@@ -26,16 +26,19 @@ private:
 	* return vecteur des prix spot
 	*/
 	PnlVect * MC_Compute::GetInitSpot();
+	
 	/*
 	* Déclaration du vecteur volatilité
 	* return vecteur volatitlié
 	*/
 	PnlVect * MC_Compute::GetInitVol();
+	
 	/*
 	*	Vérifie que tous les paramètres ont été défini
 	*   Dans le cas contraire, Price ne peut être exécutée
 	*/
 	bool MC_Compute::CheckParameter(); 
+	
 	/*
 	* Permet de calculer les deltas du produit
 	* @param out matrice des delta
@@ -45,23 +48,25 @@ private:
 	*/
     inline void MC_Compute::ComputeGrec(PnlVect * sumDelta, PnlVect* sumGamma, const PnlMat * pathTmp, const PnlMat* past, const double payoff, PnlVect* l_drift, int time);
 
-
 	/*
-	* Price le produit KB AKCENT
-	* @param histoFix in
+	* Price le produit KB AKCENT au temps time
+	* @param histoFix in : la valeur de chacun des actifs aux dates de fixing
 	* @param payoff out
 	*/
 	inline void MC_Compute::PriceProduct(const PnlMat * histoFix, double * payoff, int time);
+	
 	/*
-	* Renvoie le payoff actualisé au temps time
+	* Renvoie le payoff actualisé au temps time, a partir de la matrice des rentabilités
 	*/
 	inline double DiscountedPayoff(const PnlMat *rent, int time);
+	
 	/*
 	* Renvoie la valeur de value actualisée entre date et time
 	* @param in temps
 	* @pram in value : valeur a actualiser à t0
 	*/
 	inline double Discount(double value, int date, int time);
+	
 	/*
 	* Renvoie la performance lissée du panier d'actions 
 	* définie dans la brochure
@@ -69,6 +74,7 @@ private:
 	* return : performance lissée sous forme de vecteur, 1 ligne par actif/taux
 	*/ 
 	inline double Perf_Liss(const PnlVect *spot);
+	
 	/*
 	* Renvoie la perfomrance boostée du panier d'actions
 	*/
@@ -137,7 +143,6 @@ private:
 	double Compute_dt(int date);
 
 	/*
-	*
 	*@patram in : date actuelle
 	* return : prochaine date de fixing
 	*/

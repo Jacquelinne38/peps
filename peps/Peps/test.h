@@ -3,7 +3,8 @@
 #include "Model.h"
 #include <pnl/pnl_random.h>
 
-/* Retourne une matrice tronquée en time remplie de 0 size = size histo
+/* Retourne une matrice tronquée en time remplie de 0  à time par les valeurs historiques
+* size = size histo
 * @param in : histo : matrice historique
 * @param out : matrice tronquée
 * @param in : time temps auquel on souhaite tronquer
@@ -21,7 +22,8 @@ void TronqCoursHisto(const PnlMat * histo, PnlMat * outTronq, int time) {
 	pnl_vect_free(&tmp);
 }
 
-/* renvoie une matrice aux datex de fixing
+/* renvoie la matrice contenant la valeur des actifs aux date de fixing
+* a partir de la matrice contenant la valeur des actifs à chaque date
 * @param in : matrice simulée plus les cours passés
 * @param out : matrice aux dates de fixing
 * @param in : vecteur des dates de fixing

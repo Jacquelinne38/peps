@@ -15,7 +15,7 @@ private :
 	*Diffuse les trajectoires pour chacun des actifs
 	*@param in : produit
 	*@param in : drift du modèle
-	*@param in : vecteur des tirages effectués
+	*@param in : vecteur contenant les tirages aléatoires de loi normale
 	*@param in : matrice de cholesky des corrélations
 	*@param in/out : vecteur spot
 	*/
@@ -25,7 +25,7 @@ private :
 	*Calcule le spot dt jours/semaines plus tard
 	*@param in : produit
 	*@param in : drift du modèle
-	*@param in : vecteur des tirages effectués
+	*@param in : vecteur contenant les tirages aléatoires de loi normale
 	*@param in : matrice de cholesky des corrélations
 	*@param in/out : vecteur spot
 	*@param in : pas de temps
@@ -48,7 +48,7 @@ private :
 
 	DISCRETISATION_TYPE m_discretisation;
 
-	//fixer par rapport au type de discrétisation souhaité
+	//fixé par rapport au type de discrétisation souhaité
 	double m_DT;
 	double  m_NBDISCRETISATION;
 	int m_FINALDATE;
