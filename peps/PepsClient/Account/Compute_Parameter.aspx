@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-<h1>Here you can launch new compute of volatility and correlation parameter</h1>
+<h1>Here you can launch a new computation of volatility and correlation parameters</h1>
 <div style="width : 200px; height:300px; float: left; margin-right : 100px;">
 <p> Begin date :
     <asp:Calendar ID="CalendarBegin" runat="server" VisibleDate="2004-01-01"></asp:Calendar>

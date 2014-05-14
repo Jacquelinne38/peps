@@ -155,7 +155,7 @@ void Produit::UpDate_listFx(){}
 void Produit::LoadDataHisto() {
 
 	//ou histo1 ou histo2
-	fstream fichier("C:/Users/pizzix-game/Documents/GitHub/peps/peps/DATA/data2.txt");
+	fstream fichier("C:/Users/pizzix-game/Documents/GitHub/peps/peps/DATA/data.txt");
 	vector <string> monTableau;
 
 	if ( !fichier )

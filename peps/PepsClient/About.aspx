@@ -48,8 +48,8 @@
     </h2>
     <div id="carousel1"  style="width:584px; height:400px;  overflow:scroll;">
 		    <img  width="130" height="160" class = "cloudcarousel" src="./img/yannick.jpg" alt="Option Ingénierie de l'Information et Mathématiques Financières,<br /><span style='color:#1860A8'>yannick.luzy[at]gmail.com</span>" title="Yannick Luzy" />
-			<img  width="250" height="200" class = "cloudcarousel" src="./img/thomas.jpg" alt="Option Méthodes Quantitatives Avancées<br /><span style='color:#1860A8'>Thomas.Lutrat[at]gmail.com</span>" title="Thomas Lutrat" />
-			<img  width="130" height="160" class = "cloudcarousel" src="./img/yannick.jpg" alt="Option Méthodes Quantitatives Avancées<br /><span style='color:#1860A8'>Pierre.Bourillet[at]gmail.com</span>" title="Pierre Bourillet" />									
+			<img  width="250" height="200" class = "cloudcarousel" src="./img/lutratt.jpg" alt="Option Méthodes Quantitatives Avancées<br /><span style='color:#1860A8'>Thomas.Lutrat[at]gmail.com</span>" title="Thomas Lutrat" />
+			<img  width="200" height="160" class = "cloudcarousel" src="./img/bourillp.jpg" alt="Option Méthodes Quantitatives Avancées<br /><span style='color:#1860A8'>Pierre.Bourillet[at]gmail.com</span>" title="Pierre Bourillet" />									
 	</div>
     <table style="width:100%;">
         <tr>
@@ -64,7 +64,7 @@
     </table>
 </div>
 <div id ="right">
-<p>Notre équipe est composé de trois personne :</p>
+<p>Notre équipe est composée de trois personne :</p>
 <ul style="margin-left:580px; margin-top:0px; padding-top:0px">
 <li>Yannick Luzy :</br>Option Ingénierie de l'Information et Mathématiques Financières</li>
 <li>Pierre Bourillet :</br>Option Méthodes Quantitatives Avancées</li>

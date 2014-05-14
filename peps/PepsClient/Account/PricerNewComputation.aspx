@@ -24,7 +24,7 @@
          <asp:ListItem Value="1">Day</asp:ListItem>
      </asp:RadioButtonList>
   </p>
-<p> Nombre of path : 
+<p> Number of path : 
     <asp:TextBox ID="TextBoxPath" runat="server" AutoPostBack="True">100</asp:TextBox>
     </p>
     <div style="width : 200px; height:300px; float: left; margin-right : 100px;">

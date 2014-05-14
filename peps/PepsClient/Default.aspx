@@ -6,10 +6,10 @@
 <asp:Content ID="BodyContent" runat="server" ContentPlaceHolderID="MainContent">
       
     <h2>
-        Bienvenue sur notre application de gestion de produit structurés
+        Bienvenue sur notre application de gestion de produit structuré
     </h2>
     <p>
-        Merci de bien vouloir utiliser votre logging afin d'accéder à votre produit
+        Merci de bien vouloir utiliser votre logging afin d'accéder à votre produit.
     </p>
     <p>
         Rapport disponible <a href="http://go.microsoft.com/fwlink/?LinkID=152368"

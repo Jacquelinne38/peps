@@ -32,15 +32,26 @@ namespace Wrapper {
 		System::Collections::Generic::List<double>^% list_priceCouverture,
 		System::Collections::Generic::List<double>^% list_sans_risq,
 		System::Collections::Generic::List<double>^% list_actifs_risq,
-		array<double, 2>^% compoCli
+		array<double, 2>^% compoCli,
+		int week,
+		int nbPathh
 		) {
 
 		if(PAS > nbDate)
 			return -1;
-		//nbActif = 15;
+
+
 		PnlMat * lm_histo = pnl_mat_create(nbActif, PAS);
 		array<double, 2>^ tmp = PnlMatToArray(lm_histo);
-		
+		NBPATH = nbPathh;
+		if(week == 0) {
+			DISCRETISATION = WEEK;
+			PAS = 260;
+		}
+		else {
+			DISCRETISATION = DAY;
+			PAS = 1820;
+		}
 
 		
 		std::cout << std::endl;
@@ -63,6 +74,7 @@ namespace Wrapper {
 
 		std::vector<double> vec_price;	
 		std::vector<PnlVect *> vec_delta;
+		//Différent produit que nous pouvons utiliser
 		//Produit produit = Produit(lm_histo, nbActif, nbDate);
 		//Produit produit = Produit();
 		Produit produit = Produit(lm_histo, lm_corr, lv_vol);

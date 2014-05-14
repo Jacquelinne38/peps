@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-   <p>Le produit structuré est basé sous les sous-jacents suivant : </p>
+   <p>Le produit structuré est basé sur les sous-jacents suivant : </p>
     <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" 
     DataKeyNames="namego" DataSourceID="SqlDataSource1" 
     EmptyDataText="Il n'y a aucun enregistrement de données à afficher.">

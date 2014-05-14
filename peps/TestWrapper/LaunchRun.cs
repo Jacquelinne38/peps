@@ -8,11 +8,11 @@ namespace TestWrapper
 {
     public static  class LaunchRun
     {
-        //Fonction appelé par le projet asp pour lancer un nouveau run de calcule.
-        //Il prend en compte les divers paramètre qui sont renseigné sur la page de lancement de run.
+        //Fonction appelé par le projet asp pour lancer un nouveau run de calcul.
+        //Il prend en compte les divers paramètres qui sont renseignés sur la page de lancement de run.
         static public void LaunchRunPricer(int runVol, int weekDay, int nbPath, DateTime begin, DateTime end) {
-            DataAssetValuesLoader loader = new DataAssetValuesLoader(new DateTime(2004, 1, 1), new DateTime(2006, 1, 1));
-            double[,] mat = loader.Matrix;
+            //DataAssetValuesLoader loader = new DataAssetValuesLoader(new DateTime(2004, 1, 1), new DateTime(2006, 1, 1));
+            //double[,] mat = loader.Matrix;
             DataAssetValuesLoader loaderNext = new DataAssetValuesLoader(begin, end);
             double[,] matNext = loaderNext.Matrix;
 
@@ -39,7 +39,9 @@ namespace TestWrapper
                                  ref priceCouverture,
                                  ref sansRisque,
                                  ref risque,
-                                 ref compoAll
+                                 ref compoAll,
+                                 weekDay,
+                                 nbPath
                                  );
 
             DataResultEncoder.ExportData(loaderNext.LstassetDate, price, priceCouverture, sansRisque, risque, compoAll, loaderNext.LstassetName);

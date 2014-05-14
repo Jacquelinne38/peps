@@ -24,7 +24,7 @@
           </SelectParameters>
         </asp:SqlDataSource>
    
-<h1>Les paramètres suivant on été calculer avec : </h1>
+<h1>Les paramètres suivant ont été calculés avec : </h1>
     <p> Begin date : 
     <asp:Label ID="LabelDateDebut" runat="server"></asp:Label>
     </p>

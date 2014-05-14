@@ -33,8 +33,6 @@ namespace TestWrapper
             List<double> risque = new List<double>();
             double[,] compoAll = new double[1,1];
 
-            double[] debug = new double[20];
-
 
              WrapperClass cl = new WrapperClass();
              corr = cl.CalcCorr(mat, loader.LstassetName.Count, loader.LstassetDate.Count, true);
@@ -48,7 +46,9 @@ namespace TestWrapper
                                   ref priceCouverture,
                                   ref sansRisque, 
                                   ref risque,
-                                  ref compoAll
+                                  ref compoAll,
+                                  1,
+                                  100
                                   );
 
            
