@@ -2,9 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Peps", "Peps\Peps.vcxproj", "{A68B74DC-51F8-48BD-A604-D22BA86AE3A7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8E15D056-78DA-4717-8F0B-FCEC19ED229F} = {8E15D056-78DA-4717-8F0B-FCEC19ED229F}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphTest", "GraphTest\GraphTest.csproj", "{7CDEC5A1-7072-4280-B4A0-6F9C9618A10E}"
 EndProject

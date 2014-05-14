@@ -49,18 +49,24 @@ namespace DALAssetDotNet
             db.Result.InsertAllOnSubmit(results);
             db.SubmitChanges();
 
-
             //compo
             List<Composition> compos = new List<Composition>();
             for( int i = 0; i < compo.GetLength(0); i++) {
-                for(int j = 0; i < dates.Count ; j++) {
+                for (int j = 0; j < prices.Count; j++)
+                {
                     Composition tmp = new Composition();
                     tmp.idRun = runid +1;
                     tmp.actif = assets[i];
-                    double? val = compo[i, j];
-                    if (val == null)
+                    double val = compo[i, j];
+                    if (double.IsNaN(val))
                         val = 0;
-                    tmp.value = (compo[i, j]*100);
+                    else if (double.IsInfinity(val))
+                        val = 0;
+                    else if (double.IsNegativeInfinity(val))
+                        val = 0;
+                    else if (double.IsPositiveInfinity(val))
+                        val = 0;
+                    tmp.value = val * 100;
                     tmp.date = dates[j];
                     compos.Add(tmp);
                 }

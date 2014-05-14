@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Peps2014.Properties" GeneratedClassName="Settings">
-  <Profiles />
-  <Settings>
-    <Setting Name="AdditionalPaths" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">C:\Users\pizzix-game\Documents\GitHub\peps\peps\Debug</Value>
-    </Setting>
-  </Settings>
-</SettingsFile>
