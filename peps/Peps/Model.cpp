@@ -10,7 +10,7 @@ void Model::Diffuse_from_t_all_Asset(Produit * produit,const PnlVect * drift, co
 	double l_compo1 = 0;
 	double l_compo2 = 0;
 	tmp2 = pnl_mat_mult_vect(choleskyCor, produit->Volatility());
-    //#pragma omp parallel for	
+   // #pragma omp parallel for	
 	for (int j = 0; j < produit->getEquities().size(); ++j){ 
 		l_compo1 = (pnl_vect_get(drift, j) - pow(produit->getEquities()[j].volatility,2)  / 2.0) * (double)(m_DT);		
 		tmp = pnl_vect_get(tmp2, j) ;

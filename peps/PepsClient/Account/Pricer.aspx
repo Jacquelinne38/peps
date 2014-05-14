@@ -31,6 +31,34 @@
         DataSourceID="SqlDataSource2" DataTextField="idRun" DataValueField="idRun" 
         AutoPostBack="True" onselectedindexchanged="DropDownList1_SelectedIndexChanged">
     </asp:DropDownList>
+    </p>
+    <p>Date range :
+        <asp:DropDownList ID="DropDownList2" runat="server" 
+            DataSourceID="SqlDataSource3" DataTextField="date" DataValueField="date" 
+            AutoPostBack="True" onselectedindexchanged="DropDownList2_SelectedIndexChanged">
+        </asp:DropDownList>
+        <asp:SqlDataSource ID="SqlDataSource3" runat="server" 
+            ConnectionString="<%$ ConnectionStrings:pepsConnectionString1 %>" 
+            SelectCommand="SELECT distinct([date]) FROM [Composition] where [idRun] = @runId ORDER BY [date]  ">
+             <SelectParameters>
+            <asp:Parameter Name="runId" Type="Int32" DefaultValue="1" />
+          </SelectParameters>
+        </asp:SqlDataSource>
+        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" 
+            DataSourceID="SqlDataSource4">
+            <Columns>
+                <asp:BoundField DataField="actif" HeaderText="actif" SortExpression="actif" />
+                <asp:BoundField DataField="value" HeaderText="value" SortExpression="value" />
+            </Columns>
+        </asp:GridView>
+        <asp:SqlDataSource ID="SqlDataSource4" runat="server" 
+            ConnectionString="<%$ ConnectionStrings:pepsConnectionString1 %>" 
+            SelectCommand="SELECT [actif], [value] FROM [Composition]  where [idRun] = @runId and [date] =  @dateId ORDER BY [actif]">
+             <SelectParameters>
+            <asp:Parameter Name="runId" Type="Int32" DefaultValue="1" />
+            <asp:Parameter Name="dateId" Type="DateTime" DefaultValue="1/1/2014" />
+          </SelectParameters>
+        </asp:SqlDataSource>
     </p> 
     <asp:SqlDataSource ID="SqlDataSource2" runat="server" 
         ConnectionString="<%$ ConnectionStrings:pepsConnectionString1 %>" 

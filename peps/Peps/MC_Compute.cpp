@@ -273,6 +273,7 @@ inline double MC_Compute::Perf_Liss(const PnlVect *spot)
 }
 
 inline void MC_Compute::RentFromMat(const PnlMat *mat, PnlMat *res) {
+	//#pragma omp parallel for
 	for(int i = 0 ; i < mat->m ; ++i) {
 		for(int j = 1; j < mat->n; ++j) {
 			double rent = (pnl_mat_get(mat, i, j) / pnl_mat_get(mat, i, 0))-1;
@@ -289,8 +290,10 @@ inline void MC_Compute::RentFromMat(const PnlMat *mat, PnlMat *res) {
 *
 * OKY 25/03
 */
+
 inline void MC_Compute::RentFromVect(const PnlVect *vect, PnlVect *res)
 {
+	//#pragma omp parallel for
 	for (int j = 0; j < vect->size-1; ++j) {
 		pnl_vect_set(res, j, (pnl_vect_get(vect, j + 1) / pnl_vect_get(vect, 0)) - 1);
 	}
@@ -298,6 +301,7 @@ inline void MC_Compute::RentFromVect(const PnlVect *vect, PnlVect *res)
 
 inline void MC_Compute::RentFromVectHisto(const PnlVect *vect, PnlVect *res, int time) 
 {
+	//#pragma omp parallel for
 	for (int j = time; j < vect->size-1; ++j) {
 		pnl_vect_set(res, j, (pnl_vect_get(vect, j + 1) / pnl_vect_get(vect, 0)) - 1);
 	}

@@ -17,8 +17,16 @@ namespace PepsClient.Account
         protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
         {
             SqlDataSource1.SelectParameters["runId"].DefaultValue =  DropDownList1.SelectedValue;
+            SqlDataSource3.SelectParameters["runId"].DefaultValue = DropDownList1.SelectedValue;
+            SqlDataSource4.SelectParameters["runId"].DefaultValue = DropDownList1.SelectedValue;
+            SqlDataSource4.SelectParameters["dateId"].DefaultValue = DropDownList2.SelectedValue;
         }
 
+        protected void DropDownList2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlDataSource4.SelectParameters["runId"].DefaultValue = DropDownList1.SelectedValue;
+            SqlDataSource4.SelectParameters["dateId"].DefaultValue = DropDownList2.SelectedValue;
+        }
 
     }
 }
