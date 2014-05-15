@@ -29,7 +29,7 @@
     </p>
     <div style="width : 200px; height:300px; float: left; margin-right : 100px;">
     <p> Begin date :
-        <asp:Calendar ID="CalendarBegin" runat="server" VisibleDate="02/02/2006 00:00:00"></asp:Calendar>
+        <asp:Calendar ID="CalendarBegin" runat="server" VisibleDate="2007-02-02"></asp:Calendar>
     </p>
     </div>
      <p> End date :

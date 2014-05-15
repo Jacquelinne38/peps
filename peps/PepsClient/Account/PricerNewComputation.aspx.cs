@@ -22,6 +22,10 @@ namespace PepsClient.Account
                 int weekDay = int.Parse(RadioButtonListWeekDay.SelectedItem.Value);
                 int nbPath = int.Parse(TextBoxPath.Text);
                 DateTime begin = CalendarBegin.SelectedDate;
+                DateTime beginBis = new DateTime(2007, 1, 1);
+                int compare = DateTime.Compare(begin, beginBis);
+                if (compare > 0)
+                    begin = beginBis;
                 DateTime end = CalendarEnd.SelectedDate;
                 int runId = int.Parse(DropDownListVolCor.SelectedValue);
                 TestWrapper.LaunchRun.LaunchRunPricer(runId, weekDay, nbPath, begin, end);
